@@ -1,14 +1,21 @@
 #include <Servo.h>
 
-int lightLeft = A0;
-int lightRight = A1;
+// light sensor port numbers
+int lightLeftPort = A0;
+int lightRightPort = A1;
 
-int valLeft = 0;
-int valRight = 0;
+// light sensor read values
+int lightLeftVal = 0;
+int lightRightVal = 0;
+
+// servo objects
+Servo servoLeft;
+Servo servoRight;
 
 void setup() {
   // put your setup code here, to run once:
   Serial.begin( 9600 );
+  servoSetup();
 }
 
 void loop() {
@@ -17,11 +24,16 @@ void loop() {
 }
 
 void servoSetup() {
-  
+  servoLeft.attach( 5 );
+  servoRight.attach( 6 );
+}
+
+void goForward() {
+  servoLeft.write
 }
 
 void readLightSensors() {
-    valLeft = analogRead( lightLeft );
-    valRight = analogRead( lightRight );
-    Serial.println( "Left: " + valLeft + ", Right: " + valRight );
+    lightLeftVal = analogRead( lightLeftPort );
+    lightRightVal = analogRead( lightRightPort );
+    Serial.println( "Left: " + lightLeftVal + ", Right: " + lightRightVal );
 }
