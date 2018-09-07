@@ -20,18 +20,14 @@ Servo servoRight;
 void setup() {
   // put your setup code here, to run once:
   Serial.begin( 9600 );
-  //servoSetup();
+  servoSetup();
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
   readLightSensors();
-<<<<<<< HEAD
   nextStep();
   // delay( 200 );
-=======
-  delay( 200 );
->>>>>>> fa20dd9b4477fc76760f4521b3c5d348eee20211
 }
 
 void servoSetup() {
