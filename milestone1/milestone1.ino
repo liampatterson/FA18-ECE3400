@@ -8,6 +8,12 @@ int lightRightPort = A1;
 int lightLeftVal = 0;
 int lightRightVal = 0;
 
+int upperBoundWhite = 800;
+int lowerBoundWhite = 650;
+
+int upperBoundBlack = 999;
+int lowerBoundBlack = 900;
+
 // servo objects
 Servo servoLeft;
 Servo servoRight;
@@ -21,6 +27,8 @@ void setup() {
 void loop() {
   // put your main code here, to run repeatedly:
   readLightSensors();
+  nextStep();
+  // delay( 200 );
 }
 
 void servoSetup() {
@@ -29,11 +37,47 @@ void servoSetup() {
 }
 
 void goForward() {
-  servoLeft.write
+  servoLeft.write( 180 );
+  servoRight.write( 0 );
+}
+
+void goSlightRight() {
+  servoLeft.write( 180 );
+  servoRight.write( 120 );
+}
+
+void goRight() {
+  servoLeft.write( 180 );
+  servoRight.write( 90 );
+}
+
+void goSlightLeft() {
+  servoLeft.write( 60 );
+  servoRight.write( 0 );
 }
 
 void readLightSensors() {
     lightLeftVal = analogRead( lightLeftPort );
     lightRightVal = analogRead( lightRightPort );
-    Serial.println( "Left: " + lightLeftVal + ", Right: " + lightRightVal );
+    String left = "Left: ";
+    String right = ", Right: ";
+    String lightOutput = left + lightLeftVal + right + lightRightVal;
+    Serial.println( lightOutput );
 }
+
+void nextStep(){
+  boolean leftIsBlack = (lightLeftVal > lowerBoundBlack && lightLeftVal < upperBoundBlack );
+  boolean leftIsWhite = (lightLeftVal > lowerBoundWhite && lightLeftVal < upperBoundWhite );
+  boolean rightIsBlack = (lightRightVal > lowerBoundBlack && lightRightVal < upperBoundBlack );
+  boolean rightIsWhite = (lightRightVal > lowerBoundWhite && lightRightVal < upperBoundWhite );
+  
+  if (leftIsWhite  && rightIsBlack ){
+    goForward();
+  } 
+  if (leftIsWhite && rightIsWhite){
+    goSlightRight();    
+  } 
+  if (leftIsBlack && rightIsBlack){
+    goSlightLeft();
+  }
+}  
