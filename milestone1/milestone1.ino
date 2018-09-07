@@ -1,4 +1,3 @@
-#include <Servo.h>
 
 // light sensor port numbers
 int lightLeftPort = A0;
@@ -21,14 +20,18 @@ Servo servoRight;
 void setup() {
   // put your setup code here, to run once:
   Serial.begin( 9600 );
-  servoSetup();
+  //servoSetup();
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
   readLightSensors();
+<<<<<<< HEAD
   nextStep();
   // delay( 200 );
+=======
+  delay( 200 );
+>>>>>>> fa20dd9b4477fc76760f4521b3c5d348eee20211
 }
 
 void servoSetup() {
@@ -63,6 +66,21 @@ void readLightSensors() {
     String right = ", Right: ";
     String lightOutput = left + lightLeftVal + right + lightRightVal;
     Serial.println( lightOutput );
+
+}
+
+void nextStep(){
+  if (lightLeftVal = %white && lightRightVal = %black){
+    goForward();
+  } 
+  if (lightLeftVal = %white && lightRightVal = %white){
+    goSlightRight();    
+  } 
+  if (lightLeftVal = %black && lightRightVal = &black){
+    goSlightLeft();
+  }
+  
+
 }
 
 void nextStep(){
