@@ -57,9 +57,9 @@ void loop() {
   // put your main code here, to run repeatedly:
 
   readLightSensors();
-  servoLeft.write( 90 );
-  servoRight.write( 90 );
- // goForward();
+//  servoLeft.write( 90 );
+//  servoRight.write( 90 );
+  goForward();
   // delay( 200 );
 }
 
@@ -69,14 +69,14 @@ void servoSetup() {
 }
 
 void correctLeft(){
-  servoLeft.write( 100 );
-  servoRight.write( 70 );
+  servoLeft.write( 90 );
+  servoRight.write( 50 );
   Serial.println( "correcting left" );
 }
 
 void correctRight(){
-  servoLeft.write( 110 );
-  servoRight.write( 80 );
+  servoLeft.write( 130 );
+  servoRight.write( 90 );
   Serial.println( "correcting right" );
 }
 
@@ -90,8 +90,8 @@ void goForward() {
   leftIsWhite = (lightLeftVal < upperLeftBoundWhite );
   middleIsBlack = (lightMiddleVal > lowerMiddleBoundBlack && lightMiddleVal < upperMiddleBoundBlack );
   if(middleIsBlack && rightIsBlack && leftIsWhite){
-    servoLeft.write( 140 );
-    servoRight.write( 40 );
+    servoLeft.write( 95 );
+    servoRight.write( 85 );
     Serial.println( "going straight" );
   }
   if(leftIsBlack && middleIsBlack && rightIsBlack){
@@ -100,6 +100,10 @@ void goForward() {
   }
   if((middleIsWhite && leftIsBlack && rightIsBlack) || (leftIsBlack && middleIsBlack && rightIsWhite)){
     correctRight();
+    
+  }
+  if(leftIsWhite && middleIsWhite && rightIsWhite){
+    goRight();
     
   }
 }
@@ -112,6 +116,7 @@ void goSlightRight() {
 void goRight() {
   servoLeft.write( 180 );
   servoRight.write( 90 );
+  delay(750);
 }
 
 void goSlightLeft() {
