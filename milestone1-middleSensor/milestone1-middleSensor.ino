@@ -47,6 +47,8 @@ boolean foundVertex = ( leftIsWhite && middleIsWhite && rightIsWhite );
 int countLeftTurns = 0;
 int countRightTurns = 0;
 
+int turns = 0;
+
 // servo objects
 Servo servoLeft;
 Servo servoRight;
@@ -78,8 +80,17 @@ void loop() {
   if( foundVertex ) {
     Serial.println( "found the vertex" );
     goStop();
-    delay( 1000 );
-    goRight();
+    delay( 200 );
+    if ( turns < 4 ) {
+      goRight();
+    }
+    else if ( turns >= 4 ) {
+      goLeft();
+    }
+    turns++;
+    if ( turns >= 8 ) {
+      turns = 0;
+    }
   }
 }
 
@@ -120,14 +131,29 @@ void goRight() {
     Serial.println( "turning right" );
     readLightSensors();
   }
-
 }
+
+
+void goLeft() {
+  correctLeft();
+  Serial.println( "turning left" );
+  delay( 300 );
+  readLightSensors();
+  while( !( rightIsBlack && leftIsBlack && middleIsWhite ) ) {
+    servoLeft.write( 90 );
+    servoRight.write( 60 );
+    Serial.println( "turning left" );
+    readLightSensors();
+  }
+}
+
 
 void goStop() {
      servoLeft.write( 90 );
      servoRight.write( 90 );
      Serial.println( "going stopped" );
 }
+
 
 void goStraight() {
      servoLeft.write( 95 );
