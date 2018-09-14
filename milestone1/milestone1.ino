@@ -58,24 +58,17 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-<<<<<<< HEAD
 
-  readLightSensors();
 //  servoLeft.write( 90 );
 //  servoRight.write( 90 );
-  goForward();
-  // delay( 200 );
-=======
-  servoLeft.write( 90 );
-  servoRight.write( 90 );
   readLightSensors();
-//  if (middleIsWhite && rightIsWhite && leftIsWhite){
-//    goRight();
-//   }
-//  else{
-//    goForward();
-//  }
->>>>>>> c4c7b08c7ca283686f1ae5f9a2d2c6cbc3efe02c
+  if (middleIsWhite && rightIsWhite && leftIsWhite){
+    goRight();
+   }
+  else{
+    goForward();
+  }
+
 }
 
 void servoSetup() {
@@ -122,8 +115,6 @@ void goForward() {
 
 void goRight() {
   servoLeft.write( 180 );
-  servoRight.write( 90 );
-  delay(750);
   servoRight.write( 180 );
   Serial.println( "turning right" );
   delay(100);
@@ -172,31 +163,31 @@ void readLightSensors() {
     String middle = ", Middle: ";
     String right = ", Right: ";
     String lightOutput = left + lightLeftVal + middle + lightMiddleVal + right + lightRightVal;
-    //Serial.println( lightOutput );
+    Serial.println( lightOutput );
 }
 
-void figureEight() {
-  //note: this is code for figure eight implementation, but it should be placed in loop when used in order to update sensor values.
-  if (!(leftIsWhite && rightIsWhite && middleIsWhite)){
-    goForward();
-   }
-  else{
-    if (countRightTurns < 3){
-      goRight();
-      countRightTurns++;
-    }
-    else if (countLeftTurns < 3){
-      goLeft();
-      countLeftTurns++;  
-    }
-    else if (countRightTurns == 3){
-      goForward();
-      countRightTurns++;
-    }
-    else{
-      goForward();
-      countRightTurns = 0;
-      countLeftTurns = 0;
-    }
-  }
-}
+//void figureEight() {
+//  //note: this is code for figure eight implementation, but it should be placed in loop when used in order to update sensor values.
+//  if (!(leftIsWhite && rightIsWhite && middleIsWhite)){
+//    goForward();
+//   }
+//  else{
+//    if (countRightTurns < 3){
+//      goRight();
+//      countRightTurns++;
+//    }
+//    else if (countLeftTurns < 3){
+//      goLeft();
+//      countLeftTurns++;  
+//    }
+//    else if (countRightTurns == 3){
+//      goForward();
+//      countRightTurns++;
+//    }
+//    else{
+//      goForward();
+//      countRightTurns = 0;
+//      countLeftTurns = 0;
+//    }
+//  }
+//}
