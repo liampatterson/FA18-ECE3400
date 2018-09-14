@@ -78,7 +78,7 @@ void servoSetup() {
 
 void correctLeft(){
   servoLeft.write( 90 ); //stop one wheel
-  servoRight.write( 50 );
+  servoRight.write( 60 );
   Serial.println( "correcting left" );
 }
 
@@ -114,10 +114,10 @@ void goForward() {
 }
 
 void goRight() {
-  servoLeft.write( 180 );
-  servoRight.write( 180 );
+  servoLeft.write( 160 );
+  servoRight.write( 160 );
   Serial.println( "turning right" );
-  delay(100);
+  delay(50);
   readLightSensors();
   middleIsWhite = (lightMiddleVal < upperMiddleBoundWhite );
   rightIsBlack = (lightRightVal > lowerRightBoundBlack);
@@ -125,9 +125,9 @@ void goRight() {
   leftIsBlack = (lightLeftVal > lowerLeftBoundBlack);
   leftIsWhite = (lightLeftVal < upperLeftBoundWhite );
   middleIsBlack = (lightMiddleVal > lowerMiddleBoundBlack);
-  while(!leftIsWhite){
-    servoLeft.write( 180 );
-    servoRight.write( 180 );
+  while(rightIsWhite && middleIsWhite){
+    servoLeft.write( 160 );
+    servoRight.write( 160 );
     Serial.println( "turning right" );
     readLightSensors();
     middleIsWhite = (lightMiddleVal < upperMiddleBoundWhite );
