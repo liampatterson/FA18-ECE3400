@@ -12,6 +12,7 @@ int lightLeftVal = 0;
 
 //MIDDLE
 int upperMiddleBoundWhite = 750;
+int lowerMiddleBoundWhite = 0;
 
 int upperMiddleBoundBlack = 900;
 int lowerMiddleBoundBlack = 800;
@@ -121,10 +122,8 @@ void goForward() {
 
 void goRight() {
   servoLeft.write( 180 );
-<<<<<<< HEAD
   servoRight.write( 90 );
   delay(750);
-=======
   servoRight.write( 180 );
   Serial.println( "turning right" );
   delay(100);
@@ -147,7 +146,7 @@ void goRight() {
     leftIsWhite = (lightLeftVal < upperLeftBoundWhite );
     middleIsBlack = (lightMiddleVal > lowerMiddleBoundBlack);
   }
->>>>>>> c4c7b08c7ca283686f1ae5f9a2d2c6cbc3efe02c
+
 }
 
 void goLeft() {
@@ -201,5 +200,3 @@ void figureEight() {
     }
   }
 }
-
-
