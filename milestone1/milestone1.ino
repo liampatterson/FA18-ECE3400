@@ -69,14 +69,14 @@ void servoSetup() {
 }
 
 void correctLeft(){
-  servoLeft.write( 90 );
+  servoLeft.write( 90 ); //stop one wheel
   servoRight.write( 50 );
   Serial.println( "correcting left" );
 }
 
 void correctRight(){
   servoLeft.write( 130 );
-  servoRight.write( 90 );
+  servoRight.write( 90 ); //stop one wheel
   Serial.println( "correcting right" );
 }
 
