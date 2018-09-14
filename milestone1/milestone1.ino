@@ -12,11 +12,7 @@ int lightLeftVal = 0;
 
 //MIDDLE
 int upperMiddleBoundWhite = 750;
-int lowerMiddleBoundWhite = 300;
-
-// a vertex for the middle
-int upperMiddleBoundVertexWhite = 300;
-int lowerMiddleBoundVertexWhite = 100;
+int lowerMiddleBoundWhite = 0;
 
 int upperMiddleBoundBlack = 900;
 int lowerMiddleBoundBlack = 800;
@@ -30,18 +26,25 @@ int lowerRightBoundBlack = 750;
 
 ////LEFT
 int upperLeftBoundWhite = 750;
-int lowerLeftBoundWhite =0 ;
+int lowerLeftBoundWhite =65 ;
 
 int upperLeftBoundBlack = 900;
 int lowerLeftBoundBlack =700;
 
+// a vertex for the left
+int upperLeftBoundVertexWhite = 65;
+int lowerLeftBoundVertexWhite = 0;
+
 boolean middleIsWhite = (lightMiddleVal < upperMiddleBoundWhite );
-boolean middleIsVertex = (lightMiddleVal > lowerMiddleBoundVertexWhite && lightMiddleVal < upperMiddleBoundVertexWhite );
+//boolean leftIsVertex = (lightLeftVal > lowerLeftBoundVertexWhite && lightLeftVal < upperLeftBoundVertexWhite );
 boolean rightIsBlack = (lightRightVal > lowerRightBoundBlack && lightRightVal < upperRightBoundBlack );
 boolean rightIsWhite = ( lightRightVal < upperRightBoundWhite );
 boolean leftIsBlack = (lightLeftVal > lowerLeftBoundBlack && lightLeftVal < upperLeftBoundBlack );
 boolean leftIsWhite = (lightLeftVal < upperLeftBoundWhite );
 boolean middleIsBlack = (lightMiddleVal > lowerMiddleBoundBlack && lightMiddleVal < upperMiddleBoundBlack );
+
+int countLeftTurns = 0;
+int countRightTurns = 0;
 
 // servo objects
 Servo servoLeft;
@@ -55,17 +58,20 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-
-  readLightSensors();
   servoLeft.write( 90 );
   servoRight.write( 90 );
- // goForward();
-  // delay( 200 );
+  readLightSensors();
+//  if (middleIsWhite && rightIsWhite && leftIsWhite){
+//    goRight();
+//   }
+//  else{
+//    goForward();
+//  }
 }
 
 void servoSetup() {
-  servoLeft.attach( 5 );
-  servoRight.attach( 6 );
+  servoLeft.attach( 9 );
+  servoRight.attach( 10 );
 }
 
 void correctLeft(){
@@ -83,12 +89,11 @@ void correctRight(){
 
 void goForward() {
   middleIsWhite = (lightMiddleVal < upperMiddleBoundWhite );
-  middleIsVertex = (lightMiddleVal > lowerMiddleBoundVertexWhite && lightMiddleVal < upperMiddleBoundVertexWhite );
-  rightIsBlack = (lightRightVal > lowerRightBoundBlack && lightRightVal < upperRightBoundBlack );
+  rightIsBlack = (lightRightVal > lowerRightBoundBlack);
   rightIsWhite = ( lightRightVal < upperRightBoundWhite );
-  leftIsBlack = (lightLeftVal > lowerLeftBoundBlack && lightLeftVal < upperLeftBoundBlack );
+  leftIsBlack = (lightLeftVal > lowerLeftBoundBlack);
   leftIsWhite = (lightLeftVal < upperLeftBoundWhite );
-  middleIsBlack = (lightMiddleVal > lowerMiddleBoundBlack && lightMiddleVal < upperMiddleBoundBlack );
+  middleIsBlack = (lightMiddleVal > lowerMiddleBoundBlack);
   if(middleIsBlack && rightIsBlack && leftIsWhite){
     servoLeft.write( 140 );
     servoRight.write( 40 );
@@ -96,29 +101,52 @@ void goForward() {
   }
   if(leftIsBlack && middleIsBlack && rightIsBlack){
     correctLeft();
-    
   }
   if((middleIsWhite && leftIsBlack && rightIsBlack) || (leftIsBlack && middleIsBlack && rightIsWhite)){
     correctRight();
-    
   }
-}
-
-void goSlightRight() {
-  servoLeft.write( 180 );
-  servoRight.write( 120 );
 }
 
 void goRight() {
   servoLeft.write( 180 );
-  servoRight.write( 90 );
+  servoRight.write( 180 );
+  Serial.println( "turning right" );
+  delay(100);
+  readLightSensors();
+  middleIsWhite = (lightMiddleVal < upperMiddleBoundWhite );
+  rightIsBlack = (lightRightVal > lowerRightBoundBlack);
+  rightIsWhite = ( lightRightVal < upperRightBoundWhite );
+  leftIsBlack = (lightLeftVal > lowerLeftBoundBlack);
+  leftIsWhite = (lightLeftVal < upperLeftBoundWhite );
+  middleIsBlack = (lightMiddleVal > lowerMiddleBoundBlack);
+  while(!leftIsWhite){
+    servoLeft.write( 180 );
+    servoRight.write( 180 );
+    Serial.println( "turning right" );
+    readLightSensors();
+    middleIsWhite = (lightMiddleVal < upperMiddleBoundWhite );
+    rightIsBlack = (lightRightVal > lowerRightBoundBlack);
+    rightIsWhite = ( lightRightVal < upperRightBoundWhite );
+    leftIsBlack = (lightLeftVal > lowerLeftBoundBlack);
+    leftIsWhite = (lightLeftVal < upperLeftBoundWhite );
+    middleIsBlack = (lightMiddleVal > lowerMiddleBoundBlack);
+  }
 }
 
-void goSlightLeft() {
-  servoLeft.write( 60 );
-  servoRight.write( 0 );
+void goLeft() {
+  middleIsWhite = (lightMiddleVal < upperMiddleBoundWhite );
+  rightIsBlack = (lightRightVal > lowerRightBoundBlack && lightRightVal < upperRightBoundBlack );
+  rightIsWhite = ( lightRightVal < upperRightBoundWhite );
+  leftIsBlack = (lightLeftVal > lowerLeftBoundBlack && lightLeftVal < upperLeftBoundBlack );
+  leftIsWhite = (lightLeftVal < upperLeftBoundWhite );
+  middleIsBlack = (lightMiddleVal > lowerMiddleBoundBlack && lightMiddleVal < upperMiddleBoundBlack );
+  
+  while(!leftIsWhite){
+    servoLeft.write( 0 );
+    servoRight.write( 0 );
+    Serial.println( "correcting left" );
+  }
 }
-
 
 void readLightSensors() {
     lightMiddleVal = analogRead( lightMiddlePort );
@@ -131,47 +159,30 @@ void readLightSensors() {
     //Serial.println( lightOutput );
 }
 
+void figureEight() {
+  //note: this is code for figure eight implementation, but it should be placed in loop when used in order to update sensor values.
+  if (!(leftIsWhite && rightIsWhite && middleIsWhite)){
+    goForward();
+   }
+  else{
+    if (countRightTurns < 3){
+      goRight();
+      countRightTurns++;
+    }
+    else if (countLeftTurns < 3){
+      goLeft();
+      countLeftTurns++;  
+    }
+    else if (countRightTurns == 3){
+      goForward();
+      countRightTurns++;
+    }
+    else{
+      goForward();
+      countRightTurns = 0;
+      countLeftTurns = 0;
+    }
+  }
+}
 
-//void nextStep(){
-//  boolean middleIsWhite = (lightMiddleVal > lowerMiddleBoundWhite && lightMiddleVal < upperMiddleBoundWhite );
-//  boolean middleIsVertex = (lightMiddleVal > lowerMiddleBoundVertexWhite && lightMiddleVal < upperMiddleBoundVertexWhite );
-//  boolean rightIsBlack = (lightRightVal > lowerRightBoundBlack && lightRightVal < upperRightBoundBlack );
-//  boolean rightIsWhite = (lightRightVal > lowerRightBoundWhite && lightRightVal < upperRightBoundWhite );
-//  boolean leftIsBlack = (lightLeftVal > lowerLeftBoundBlack && lightLeftVal < upperLeftBoundBlack );
-//  boolean leftIsWhite = (lightLeftVal > lowerLeftBoundWhite && lightLeftVal < upperLeftBoundWhite );
-//  
-//  
-//  if (leftIsWhite  && middleIsVertex && rightIsWhite ){
-//     goSlightRight(); 
-//  } 
-//  if (leftIsBlack && middleIsWhite && rightIsBlack){
-//    goForward();    
-//  } 
-//}  
 
-int countForwards = 0;
-boolean goingRight = false;
-//void figure8(){
-//  boolean middleIsWhite = (lightMiddleVal > lowerMiddleBoundWhite && lightMiddleVal < upperMiddleBoundWhite );
-//  boolean middleIsVertex = (lightMiddleVal > lowerMiddleBoundVertexWhite && lightMiddleVal < upperMiddleBoundVertexWhite );
-//  boolean rightIsBlack = (lightRightVal > lowerRightBoundBlack && lightRightVal < upperRightBoundBlack );
-//  boolean rightIsWhite = (lightRightVal > lowerRightBoundWhite && lightRightVal < upperRightBoundWhite );
-//  boolean leftIsBlack = (lightLeftVal > lowerLeftBoundBlack && lightLeftVal < upperLeftBoundBlack );
-//  boolean leftIsWhite = (lightLeftVal > lowerLeftBoundWhite && lightLeftVal < upperLeftBoundWhite );
-//  
-//  
-//  if (leftIsWhite  && middleIsVertex && rightIsWhite ){
-//     goSlightRight(); 
-//  } 
-//  if (leftIsBlack && middleIsWhite && rightIsBlack){
-//    goForward();    
-//  } 
-//}
-//void square(){
-//  if (leftIsWhite  && rightIsBlack ){
-//    goForward();
-//  } 
-//  if (leftIsWhite && rightIsWhite){
-//    goSlightRight();    
-//  } 
-//}
