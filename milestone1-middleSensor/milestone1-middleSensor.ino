@@ -78,6 +78,8 @@ void loop() {
   if( foundVertex ) {
     Serial.println( "found the vertex" );
     goStop();
+    delay( 1000 );
+    goRight();
   }
 }
 
@@ -104,6 +106,21 @@ void readLightSensors() {
     leftIsWhite = (lightLeftVal < upperLeftBoundWhite );
     
     foundVertex = ( leftIsWhite && middleIsWhite && rightIsWhite );
+}
+
+
+void goRight() {
+  correctRight();
+  Serial.println( "turning right" );
+  delay( 300 );
+  readLightSensors();
+  while( !( rightIsBlack && leftIsBlack && middleIsWhite ) ) {
+    servoLeft.write( 120 );
+    servoRight.write( 90 );
+    Serial.println( "turning right" );
+    readLightSensors();
+  }
+
 }
 
 void goStop() {
