@@ -97,7 +97,7 @@ void goForward() {
   leftIsWhite = (lightLeftVal < upperLeftBoundWhite );
   middleIsBlack = (lightMiddleVal > lowerMiddleBoundBlack);
   leftIsVertex = (lightLeftVal < upperLeftBoundVertexWhite );
-  if(middleIsBlack && rightIsBlack && leftIsWhite){
+  if(middleIsWhite && rightIsBlack && leftIsBlack){
     servoLeft.write( 95 );
     servoRight.write( 85 );
     Serial.println( "going straight" );
@@ -153,7 +153,7 @@ void goLeft() {
   leftIsWhite = (lightLeftVal < upperLeftBoundWhite );
   middleIsBlack = (lightMiddleVal > lowerMiddleBoundBlack && lightMiddleVal < upperMiddleBoundBlack );
   
-  while(!leftIsWhite){
+  while(!leftIsWhite && !middleIsWhite && ! rightIsWhite){
     servoLeft.write( 0 );
     servoRight.write( 0 );
     Serial.println( "correcting left" );
@@ -165,7 +165,7 @@ void readLightSensors() {
     lightLeftVal = analogRead( lightLeftPort );
     lightRightVal = analogRead( lightRightPort );
     String left = "Left: ";
-    String middle = ", Middle: ";
+    String middle = ", Middle: "; 
     String right = ", Right: ";
     String lightOutput = left + lightLeftVal + middle + lightMiddleVal + right + lightRightVal;
     Serial.println( lightOutput );
