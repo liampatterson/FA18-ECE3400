@@ -132,14 +132,15 @@ void loop() {
     Serial.println( "found the vertex" );
     //delay( 200 );
     if( MiddleDistance > 200){
+      Serial.println( "got right" );
       goStop();
       delay( 100 );
-      Serial.println( "got here" );
       goRight(); 
       foundVertex = false;
     }
     else{
       goStop();
+      Serial.println( "got straight" );
       delay(100);
       Straight();
       foundVertex = false;
