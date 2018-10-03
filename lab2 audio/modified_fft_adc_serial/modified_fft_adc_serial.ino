@@ -6,7 +6,6 @@ it takes in data on ADC0 (Analog0) and processes them
 with the fft. the data is sent out over the serial
 port at 115.2kb.
 */
-
 #define LOG_OUT 1 // use the log output function
 #define FFT_N 256 // set to 256 point fft
 
@@ -18,6 +17,8 @@ void setup() {
   ADCSRA = 0xe5; // set the adc to free running mode
   ADMUX = 0x40; // use adc0
   DIDR0 = 0x01; // turn off the digital input for adc0
+  pinMode(6, OUTPUT); // 6kHz Led
+  pinMode(7, OUTPUT); // 18kHz Led
 }
 
 void loop() {
@@ -39,15 +40,30 @@ void loop() {
     fft_run(); // process the data in the fft
     fft_mag_log(); // take the output of the fft
     sei();
-    Serial.println("start");
+//    Serial.println("start");
     for (byte i = 0 ; i < FFT_N/2 ; i++) { 
-      Serial.println(fft_log_out[i]); // send out the data
+      //Serial.println(fft_log_out[i]); // send out the data
     }
-    if(fft_log_out[5] > 115){
-      Serial.println("this is 660"); 
+//    if(fft_log_out[5] > 115){
+//      Serial.println("this is 660"); 
+    //}
+
+    if (fft_log_out[42] > 50) {
+      Serial.println("this is 6kHz");
+      digitalWrite(6, LOW);
+      digitalWrite(7, HIGH);
+    }
+
+    else if (fft_log_out[120] > 35) {
+      Serial.println("this is 18kHz");
+      digitalWrite(6, HIGH);
+      digitalWrite(7, LOW);
     }
     else{
       Serial.println("diff frequency"); 
+      digitalWrite(6, LOW);
+      digitalWrite(7, LOW);
     }
   }
 }
+
