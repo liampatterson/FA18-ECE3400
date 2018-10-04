@@ -44,21 +44,22 @@ void loop() {
     for (byte i = 0 ; i < FFT_N/2 ; i++) { 
       //Serial.println(fft_log_out[i]); // send out the data
     }
-//    if(fft_log_out[5] > 115){
-//      Serial.println("this is 660"); 
-    //}
-
-    if (fft_log_out[42] > 50) {
-      Serial.println("this is 6kHz");
-      digitalWrite(6, LOW);
-      digitalWrite(7, HIGH);
+    if(fft_log_out[5] > 138){
+      Serial.println("this is 660"); 
+      digitalWrite(6,HIGH);
     }
 
-    else if (fft_log_out[120] > 35) {
-      Serial.println("this is 18kHz");
-      digitalWrite(6, HIGH);
-      digitalWrite(7, LOW);
-    }
+//    if (fft_log_out[42] > 85) {
+//      Serial.println("this is 6kHz");
+//      digitalWrite(6, LOW);
+//      digitalWrite(7, HIGH);
+//    }
+//
+//    else if (fft_log_out[122] > 60) {
+//      Serial.println("this is 18kHz");
+//      digitalWrite(6, HIGH);
+//      digitalWrite(7, LOW);
+//    }
     else{
       Serial.println("diff frequency"); 
       digitalWrite(6, LOW);
