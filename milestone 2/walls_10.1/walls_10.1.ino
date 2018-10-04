@@ -1,4 +1,3 @@
-
 #include <Servo.h>
 
 // light sensor port numbers
@@ -63,7 +62,7 @@ Servo servoRight;
 void setup() {
   // put your setup code here, to run once:
   Serial.begin( 9600 );
-  servoSetup();
+  //servoSetup();
 }
 
 void servoSetup() {
@@ -131,18 +130,19 @@ void loop() {
   else { //found vertex
     Serial.println( "found the vertex" );
     //delay( 200 );
-    if( MiddleDistance > 200){
+    if( MiddleDistance > 250){
       Serial.println( "got right" );
-      goStop();
-      delay( 100 );
+      //goStop();
+//      delay( 100 );
       goRight(); 
       foundVertex = false;
     }
     else{
-      goStop();
+      //goStop();
       Serial.println( "got straight" );
-      delay(100);
-      Straight();
+      //delay(100);
+//      Straight();
+      goStraight();
       foundVertex = false;
     }
   }
