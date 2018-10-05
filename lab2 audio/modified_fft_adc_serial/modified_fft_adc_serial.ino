@@ -21,8 +21,12 @@ void setup() {
   pinMode(7, OUTPUT); // 18kHz Led
 }
 
+int counter = 0;
+int average = 0;
+
 void loop() {
   while(1) { // reduces jitter
+    counter = counter+1;
     cli();  // UDRE interrupt slows this way down on arduino1.0
     for (int i = 0 ; i < 512 ; i += 2) { // save 256 samples
       while(!(ADCSRA & 0x10)); // wait for adc to be ready
@@ -40,31 +44,38 @@ void loop() {
     fft_run(); // process the data in the fft
     fft_mag_log(); // take the output of the fft
     sei();
-//    Serial.println("start");
+    Serial.println("start");
     for (byte i = 0 ; i < FFT_N/2 ; i++) { 
-      //Serial.println(fft_log_out[i]); // send out the data
+      Serial.println(fft_log_out[i]); // send out the data
     }
-    if(fft_log_out[5] > 138){
-      Serial.println("this is 660"); 
-      digitalWrite(6,HIGH);
-    }
-
-//    if (fft_log_out[42] > 85) {
-//      Serial.println("this is 6kHz");
-//      digitalWrite(6, LOW);
-//      digitalWrite(7, HIGH);
-//    }
-//
-//    else if (fft_log_out[122] > 60) {
-//      Serial.println("this is 18kHz");
-//      digitalWrite(6, HIGH);
-//      digitalWrite(7, LOW);
-//    }
-    else{
-      Serial.println("diff frequency"); 
-      digitalWrite(6, LOW);
-      digitalWrite(7, LOW);
+    average = average + fft_log_out[5];
+    //Serial.println(fft_log_out[5]);
+    if(counter == 5){ 
+      average = average/5;
+      Serial.println(average); 
+      if(average > 115){
+        //Serial.println("this is 660"); 
+        digitalWrite(6,HIGH);
+      }
+  
+  //    if (fft_log_out[42] > 85) {
+  //      Serial.println("this is 6kHz");
+  //      digitalWrite(6, LOW);
+  //      digitalWrite(7, HIGH);
+  //    }
+  //
+  //    else if (fft_log_out[122] > 60) {
+  //      Serial.println("this is 18kHz");
+  //      digitalWrite(6, HIGH);
+  //      digitalWrite(7, LOW);
+  //    }
+      else{
+        Serial.println("diff frequency"); 
+        digitalWrite(6, LOW);
+        digitalWrite(7, LOW);
+      }
+      counter = 0;
+      average = 0;
     }
   }
 }
-
