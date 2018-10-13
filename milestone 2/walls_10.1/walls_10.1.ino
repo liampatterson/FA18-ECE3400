@@ -5,6 +5,9 @@ int lightLeftPort = A0;
 int lightMiddlePort = A1;
 int lightRightPort = A2;
 
+int avgRightDistance = 0;
+int avgMiddleDistance = 0;
+int avgLeftDistance = 0;
 
 // light sensor read values
 int lightMiddleVal = 0;
@@ -62,7 +65,7 @@ Servo servoRight;
 void setup() {
   // put your setup code here, to run once:
   Serial.begin( 9600 );
-  //servoSetup();
+  servoSetup();
 }
 
 void servoSetup() {
@@ -90,10 +93,25 @@ void readLightSensors() {
     foundVertex = ( leftIsWhite && middleIsWhite && rightIsWhite );
 }
 
+void readDistanceSensors() {
+  
+  int counter = 0;
+  while (counter < 5) {
+    avgLeftDistance = avgLeftDistance + analogRead(A3);
+    avgMiddleDistance = avgMiddleDistance + analogRead(A5);
+    avgRightDistance = avgRightDistance + analogRead(A4);
+    counter+=1;
+  }
+  LeftDistance = avgLeftDistance/5;
+  MiddleDistance = avgMiddleDistance/5;
+  RightDistance = avgRightDistance/5;
+  avgLeftDistance = 0;
+  avgMiddleDistance = 0;
+  avgRightDistance = 0;
+}
+
 void Straight(){
-  LeftDistance = analogRead(A3);
-  MiddleDistance = analogRead(A5);
-  RightDistance = analogRead(A4);
+  readDistanceSensors();
   //case 1, follow line straight, middle should see white, left/right on black.
     if ( middleIsWhite && leftIsBlack && rightIsBlack ) {
       goStraight();
@@ -113,33 +131,42 @@ void loop() {
   // put your main code here, to run repeatedly:
   readLightSensors();
    // put your main code here, to run repeatedly:
-  LeftDistance = analogRead(A3);
-  MiddleDistance = analogRead(A5);
-  RightDistance = analogRead(A4);
+  readDistanceSensors();
   
   String left = "left: ";
   String middle = "     middle:";
   String right = "        right: ";
 //  /Serial.println( left + LeftDistance + middle + MiddleDistance + right + RightDistance );
-  Serial.println( middle + MiddleDistance );
+  //Serial.println( middle + MiddleDistance );
 
   if( !foundVertex ){
       Straight();
     }
   
   else { //found vertex
-    Serial.println( "found the vertex" );
+    Serial.println(MiddleDistance);
+    //Serial.println( "found the vertex" );
     //delay( 200 );
-    if( MiddleDistance > 250){
-      Serial.println( "got right" );
+    if( MiddleDistance > 170) {
+      if (LeftDistance > 170) {
+        goRight();
+        foundVertex = false;
+      }
+      else if (RightDistance > 170) {
+        goLeft();
+        foundVertex = false;
+      }
+      //Serial.println( "got right" );
       //goStop();
 //      delay( 100 );
-      goRight(); 
-      foundVertex = false;
+      else {
+        goLeft   ();
+        foundVertex = false; 
+      }
     }
     else{
       //goStop();
-      Serial.println( "got straight" );
+      //Serial.println( "got straight" );
       //delay(100);
 //      Straight();
       goStraight();
@@ -167,9 +194,7 @@ void goRight() {
   Serial.println( "turning right" );
   delay( 300 );
   readLightSensors();
-  LeftDistance = analogRead(A3);
-  MiddleDistance = analogRead(A5);
-  RightDistance = analogRead(A4);
+  readDistanceSensors();
   while( !( rightIsBlack && leftIsBlack && middleIsWhite ) ) {
     servoLeft.write( 120 );
     servoRight.write( 90 );
