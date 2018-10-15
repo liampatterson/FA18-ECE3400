@@ -84,9 +84,9 @@ int tempADCSRA;
 int tempTIMSK0;
 int tempADMUX;
 int tempDIDR0;
+boolean r;
 
-
-void detectIR(){
+boolean detectIR(){
     tempADCSRA = ADCSRA;
     tempTIMSK0 = TIMSK0;
     tempADMUX = ADMUX;
@@ -119,7 +119,7 @@ void detectIR(){
        // Serial.println(fft_log_out[i]); // send out the data
       }
 
-
+      r = false;
       average = average + fft_log_out[42];
       String avg = "average ";
       //Serial.println(avg+average);
@@ -129,8 +129,12 @@ void detectIR(){
         Serial.println(avg+average);
         if(average > 120){
           Serial.println("****************************this is 6kHz"); 
-          goStop();
+          //goStop();
           //delay(5000);
+          r = true;
+        }
+        else{
+          r = false;
         }
         counter = 0;
         average = 0;
@@ -143,13 +147,16 @@ void detectIR(){
     ADMUX = tempADMUX;
     DIDR0 = tempDIDR0;
     //goStraight();
+    return r;
  }
  
 void loop() {
   // put your main code here, to run repeatedly:
   readLightSensors();
   goStraight(); //just go straight continuously
-  detectIR();
+  if(detectIR()){
+    goStop();
+  }
   //goStop();
   //delay(5000);
   //goStraight();
@@ -276,8 +283,7 @@ void goLeft() {
 
 
 void goStop() {
-     //cli();
-     delay(5000);
+  
      servoLeft.write( 90 );
      servoRight.write( 90 );
      Serial.println( "going stopped" );
