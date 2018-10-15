@@ -1,5 +1,9 @@
 #define LOG_OUT 1 // use the log output function
 #define FFT_N 256 // set to 256 point fft
+#define BLUE_LED 4
+#define RED_LED 2
+#define WHITE_LED 1
+#define GREEN_LED 0
 
 #include <FFT.h> // include the library
 #include <Servo.h>
@@ -61,6 +65,9 @@ int countRightTurns = 0;
 
 int turns = 0;
 
+int counter = 0;
+int average = 0;
+
 // servo objects
 Servo servoLeft;
 Servo servoRight;
@@ -77,17 +84,86 @@ void setup() {
   DIDR0 = 0x01; // turn off the digital input for adc0
 }
 
+
+void loop() {
+  // put your main code here, to run repeatedly:
+  readLightSensors();
+  readDistanceSensors();
+  
+  String left = "left: ";
+  String middle = "     middle:";
+  String right = "        right: ";
+
+  if( !foundVertex ){
+      Straight();
+    }
+  
+  else { //found vertex
+    Serial.println(MiddleDistance);
+    //Serial.println( "found the vertex" );
+    //delay( 200 );
+    if( MiddleDistance > 170) {
+      if (LeftDistance > 170) {
+        goRight();
+        foundVertex = false;
+      }
+      else if (RightDistance > 170) {
+        goLeft();
+        foundVertex = false;
+      }
+      //Serial.println( "got right" );
+      //goStop();
+//      delay( 100 );
+      else {
+        goLeft   ();
+        foundVertex = false; 
+      }
+    }
+    else{
+      //goStop();
+      //Serial.println( "got straight" );
+      //delay(100);
+//      Straight();
+      goStraight();
+      foundVertex = false;
+    }
+  }
+}
+
+
 void servoSetup() {
   servoLeft.attach( 9 );
   servoRight.attach( 10 );
 }
 
+
 void ledSetup() {
-  pinMode( 0, OUTPUT ); //green LED
-  pinMode( 1, OUTPUT ); //white LED
-  pinMode( 2, OUTPUT ); //red LED
-  pinMode( 4, OUTPUT ); //blue LED
+  pinMode( GREEN_LED, OUTPUT ); //green LED
+  pinMode( WHITE_LED, OUTPUT ); //white LED
+  pinMode( RED_LED, OUTPUT ); //red LED
+  pinMode( BLUE_LED, OUTPUT ); //blue LED
+  ledOff();
+  ledOn();
+  delay( 1000 );
+  ledOff();
 }
+
+
+void ledOff() {
+  digitalWrite( GREEN_LED, HIGH );
+  digitalWrite( WHITE_LED, HIGH );
+  digitalWrite( RED_LED, HIGH );
+  digitalWrite( BLUE_LED, HIGH );
+}
+
+
+void ledOn() {
+  digitalWrite( GREEN_LED, LOW );
+  digitalWrite( WHITE_LED, LOW );
+  digitalWrite( RED_LED, LOW );
+  digitalWrite( BLUE_LED, LOW );
+}
+
  
 void readLightSensors() {
     lightMiddleVal = analogRead( lightMiddlePort );
@@ -141,55 +217,6 @@ void Straight(){
     if ( rightIsWhite && leftIsBlack ) {
       correctRight();
     }
-}
-
-
-void loop() {
-  // put your main code here, to run repeatedly:
-  readLightSensors();
-   // put your main code here, to run repeatedly:
-  readDistanceSensors();
-  
-  String left = "left: ";
-  String middle = "     middle:";
-  String right = "        right: ";
-//  /Serial.println( left + LeftDistance + middle + MiddleDistance + right + RightDistance );
-  //Serial.println( middle + MiddleDistance );
-
-  if( !foundVertex ){
-      Straight();
-    }
-  
-  else { //found vertex
-    Serial.println(MiddleDistance);
-    //Serial.println( "found the vertex" );
-    //delay( 200 );
-    if( MiddleDistance > 170) {
-      if (LeftDistance > 170) {
-        goRight();
-        foundVertex = false;
-      }
-      else if (RightDistance > 170) {
-        goLeft();
-        foundVertex = false;
-      }
-      //Serial.println( "got right" );
-      //goStop();
-//      delay( 100 );
-      else {
-        goLeft   ();
-        foundVertex = false; 
-      }
-    }
-    else{
-      //goStop();
-      //Serial.println( "got straight" );
-      //delay(100);
-//      Straight();
-      goStraight();
-      foundVertex = false;
-    }
-  }
 }
 
 
@@ -248,3 +275,57 @@ void correctRight(){
   servoRight.write( 90 ); //stop one wheel
   Serial.println( "correcting right" );
 }
+
+
+void detectIr(){
+    while(1) { // reduces jitter
+      counter = counter+1;
+      cli();  // UDRE interrupt slows this way down on arduino1.0
+      for (int i = 0 ; i < 512 ; i += 2) { // save 256 samples
+        while(!(ADCSRA & 0x10)); // wait for adc to be ready
+        ADCSRA = 0xf5; // restart adc
+        byte m = ADCL; // fetch adc data
+        byte j = ADCH;
+        int k = (j << 8) | m; // form into an int
+        k -= 0x0200; // form into a signed int
+        k <<= 6; // form into a 16b signed int
+        fft_input[i] = k; // put real data into even bins
+        fft_input[i+1] = 0; // set odd bins to 0
+      }
+      fft_window(); // window the data for better frequency response
+      fft_reorder(); // reorder the data before doing the fft
+      fft_run(); // process the data in the fft
+      fft_mag_log(); // take the output of the fft
+      sei();
+      Serial.println("start");
+      for (byte i = 0 ; i < FFT_N/2 ; i++) { 
+        Serial.println(fft_log_out[i]); // send out the data
+      }
+//      average = average + fft_log_out[5];
+//      //Serial.println(fft_log_out[5]);
+//      if(counter == 5){ 
+//        average = average/5;
+//        Serial.println(average); 
+//        if(average > 115){
+//          //Serial.println("this is 660"); 
+//          digitalWrite(6,HIGH);
+//        }
+    
+       if (fft_log_out[42] > 85) {
+          Serial.println("this is 6kHz");
+
+       }
+    //
+    //    else if (fft_log_out[122] > 60) {
+    //      Serial.println("this is 18kHz");
+    //      digitalWrite(6, HIGH);
+    //      digitalWrite(7, LOW);
+    //    }
+        else{
+          Serial.println("diff frequency"); 
+        }
+        counter = 0;
+        average = 0;
+    }
+ }
+ 
