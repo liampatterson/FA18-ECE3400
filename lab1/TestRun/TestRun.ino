@@ -8,8 +8,8 @@ Servo servoTwo;
 
 // the setup function runs once when you press reset or power the board
 void setup() {
-  servoOne.attach(5);
-  servoTwo.attach(6);
+  servoOne.attach(9);
+  servoTwo.attach(10);
  
 }
 
@@ -34,10 +34,8 @@ void straight(){
 
 //square
 void loop() {
-  straight();
-  rightTurn();
+//  straight();
+//  rightTurn();
+    servoOne.write(90); 
+    servoTwo.write(90);
 }
-
-
-
-
