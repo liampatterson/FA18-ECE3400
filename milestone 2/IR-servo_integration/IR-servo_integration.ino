@@ -10,6 +10,69 @@ port at 115.2kb.
 #define FFT_N 256 // set to 256 point fft
 
 #include <FFT.h> // include the library
+#include <Servo.h>
+
+// light sensor port numbers
+int lightLeftPort = A0;
+int lightMiddlePort = A1;
+int lightRightPort = A2;
+
+int avgRightDistance = 0;
+int avgMiddleDistance = 0;
+int avgLeftDistance = 0;
+
+// light sensor read values
+int lightMiddleVal = 0;
+int lightRightVal = 0;
+int lightLeftVal = 0;
+
+//MIDDLE
+int upperMiddleBoundWhite = 600;
+int lowerMiddleBoundWhite = 0;
+
+int upperMiddleBoundBlack = 900;
+int lowerMiddleBoundBlack = 600;
+
+//RIGHT
+int upperRightBoundWhite = 450;
+int lowerRightBoundWhite = 0;
+
+int upperRightBoundBlack = 900;
+int lowerRightBoundBlack = 450;
+
+////LEFT
+int upperLeftBoundWhite = 450;
+int lowerLeftBoundWhite = 0 ;
+
+int upperLeftBoundBlack = 900;
+int lowerLeftBoundBlack = 450;
+
+// a vertex for the left
+//int upperLeftBoundVertexWhite = 65;
+//int lowerLeftBoundVertexWhite = 0;
+
+boolean middleIsWhite = (lightMiddleVal < upperMiddleBoundWhite );
+boolean rightIsBlack = (lightRightVal > lowerRightBoundBlack && lightRightVal < upperRightBoundBlack );
+boolean rightIsWhite = ( lightRightVal < upperRightBoundWhite );
+boolean leftIsBlack = (lightLeftVal > lowerLeftBoundBlack && lightLeftVal < upperLeftBoundBlack );
+boolean leftIsWhite = (lightLeftVal < upperLeftBoundWhite );
+boolean middleIsBlack = (lightMiddleVal > lowerMiddleBoundBlack && lightMiddleVal < upperMiddleBoundBlack );
+
+boolean foundVertex = ( leftIsWhite && middleIsWhite && rightIsWhite );
+
+int countLeftTurns = 0;
+int countRightTurns = 0;
+
+int turns = 0;
+
+// servo objects
+Servo servoLeft;
+Servo servoRight;
+
+void servoSetup() {
+  servoLeft.attach( 9 );
+  servoRight.attach( 10 );
+}
 
 void setup() {
   Serial.begin(115200); // use the serial port
@@ -17,8 +80,7 @@ void setup() {
   ADCSRA = 0xe5; // set the adc to free running mode
   ADMUX = 0x40; // use adc0
   DIDR0 = 0x01; // turn off the digital input for adc0
-  pinMode(6, OUTPUT); // 6kHz Led
-  pinMode(7, OUTPUT); // 18kHz Led
+  servoSetup();
 }
 
 int counter = 0;
