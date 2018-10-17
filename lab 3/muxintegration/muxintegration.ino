@@ -65,13 +65,14 @@ int muxOut = A3;
 Servo servoLeft;
 Servo servoRight;
 
-// to be used for mux digital inputs
-int S2= 5;
-int S1= 6;
-int S0= 7;
+// Select bits to be used for mux digital inputs
 // Chn 000 left wall sensor
 // Chn 001 middle wall sensor
 // Chn 010 right wall sensor
+int S2= 5;
+int S1= 6;
+int S0= 7;
+
 
 void setup() {
   // put your setup code here, to run once:
@@ -90,7 +91,7 @@ void servoSetup() {
 }
 
 void ledSetup() {
-  pinMode( 0, OUTPUT ); //green LED
+  pinMode( 0, OUTPUT ); //green LED`
   pinMode( 1, OUTPUT ); //white LED
   pinMode( 2, OUTPUT ); //red LED
   pinMode( 4, OUTPUT ); //blue LED
