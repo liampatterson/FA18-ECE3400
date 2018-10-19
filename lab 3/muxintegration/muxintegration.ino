@@ -79,6 +79,7 @@ void setup() {
   ledSetup();
   servoSetup();
   //to be used for mux digital inputs
+  pinMode(4, OUTPUT);
   pinMode(S2, OUTPUT);
   pinMode(S1, OUTPUT);
   pinMode(S0, OUTPUT);
@@ -119,7 +120,10 @@ void readLightSensors() {
 
 void readDistanceSensors() {
   int counter = 0;
+  digitalWrite(4, HIGH);
+  Serial.println( "Got outside loop" );
   while (counter < 5) {
+     Serial.println( "Got inside loop" );
     chooseChannel0();
     avgLeftDistance = avgLeftDistance + analogRead(muxOut);
     chooseChannel1();
@@ -128,6 +132,7 @@ void readDistanceSensors() {
     avgRightDistance = avgRightDistance + analogRead(muxOut);
     counter+=1;
   }
+  digitalWrite(4, LOW);
   LeftDistance = avgLeftDistance/5;
   MiddleDistance = avgMiddleDistance/5;
   RightDistance = avgRightDistance/5;
@@ -155,7 +160,6 @@ void chooseChannel2(){
 }
 
 void Straight(){
-  readDistanceSensors();
   //case 1, follow line straight, middle should see white, left/right on black.
     if ( middleIsWhite && leftIsBlack && rightIsBlack ) {
       goStraight();
@@ -175,7 +179,6 @@ void loop() {
   // put your main code here, to run repeatedly:
   readLightSensors();
    // put your main code here, to run repeatedly:
-  readDistanceSensors();
   
   String left = "left: ";
   String middle = "     middle:";
@@ -188,16 +191,19 @@ void loop() {
     }
   
   else { //found vertex
+    readDistanceSensors();
     Serial.println(MiddleDistance);
     //Serial.println( "found the vertex" );
     //delay( 200 );
-    if( MiddleDistance > 170) {
+    if( MiddleDistance > 80) {
       if (LeftDistance > 170) {
         goRight();
         foundVertex = false;
+        Serial.println( "Left Wall" );
       }
       else if (RightDistance > 170) {
         goLeft();
+        Serial.println( "Right Wall" );
         foundVertex = false;
       }
       //Serial.println( "got right" );
@@ -205,6 +211,7 @@ void loop() {
 //      delay( 100 );
       else {
         goLeft   ();
+        Serial.println( "Middle Wall" );
         foundVertex = false; 
       }
     }
@@ -225,7 +232,6 @@ void goRight() {
   Serial.println( "turning right" );
   delay( 300 );
   readLightSensors();
-  readDistanceSensors();
   while( !( rightIsBlack && leftIsBlack && middleIsWhite ) ) {
     servoLeft.write( 120 );
     servoRight.write( 90 );
