@@ -68,6 +68,8 @@ int turns = 0;
 int counter = 0;
 int average = 0;
 
+boolean hasStarted = false;
+
 // servo objects
 Servo servoLeft;
 Servo servoRight;
@@ -84,8 +86,79 @@ int tempADCSRA;
 int tempTIMSK0;
 int tempADMUX;
 int tempDIDR0;
-boolean r;
 
+int tempSoundADCSRA;
+int tempSoundTIMSK0;
+int tempSoundADMUX;
+int tempSoundDIDR0;
+boolean r;
+boolean start;
+
+boolean startSound(){
+    tempSoundADCSRA = ADCSRA;
+    tempSoundTIMSK0 = TIMSK0;
+    tempSoundADMUX = ADMUX;
+    tempSoundDIDR0 = DIDR0;    
+    TIMSK0 = 0; // turn off timer0 for lower jitter
+    ADCSRA = 0xe5; // set the adc to free running mode
+    ADMUX = 0x44; // use adc4
+    DIDR0 = 0x01; // turn off the digital input for adc0
+    //while(1) { // reduces jitter
+      //counter = counter+1;
+     //cli();  // UDRE interrupt slows this way down on arduino1.0
+      for (int i = 0 ; i < 512 ; i += 2) { // save 256 samples
+        while(!(ADCSRA & 0x10)); // wait for adc to be ready
+        ADCSRA = 0xf5; // restart adc
+        byte m = ADCL; // fetch adc data
+        byte j = ADCH;
+        int k = (j << 8) | m; // form into an int
+        k -= 0x0200; // form into a signed int
+        k <<= 6; // form into a 16b signed int
+        fft_input[i] = k; // put real data into even bins
+        fft_input[i+1] = 0; // set odd bins to 0
+      }
+      fft_window(); // window the data for better frequency response
+      fft_reorder(); // reorder the data before doing the fft
+      fft_run(); // process the data in the fft
+      fft_mag_log(); // take the output of the fft
+      sei();
+      //Serial.println("start");
+      for (byte i = 0 ; i < FFT_N/2 ; i++) { 
+        //Serial.println(fft_log_out[i]); // send out the data
+      }
+      Serial.println(fft_log_out[5]);
+      start = false;
+      average = average + fft_log_out[5];
+      String avg = "average ";
+      //Serial.println(avg+average);
+      if(counter == 5){ 
+        average = average/5; 
+        
+        //Serial.println(avg+average);
+        if(average > 170){
+          Serial.println("****************************this is 6.6Hz"); 
+          //goStop();
+          //delay(5000);
+          start = true;
+        }
+        else{
+          start = false;
+        }
+        counter = 0;
+        average = 0;
+      }
+     counter+=1; 
+     //Serial.println(counter);
+    //}
+    ADCSRA = tempSoundADCSRA;
+    TIMSK0= tempSoundTIMSK0;
+    ADMUX = tempSoundADMUX;
+    DIDR0 = tempSoundDIDR0;
+    //goStraight();
+    return start;
+ }
+
+ 
 boolean detectIR(){
     tempADCSRA = ADCSRA;
     tempTIMSK0 = TIMSK0;
@@ -127,7 +200,7 @@ boolean detectIR(){
         average = average/5; 
         
         //Serial.println(avg+average);
-        if(average > 180){
+        if(average > 120){
           Serial.println("****************************this is 6kHz"); 
           //goStop();
           //delay(5000);
@@ -140,7 +213,7 @@ boolean detectIR(){
         average = 0;
       }
      counter+=1; 
-     //Serial.println(counter);
+     Serial.println(counter);
     //}
     ADCSRA = tempADCSRA;
     TIMSK0= tempTIMSK0;
@@ -153,9 +226,18 @@ boolean detectIR(){
 void loop() {
   // put your main code here, to run repeatedly:
   readLightSensors();
-  goStraight(); //just go straight continuously
-  if(detectIR()){
-    goStop();
+  if(!hasStarted){
+    //doNotStart();
+    Serial.println("here not started");
+    if(startSound()){
+      hasStarted = true;
+    }
+  }
+  else{
+    Straight(); //just go straight continuously
+    if(detectIR()){
+      goStop();
+    }
   }
   //goStop();
   //delay(5000);
@@ -288,6 +370,13 @@ void goStop() {
      servoRight.write( 90 );
      Serial.println( "going stopped" );
      delay(5000);
+}
+
+
+void doNotStart() {
+  
+     servoLeft.write( 90 );
+     servoRight.write( 90 );
 }
 
 
