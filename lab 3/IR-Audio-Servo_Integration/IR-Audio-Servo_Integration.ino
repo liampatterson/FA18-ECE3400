@@ -86,14 +86,19 @@ int tempADCSRA;
 int tempTIMSK0;
 int tempADMUX;
 int tempDIDR0;
+
+int tempSoundADCSRA;
+int tempSoundTIMSK0;
+int tempSoundADMUX;
+int tempSoundDIDR0;
 boolean r;
 boolean start;
 
 boolean startSound(){
-    tempADCSRA = ADCSRA;
-    tempTIMSK0 = TIMSK0;
-    tempADMUX = ADMUX;
-    tempDIDR0 = DIDR0;    
+    tempSoundADCSRA = ADCSRA;
+    tempSoundTIMSK0 = TIMSK0;
+    tempSoundADMUX = ADMUX;
+    tempSoundDIDR0 = DIDR0;    
     TIMSK0 = 0; // turn off timer0 for lower jitter
     ADCSRA = 0xe5; // set the adc to free running mode
     ADMUX = 0x44; // use adc4
@@ -145,10 +150,10 @@ boolean startSound(){
      counter+=1; 
      //Serial.println(counter);
     //}
-    ADCSRA = tempADCSRA;
-    TIMSK0= tempTIMSK0;
-    ADMUX = tempADMUX;
-    DIDR0 = tempDIDR0;
+    ADCSRA = tempSoundADCSRA;
+    TIMSK0= tempSoundTIMSK0;
+    ADMUX = tempSoundADMUX;
+    DIDR0 = tempSoundDIDR0;
     //goStraight();
     return start;
  }
