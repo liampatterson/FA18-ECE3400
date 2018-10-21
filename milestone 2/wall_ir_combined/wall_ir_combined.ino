@@ -114,7 +114,7 @@ boolean detectIR(){
       fft_run(); // process the data in the fft
       fft_mag_log(); // take the output of the fft
       sei();
-      Serial.println("start");
+      //Serial.println("start");
       for (byte i = 0 ; i < FFT_N/2 ; i++) { 
        // Serial.println(fft_log_out[i]); // send out the data
       }
@@ -126,8 +126,8 @@ boolean detectIR(){
       if(counter == 5){ 
         average = average/5; 
         
-        Serial.println(avg+average);
-        if(average > 120){
+        //Serial.println(avg+average);
+        if(average > 180){
           Serial.println("****************************this is 6kHz"); 
           //goStop();
           //delay(5000);
@@ -140,7 +140,7 @@ boolean detectIR(){
         average = 0;
       }
      counter+=1; 
-     Serial.println(counter);
+     //Serial.println(counter);
     //}
     ADCSRA = tempADCSRA;
     TIMSK0= tempTIMSK0;
