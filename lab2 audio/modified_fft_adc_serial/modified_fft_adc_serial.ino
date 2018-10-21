@@ -15,7 +15,7 @@ void setup() {
   Serial.begin(115200); // use the serial port
   TIMSK0 = 0; // turn off timer0 for lower jitter
   ADCSRA = 0xe5; // set the adc to free running mode
-  ADMUX = 0x45; // use adc0
+  ADMUX = 0x44; // use adc4
   DIDR0 = 0x01; // turn off the digital input for adc0
   pinMode(6, OUTPUT); // 6kHz Led
   pinMode(7, OUTPUT); // 18kHz Led
@@ -44,19 +44,19 @@ void loop() {
     fft_run(); // process the data in the fft
     fft_mag_log(); // take the output of the fft
     sei();
-    Serial.println("start");
+    //Serial.println("start");
     for (byte i = 0 ; i < FFT_N/2 ; i++) { 
-      Serial.println(fft_log_out[i]); // send out the data
+      //Serial.println(fft_log_out[i]); // send out the data
     }
     average = average + fft_log_out[5];
     //Serial.println(fft_log_out[5]);
     if(counter == 5){ 
       average = average/5;
-      //Serial.println(average); 
-      if(average > 115){
-        //Serial.println("this is 660"); 
-        digitalWrite(6,HIGH);
-      }
+      Serial.println(average); 
+//      if(average > 170){
+//        Serial.println("this is 660 *******"); 
+//        //digitalWrite(6,HIGH);
+//      }
   
   //    if (fft_log_out[42] > 85) {
   //      Serial.println("this is 6kHz");
@@ -69,11 +69,11 @@ void loop() {
   //      digitalWrite(6, HIGH);
   //      digitalWrite(7, LOW);
   //    }
-      else{
-        Serial.println("diff frequency"); 
-        digitalWrite(6, LOW);
-        digitalWrite(7, LOW);
-      }
+      //else{
+        //Serial.println("diff frequency"); 
+        //digitalWrite(6, LOW);
+        //digitalWrite(7, LOW);
+      //}
       counter = 0;
       average = 0;
     }
