@@ -16,25 +16,25 @@ int lightRightVal = 0;
 int lightLeftVal = 0;
 
 //MIDDLE
-int upperMiddleBoundWhite = 600;
+int upperMiddleBoundWhite = 680;
 int lowerMiddleBoundWhite = 0;
 
 int upperMiddleBoundBlack = 900;
-int lowerMiddleBoundBlack = 600;
+int lowerMiddleBoundBlack = 680;
 
 //RIGHT
-int upperRightBoundWhite = 450;
+int upperRightBoundWhite = 620;
 int lowerRightBoundWhite = 0;
 
 int upperRightBoundBlack = 900;
-int lowerRightBoundBlack = 450;
+int lowerRightBoundBlack = 620;
 
 ////LEFT
-int upperLeftBoundWhite = 450;
+int upperLeftBoundWhite = 620;
 int lowerLeftBoundWhite = 0 ;
 
 int upperLeftBoundBlack = 900;
-int lowerLeftBoundBlack = 450;
+int lowerLeftBoundBlack = 620;
 
 // a vertex for the left
 //int upperLeftBoundVertexWhite = 65;
@@ -80,6 +80,7 @@ void setup() {
   ledSetup();
   servoSetup();
   //to be used for mux digital inputs
+  pinMode(4, OUTPUT);
   pinMode(S2, OUTPUT);
   pinMode(S1, OUTPUT);
   pinMode(S0, OUTPUT);
@@ -120,13 +121,21 @@ void readLightSensors() {
 
 void readDistanceSensors() {
   int counter = 0;
+  Serial.println( "Got outside loop" );
   while (counter < 5) {
+    Serial.println( "Got inside loop" );
     chooseChannel0();
+    digitalWrite(4, LOW);
     avgLeftDistance = avgLeftDistance + analogRead(muxOut);
+    digitalWrite(4, HIGH);
     chooseChannel1();
+    digitalWrite(4, LOW);
     avgMiddleDistance = avgMiddleDistance + analogRead(muxOut);
+    digitalWrite(4, HIGH);
     chooseChannel2();
+    digitalWrite(4, LOW);
     avgRightDistance = avgRightDistance + analogRead(muxOut);
+    digitalWrite(4, HIGH);
     counter+=1;
   }
   LeftDistance = avgLeftDistance/5;
@@ -156,18 +165,20 @@ void chooseChannel2(){
 }
 
 void Straight(){
-  readDistanceSensors();
   //case 1, follow line straight, middle should see white, left/right on black.
     if ( middleIsWhite && leftIsBlack && rightIsBlack ) {
       goStraight();
+      Serial.println("not correcting");
     }
     //case 2, correct left, because I see left white.
     if ( leftIsWhite && rightIsBlack ) {
       correctLeft();
+      Serial.println("correcting left");
     }
     //case 3, correct right, because I see right white.
     if ( rightIsWhite && leftIsBlack ) {
       correctRight();
+      Serial.println("correcting right");
     }
 }
 
@@ -176,7 +187,6 @@ void loop() {
   // put your main code here, to run repeatedly:
   readLightSensors();
    // put your main code here, to run repeatedly:
-  readDistanceSensors();
   
   String left = "left: ";
   String middle = "     middle:";
@@ -189,16 +199,19 @@ void loop() {
     }
   
   else { //found vertex
+    readDistanceSensors();
     Serial.println(MiddleDistance);
     //Serial.println( "found the vertex" );
     //delay( 200 );
-    if( MiddleDistance > 170) {
-      if (LeftDistance > 170) {
+    if( MiddleDistance > 120) {
+      if (LeftDistance > 120) {
         goRight();
         foundVertex = false;
+        //Serial.println( "Left Wall" );
       }
-      else if (RightDistance > 170) {
+      else if (RightDistance > 120) {
         goLeft();
+        //Serial.println( "Right Wall" );
         foundVertex = false;
       }
       //Serial.println( "got right" );
@@ -206,6 +219,7 @@ void loop() {
 //      delay( 100 );
       else {
         goLeft   ();
+        //Serial.println( "Middle Wall" );
         foundVertex = false; 
       }
     }
@@ -226,7 +240,6 @@ void goRight() {
   Serial.println( "turning right" );
   delay( 300 );
   readLightSensors();
-  readDistanceSensors();
   while( !( rightIsBlack && leftIsBlack && middleIsWhite ) ) {
     servoLeft.write( 120 );
     servoRight.write( 90 );

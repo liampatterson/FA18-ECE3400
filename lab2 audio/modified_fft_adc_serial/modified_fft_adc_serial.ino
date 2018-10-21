@@ -15,7 +15,7 @@ void setup() {
   Serial.begin(115200); // use the serial port
   TIMSK0 = 0; // turn off timer0 for lower jitter
   ADCSRA = 0xe5; // set the adc to free running mode
-  ADMUX = 0x40; // use adc0
+  ADMUX = 0x45; // use adc0
   DIDR0 = 0x01; // turn off the digital input for adc0
   pinMode(6, OUTPUT); // 6kHz Led
   pinMode(7, OUTPUT); // 18kHz Led
@@ -52,7 +52,7 @@ void loop() {
     //Serial.println(fft_log_out[5]);
     if(counter == 5){ 
       average = average/5;
-      Serial.println(average); 
+      //Serial.println(average); 
       if(average > 115){
         //Serial.println("this is 660"); 
         digitalWrite(6,HIGH);
