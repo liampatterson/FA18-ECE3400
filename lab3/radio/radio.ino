@@ -1,19 +1,19 @@
 /*
-Copyright (C) 2011 J. Coliz <maniacbug@ymail.com>
+  Copyright (C) 2011 J. Coliz <maniacbug@ymail.com>
 
-This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
-version 2 as published by the Free Software Foundation.
+  This program is free software; you can redistribute it and/or
+  modify it under the terms of the GNU General Public License
+  version 2 as published by the Free Software Foundation.
 */
 
 /**
-* Example for Getting Started with nRF24L01+ radios.
-*
-* This is an example of how to use the RF24 class.  Write this sketch to two
-* different nodes.  Put one of the nodes into 'transmit' mode by connecting
-* with the serial monitor and sending a 'T'.  The ping node sends the current
-* time to the pong node, which responds by sending the value back.  The ping
-* node can then see how long the whole cycle took.
+  Example for Getting Started with nRF24L01+ radios.
+
+  This is an example of how to use the RF24 class.  Write this sketch to two
+  different nodes.  Put one of the nodes into 'transmit' mode by connecting
+  with the serial monitor and sending a 'T'.  The ping node sends the current
+  time to the pong node, which responds by sending the value back.  The ping
+  node can then see how long the whole cycle took.
 */
 
 #include <SPI.h>
@@ -26,12 +26,12 @@ version 2 as published by the Free Software Foundation.
 //
 
 /***
-*  DEFINING BIT MASKS TO USE
-*  4 bits - WALLS ( N, E, S, W )
-*  2 bits - TREASURE SHAPE ( NONE, TRIANGLE, CIRCLE, SQUARE )
-*  1 bits - TREASURE COLOR ( RED, BLUE )
-*  1 bits - ROBOT IS HERE ( YES, NO, FROM IR )
-*  1 bits - EXPLORED? ( YES, NO )
+   DEFINING BIT MASKS TO USE
+   4 bits - WALLS ( N, E, S, W )
+   2 bits - TREASURE SHAPE ( NONE, TRIANGLE, CIRCLE, SQUARE )
+   1 bits - TREASURE COLOR ( RED, BLUE )
+   1 bits - ROBOT IS HERE ( YES, NO, FROM IR )
+   1 bits - EXPLORED? ( YES, NO )
 ***/
 
 #define WALL_NORTH_PRESENT B10000000;
@@ -47,7 +47,7 @@ version 2 as published by the Free Software Foundation.
 #define TREASURE_RED       B00000000;
 #define TREASURE_BLUE      B00000010;
 
-#define ROBOT_NOT_PRESENT  B00000000;
+#define ROBOT_NOT_PRESENT  B11111110;
 #define ROBOT_PRESENT      B00000001;
 
 #define EXPLORED           B10000000;
@@ -55,7 +55,7 @@ version 2 as published by the Free Software Foundation.
 /*** FINISHED DEFINING BIT MASKS **/
 // Set up nRF24L01 radio on SPI bus plus pins 9 & 10
 
-RF24 radio(9,10);
+RF24 radio(9, 10);
 
 //
 // Topology
@@ -80,6 +80,52 @@ const char* role_friendly_name[] = { "invalid", "Ping out", "Pong back"};
 // The role of the current running sketch
 role_e role = role_pong_back;
 
+
+bool northWall;
+bool southWall;
+bool eastWall;
+bool westWall;
+bool treasureCircle;
+bool treasureTriangle;
+bool treasureSquare;
+bool treasureRed;
+bool treasureBlue;
+bool robotPresent;
+
+//CREATE MAZE
+/**
+
+      __0____1____2__
+   2 | tTR       tSB |
+     |    ___________|
+   1 |       R       |
+     |___________    |
+   0 |      tCR      |
+     |_______________|
+
+
+*/
+
+typedef struct {
+  bool northWall;
+  bool southWall;
+  bool eastWall;
+  bool westWall;
+  bool treasureCircle;
+  bool treasureTriangle;
+  bool treasureSquare;
+  bool treasureRed;
+  bool treasureBlue;
+  bool robotPresent;
+} mazeSquare;
+
+mazeSquare maze[3][3] {
+  { { true, true, false, true }, { true, true, false, false, true, false, false, true }, {false, true, true, false} },
+  { { false, true, false, true }, { true, true, false, false, false, false, false, false, false, true }, { true, false, true, false } },
+  { { true, false, false, true, false, true, false, true }, { true, true, false, false }, { true, true, true, false, false, false, true, false, true } }
+};
+
+
 void setup(void)
 {
   //
@@ -89,7 +135,7 @@ void setup(void)
   Serial.begin(57600);
   printf_begin();
   printf("\n\rRF24/examples/GettingStarted/\n\r");
-  printf("ROLE: %s\n\r",role_friendly_name[role]);
+  printf("ROLE: %s\n\r", role_friendly_name[role]);
   printf("*** PRESS 'T' to begin transmitting to the other node\n\r");
 
   //
@@ -99,7 +145,7 @@ void setup(void)
   radio.begin();
 
   // optionally, increase the delay between retries & # of retries
-  radio.setRetries(15,15);
+  radio.setRetries(15, 15);
   radio.setAutoAck(true);
   // set the channel
   radio.setChannel(0x50);
@@ -125,12 +171,12 @@ void setup(void)
   if ( role == role_ping_out )
   {
     radio.openWritingPipe(pipes[0]);
-    radio.openReadingPipe(1,pipes[1]);
+    radio.openReadingPipe(1, pipes[1]);
   }
   else
   {
     radio.openWritingPipe(pipes[1]);
-    radio.openReadingPipe(1,pipes[0]);
+    radio.openReadingPipe(1, pipes[0]);
   }
 
   //
@@ -148,13 +194,49 @@ void setup(void)
 
 void loop(void)
 {
-  //
-  byte payload = WALL_NORTH_PRESENT;
-  byte payload2 = WALL_SOUTH_PRESENT;
-  roleChange();
-  if ( role == role_ping_out ) transmit( payload );
-  if ( role == role_pong_back ) receive();
+  while ( role == role_pong_back ) {
+    receive();
+    roleChange();
+  } 
+  for ( int yVal = 0; yVal < 3; yVal++ ) {
+    for ( int xVal = 0; xVal < 3; xVal++ ) {
+      
+      assignGlobalMaze( xVal, yVal );
+      byte firstByte = 0;
+      firstByte = checkWalls( firstByte );
+      firstByte = checkTreasure( firstByte );
+      firstByte = checkIr( firstByte );
+      byte secondByte = EXPLORED;
+      transmit( firstByte );
+      delay( 250 );
+      transmit( secondByte);
+      delay( 2000 );
+    }
+  }
+  byte ended = 0xFF;
+  transmit( ended );
+  delay( 250 );
+  transmit( ended );
+  delay( 250 );
+  transmit( ended );
+  delay( 250 );
 }
+
+
+void assignGlobalMaze ( int xVal, int yVal ) {
+  northWall = maze[ yVal ][ xVal ].northWall;
+  southWall = maze[ yVal ][ xVal ].southWall;
+  eastWall = maze[ yVal ][ xVal ].eastWall;
+  westWall = maze[ yVal ][ xVal ].westWall;
+  treasureCircle  = maze[ yVal ][ xVal ].treasureCircle;
+  treasureTriangle = maze[ yVal ][ xVal ].treasureTriangle;
+  treasureSquare = maze[ yVal ][ xVal ].treasureSquare;
+  treasureRed = maze[ yVal ][ xVal ].treasureRed;
+  treasureBlue = maze[ yVal ][ xVal ].treasureBlue;
+  robotPresent = maze[ yVal ][ xVal ].robotPresent;
+}
+
+
 // vim:cin:ai:sts=2 sw=2 ft=cpp
 
 
@@ -173,7 +255,7 @@ void roleChange( void ) {
       // Become the primary transmitter (ping out)
       role = role_ping_out;
       radio.openWritingPipe(pipes[0]);
-      radio.openReadingPipe(1,pipes[1]);
+      radio.openReadingPipe(1, pipes[1]);
     }
     else if ( c == 'R' && role == role_ping_out )
     {
@@ -182,9 +264,37 @@ void roleChange( void ) {
       // Become the primary receiver (pong back)
       role = role_pong_back;
       radio.openWritingPipe(pipes[1]);
-      radio.openReadingPipe(1,pipes[0]);
+      radio.openReadingPipe(1, pipes[0]);
     }
   }
+}
+
+
+byte checkWalls( byte firstByte ) {
+  if ( northWall ) firstByte |= WALL_NORTH_PRESENT;
+  if ( southWall ) firstByte |= WALL_SOUTH_PRESENT;
+  if ( eastWall ) firstByte |= WALL_EAST_PRESENT;
+  if ( westWall ) firstByte |= WALL_WEST_PRESENT;
+  return firstByte;
+}
+
+
+byte checkTreasure( byte firstByte ) {
+  if ( treasureTriangle ) firstByte |= TREASURE_TRIANGLE;
+  if ( treasureCircle ) firstByte |= TREASURE_CIRCLE;
+  if ( treasureSquare ) firstByte |= TREASURE_SQUARE;
+  if ( treasureRed ) firstByte |= TREASURE_RED;
+  if ( treasureBlue ) firstByte |= TREASURE_BLUE;
+  return firstByte;
+}
+
+
+byte checkIr( byte firstByte ) {
+  if ( robotPresent ) {
+    firstByte |= ROBOT_PRESENT; 
+    }
+  else if ( !robotPresent ) firstByte &= ROBOT_NOT_PRESENT;
+  return firstByte;
 }
 
 
@@ -201,9 +311,9 @@ void transmit( byte payload ) {
     printf( "Now sending %x...", payload );
     bool ok = radio.write( &payload, sizeof(unsigned char) );
     if ( ok )
-    printf( "ok..." );
+      printf( "ok..." );
     else
-    printf( "failed.\n\r" );
+      printf( "failed.\n\r" );
 
     // Now, continue listening
     radio.startListening();
@@ -212,8 +322,8 @@ void transmit( byte payload ) {
     unsigned long started_waiting_at = millis();
     bool timeout = false;
     while ( ! radio.available() && ! timeout )
-    if (millis() - started_waiting_at > 1000 )
-    timeout = true;
+      if (millis() - started_waiting_at > 1000 )
+        timeout = true;
 
     // Describe the results
     if ( timeout )
@@ -225,9 +335,13 @@ void transmit( byte payload ) {
       // Grab the response, compare, and send to debugging spew
       unsigned char rxPayload;
       radio.read( &rxPayload, sizeof(unsigned char) );
-      
-      // Spew it
-      printf("Got response %x, round-trip delay: %lu\n\r",rxPayload,millis()-started_waiting_at);
+      if ( rxPayload == payload ) {
+        // Spew it
+        printf("Received correct data %x, RT delay: %lu\n\r", rxPayload, millis() - started_waiting_at);
+      }
+      else {
+        printf("That's not what I sent, received %x, RT delay: %lu\n\r", rxPayload, millis() - started_waiting_at);
+      }
     }
 
     // Try again 1s later
@@ -245,16 +359,16 @@ void receive( void ) {
     if ( radio.available() )
     {
       // Dump the payloads until we've gotten everything
-      unsigned long rxPayload;
+      unsigned char rxPayload;
       bool done = false;
       while (!done)
       {
         // Fetch the payload, and see if this was the last one.
         done = radio.read( &rxPayload, sizeof(unsigned char) );
-
+        
         // Spew it
-        printf("Got payload %x...",rxPayload);
-
+        printf("Got payload %x...", rxPayload);
+        if ( rxPayload == 0xFF ) printf( "I have terminated the maze" );
         // Delay just a little bit to let the other unit
         // make the transition to receiver
         delay(20);
