@@ -99,15 +99,20 @@ String parsedSecondByte;
 
 int printFlag; 
 
+String serialOutput;
+String coordinateString;
+String firstString;
+String secondString;
+
 //CREATE MAZE
 /**
 
       __0____1____2__
-   2 | tTR       tSB |
+   0 | tTR       tSB |
      |    ___________|
    1 |       R       |
      |___________    |
-   0 |      tCR      |
+   2 |      tCR      |
      |_______________|
 
 
@@ -127,9 +132,12 @@ typedef struct {
 } mazeSquare;
 
 mazeSquare maze[3][3] {
-  { { true, true, false, true }, { true, true, false, false, true, false, false, true }, {false, true, true, false} },
-  { { false, true, false, true }, { true, true, false, false, false, false, false, false, false, true }, { true, false, true, false } },
-  { { true, false, false, true, false, true, false, true }, { true, true, false, false }, { true, true, true, false, false, false, true, false, true } }
+  //{ { true, false, false, true, false, true, false, true }, { true, true, false, false }, { true, true, true, false, false, false, true, false, true } },
+  { { true, false, false, true }, { true, true, false, false }, { true, true, true, false } },
+  //{ { false, true, false, true }, { true, true, false, false, false, false, false, false, false, true }, { true, false, true, false } },
+  { { false, true, false, true }, { true, true, false, false }, { true, false, true, false } },
+  //{ { true, true, false, true }, { true, true, false, false, true, false, false, true }, {false, true, true, false} }  
+  { { true, true, false, true }, { true, true, false, false }, {false, true, true, false} }  
 };
 
 
@@ -139,11 +147,11 @@ void setup(void)
   // Print preamble
   //
 
-  Serial.begin(57600);
+  Serial.begin(9600);
   printf_begin();
-  printf("\n\rRF24/examples/GettingStarted/\n\r");
-  printf("ROLE: %s\n\r", role_friendly_name[role]);
-  printf("*** PRESS 'T' to begin transmitting to the other node\n\r");
+  //printf("\n\rRF24/examples/GettingStarted/\n\r");
+  //printf("ROLE: %s\n\r", role_friendly_name[role]);
+  //printf("*** PRESS 'T' to begin transmitting to the other node\n\r");
 
   //
   // Setup and configure rf radio
@@ -196,7 +204,8 @@ void setup(void)
   // Dump the configuration of the rf unit for debugging
   //
 
-  radio.printDetails();
+  //radio.printDetails();
+  Serial.println( "reset" );
 }
 
 void loop(void)
@@ -385,25 +394,38 @@ void receive( void ) {
         // Spew it
         //printf("Got payload %x...", rxPayload);
         if ( rxPayload == 0xFF ) {
-          printf( "I have terminated the maze \r\n" );
+          printf( "reset \r\n" );
         }
         else if ( rxPayload == 0x1b ) {
-          printf( "\r\nThis is the first byte " );
+          //printf( "\r\nThis is the first byte " );
           printFlag = 1;
         }
         else if ( rxPayload == 0x2b ) {
-          printf( "This is the second byte " );
+          //printf( "This is the second byte " );
           printFlag = 2;
         }
         else if ( rxPayload == 0xcc ) {
-          printf( "These are the coordinates " );
+          //printf( "These are the coordinates " );
           printFlag = 3;
         }
         else {
-          printf("%x \n\r", rxPayload);
-          switch ( printFlag ):
-          case 3: 
+          //printf("%x \n\r", rxPayload);
+          switch ( printFlag ) {
+            case 3: 
+              coordinateString = readCoordinates( rxPayload );
+              Serial.println( coordinateString + firstString );
+              break;
+            case 2:
+              //Serial.println( "2" );
+              break;
+            case 1:
+              firstString = readFirstByte( rxPayload );
+              break;
+            default:
+              break;
+            
           
+          }
         }
         // Delay just a little bit to let the other unit
         // make the transition to receiver
@@ -426,15 +448,37 @@ void receive( void ) {
 
 String readCoordinates( byte coordinates ) {
   String output = "";
-  int xVal = coordinates >> 4;
-  int yVal = coordinates & 0x0F;
-  output = xVal + "," + yVal;
-  return output
+  String xVal = String(coordinates >> 4);
+  String yVal = String(coordinates & 0x0F);
+
+  output = yVal + "," + xVal;
+  return output;
 }
 
 
 String readFirstByte( byte firstByte ) {
   String output = "";
-  //if ( firstByte >> 7 ) 
+  if ( firstByte >> 7 ) output += ",north=true";
+  if ( ( firstByte & B01000000 ) >> 6 ) output += ",east=true";
+  if ( ( firstByte & B00100000 ) >> 5 ) output += ",south=true";
+  if ( ( firstByte & B00010000 ) >> 4 ) output += ",west=true";
+  switch ( ( firstByte & B00001100 ) >> 2 ) {
+    case 1:
+      //triangle
+      output += ",tshape=triangle,tcolor=red";
+      break;
+    case 2: 
+      //circle
+      output += ",tshape=circle,tcolor=red";
+      break;
+    case 3:
+      //square
+      output += ",tshape=square,tcolor=red";
+      break;
+    default:
+      break;
+  }
+  if ( ( firstByte & B00000010 ) >> 1 ) output += ",tcolor=blue";
+  if ( ( firstByte & B00000001 ) ) output += ",robot=true";
   return output;
 }
