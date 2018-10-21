@@ -92,6 +92,13 @@ bool treasureRed;
 bool treasureBlue;
 bool robotPresent;
 
+
+String parsedCoordinates;
+String parsedFirstByte;
+String parsedSecondByte;
+
+int printFlag; 
+
 //CREATE MAZE
 /**
 
@@ -202,22 +209,31 @@ void loop(void)
     for ( int xVal = 0; xVal < 3; xVal++ ) {
       
       assignGlobalMaze( xVal, yVal );
+      byte coordinates = xVal << 4 | yVal ;
+      byte first = 0x1b;
+      byte second = 0x2b;
+      byte coords = 0xcc;
       byte firstByte = 0;
       firstByte = checkWalls( firstByte );
       firstByte = checkTreasure( firstByte );
       firstByte = checkIr( firstByte );
       byte secondByte = EXPLORED;
+
+      transmit( first );
+      delay( 250 );
       transmit( firstByte );
       delay( 250 );
+      transmit( second );
+      delay( 250 );
       transmit( secondByte);
+      delay( 250 );
+      transmit( coords );
+      delay( 250 );
+      transmit( coordinates );
       delay( 2000 );
     }
   }
   byte ended = 0xFF;
-  transmit( ended );
-  delay( 250 );
-  transmit( ended );
-  delay( 250 );
   transmit( ended );
   delay( 250 );
 }
@@ -367,8 +383,28 @@ void receive( void ) {
         done = radio.read( &rxPayload, sizeof(unsigned char) );
         
         // Spew it
-        printf("Got payload %x...", rxPayload);
-        if ( rxPayload == 0xFF ) printf( "I have terminated the maze" );
+        //printf("Got payload %x...", rxPayload);
+        if ( rxPayload == 0xFF ) {
+          printf( "I have terminated the maze \r\n" );
+        }
+        else if ( rxPayload == 0x1b ) {
+          printf( "\r\nThis is the first byte " );
+          printFlag = 1;
+        }
+        else if ( rxPayload == 0x2b ) {
+          printf( "This is the second byte " );
+          printFlag = 2;
+        }
+        else if ( rxPayload == 0xcc ) {
+          printf( "These are the coordinates " );
+          printFlag = 3;
+        }
+        else {
+          printf("%x \n\r", rxPayload);
+          switch ( printFlag ):
+          case 3: 
+          
+        }
         // Delay just a little bit to let the other unit
         // make the transition to receiver
         delay(20);
@@ -380,10 +416,25 @@ void receive( void ) {
 
       // Send the final one back.
       radio.write( &rxPayload, sizeof(unsigned char) );
-      printf("Sent response.\n\r");
+      
 
       // Now, resume listening so we catch the next packets.
       radio.startListening();
     }
   }
+}
+
+String readCoordinates( byte coordinates ) {
+  String output = "";
+  int xVal = coordinates >> 4;
+  int yVal = coordinates & 0x0F;
+  output = xVal + "," + yVal;
+  return output
+}
+
+
+String readFirstByte( byte firstByte ) {
+  String output = "";
+  //if ( firstByte >> 7 ) 
+  return output;
 }
