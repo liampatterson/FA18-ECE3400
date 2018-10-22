@@ -23,11 +23,11 @@ int lightRightVal = 0;
 int lightLeftVal = 0;
 
 //MIDDLE
-int upperMiddleBoundWhite = 600;
+int upperMiddleBoundWhite = 500;
 int lowerMiddleBoundWhite = 0;
 
 int upperMiddleBoundBlack = 900;
-int lowerMiddleBoundBlack = 600;
+int lowerMiddleBoundBlack = 500;
 
 //RIGHT
 int upperRightBoundWhite = 450;
@@ -116,7 +116,7 @@ void readLightSensors() {
   String middle = ", Middle: ";
   String right = ", Right: ";
   String lightOutput = left + lightLeftVal + middle + lightMiddleVal + right + lightRightVal;
-  //Serial.println( lightOutput );
+  Serial.println( lightOutput );
 
   middleIsWhite = (lightMiddleVal < upperMiddleBoundWhite );
   middleIsBlack = (lightMiddleVal > lowerMiddleBoundBlack);
@@ -246,7 +246,7 @@ boolean startSound(){
         average = average/5; 
         
         //Serial.println(avg+average);
-        if(average > 170){
+        if(average > 150){
           Serial.println("****************************this is 6.6Hz"); 
           //goStop();
           //delay(5000);
@@ -339,10 +339,10 @@ void loop() {
   readLightSensors();
   // put your main code here, to run repeatedly:
 
-  String left = "left: ";
-  String middle = "     middle:";
-  String right = "        right: ";
-  //  /Serial.println( left + LeftDistance + middle + MiddleDistance + right + RightDistance );
+//  String left = "left: ";
+//  String middle = "     middle:";
+//  String right = "        right: ";
+//  Serial.println( left + LeftDistance + middle + MiddleDistance + right + RightDistance );
   //Serial.println( middle + MiddleDistance );
   if (!hasStarted) {
     //doNotStart();
@@ -356,7 +356,7 @@ void loop() {
     if(detectIR()){
       goStop();
     }
-    if ( !foundVertex ) {
+    else if ( !foundVertex ) {
       Straight();
     }
     else { //found vertex
@@ -389,7 +389,7 @@ void loop() {
         //Serial.println( "got straight" );
         //delay(100);
         //      Straight();
-        goStraight();
+        Straight();
         foundVertex = false;
       }
     }
@@ -428,6 +428,7 @@ void goLeft() {
 void goStop() {
   servoLeft.write( 90 );
   servoRight.write( 90 );
+  delay(5000);
   Serial.println( "going stopped" );
 }
 
