@@ -151,6 +151,10 @@ void readDistanceSensors() {
   LeftDistance = avgLeftDistance / 5;
   MiddleDistance = avgMiddleDistance / 5;
   RightDistance = avgRightDistance / 5;
+  String l = "left ";
+  String r = "  right ";
+  String m = "  middle ";
+  Serial.println(l+LeftDistance+m+MiddleDistance+r+RightDistance);
   avgLeftDistance = 0;
   avgMiddleDistance = 0;
   avgRightDistance = 0;
@@ -364,13 +368,13 @@ void loop() {
       Serial.println(MiddleDistance);
       //Serial.println( "found the vertex" );
       //delay( 200 );
-      if ( MiddleDistance > 120) {
-        if (LeftDistance > 120) {
+      if ( MiddleDistance > 400) {
+        if (LeftDistance > 400) {
           goRight();
           foundVertex = false;
           //Serial.println( "Left Wall" );
         }
-        else if (RightDistance > 120) {
+        else if (RightDistance > 400) {
           goLeft();
           //Serial.println( "Right Wall" );
           foundVertex = false;
