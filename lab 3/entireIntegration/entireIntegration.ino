@@ -38,7 +38,7 @@ int lowerRightBoundBlack = 550;
 
 ////LEFT
 int upperLeftBoundWhite = 550;
-int lowerLeftBoundWhite = 0 ;
+int lowerLeftBoundWhite = 0 ; 
 
 int upperLeftBoundBlack = 1000;
 int lowerLeftBoundBlack = 550;
@@ -210,7 +210,7 @@ void chooseChannel3() {
 void goRight() {
   correctRight();
   Serial.println( "turning right" );
-  delay( 300 );
+  delay( 150 );
   readLightSensors();
   while ( !( rightIsBlack && leftIsBlack && middleIsWhite ) ) {
     servoLeft.write( 120 );
@@ -224,7 +224,7 @@ void goRight() {
 void goLeft() {
   correctLeft();
   Serial.println( "turning left" );
-  delay( 300 );
+  delay( 150 );
   readLightSensors();
   while ( !( rightIsBlack && leftIsBlack && middleIsWhite ) ) {
     servoLeft.write( 90 );
@@ -452,40 +452,40 @@ void loop() {
   }
   else {
     //readDistanceSensors();
-    if(detectIR()){
-      goStop();
-    }
-    else if ( !foundVertex ) {
+//    if(detectIR()){
+//      goStop();
+//    }
+    if ( !foundVertex ) {
       Straight();
     }
     else { //found vertex
 
       readDistanceSensors();
 
-      if ( MiddleDistance > 200) {
-        if (LeftDistance > 200) {
-          goRight();
-          foundVertex = false;
-          //Serial.println( "Left Wall" );
-        }
-        else if (RightDistance > 200) {
-          goLeft();
-          //Serial.println( "Right Wall" );
-          foundVertex = false;
-        }
-        //Serial.println( "got right" );
-        //goStop();
-        //      delay( 100 );
-        else {
-          goLeft   ();
-          //Serial.println( "Middle Wall" );
-          foundVertex = false;
-        }
-      }
-      else{
+//      if ( MiddleDistance > 175) {
+//        if (LeftDistance > 200) {
+//          goRight();
+//          foundVertex = false;
+//          //Serial.println( "Left Wall" );
+//        }
+//        else if (RightDistance > 175) {
+//          goLeft();
+//          //Serial.println( "Right Wall" );
+//          foundVertex = false;
+//        }
+//        //Serial.println( "got right" );
+//        //goStop();
+//        //      delay( 100 );
+//        else {
+//          goLeft();
+//          //Serial.println( "Middle Wall" );
+//          foundVertex = false;
+//        }
+//      }
+//      else{
         Straight();
-        foundVertex = false;
-      }
+       // foundVertex = false;
+//      }
     }
   }
 }
