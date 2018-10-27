@@ -143,8 +143,8 @@ Servo servoLeft;
 Servo servoRight;
 
 // to be used for mux digital inputs
-int S2 = 5;
-int S1 = 6;
+int S2 = 3;
+int S1 = 4;
 int S0 = 7;
 // Chn 000 left wall sensor
 // Chn 001 middle wall sensor
@@ -177,7 +177,7 @@ int S0 = 7;
     const char* role_friendly_name[] = { "invalid", "Ping out", "Pong back"};
     
     // The role of the current running sketch
-    role_e role = role_pong_back;
+    role_e role = role_ping_out;
     
     
     bool northWall;
@@ -203,7 +203,7 @@ void setup( void )
   radioSetup();
   //servoSetup();
   //to be used for mux digital inputs
-  pinMode(4, OUTPUT); //enable
+  pinMode(2, OUTPUT); //enable
   pinMode(S2, OUTPUT);
   pinMode(S1, OUTPUT);
   pinMode(S0, OUTPUT);
@@ -212,6 +212,12 @@ void setup( void )
 
 void loop() {
   // put your main code here, to run repeatedly:
+  for ( int yVal = 0; yVal < 3; yVal++ ) {
+    for ( int xVal = 0; xVal < 3; xVal++ ) {
+      transmitSqData( xVal, yVal );
+    }
+  }
+ 
   readLightSensors();
  
   // put your main code here, to run repeatedly:
@@ -267,15 +273,17 @@ void loop() {
 //      }
     }
   }
+
 }
+
 /*** END MAIN CODE ***/
 
 
 /******* BEGIN HELPER FUNCTIONS ********/
 void servoSetup( void )
 {
-  servoLeft.attach( 9 );
-  servoRight.attach( 10 );
+  servoLeft.attach( 5 );
+  servoRight.attach( 6 );
 }
 
 void ledSetup( void )
@@ -338,7 +346,7 @@ void readDistanceSensors( void )
   avgLeftDistance = 0;
   avgMiddleDistance = 0;
   avgRightDistance = 0;
-  digitalWrite(4, LOW);
+  digitalWrite(2, LOW);
   while (counter < 5) {
     chooseChannel0();
     avgLeftDistance = avgLeftDistance + analogRead(muxOut);    
@@ -348,7 +356,7 @@ void readDistanceSensors( void )
     avgRightDistance = avgRightDistance + analogRead(muxOut);
     counter += 1;
   }
-  digitalWrite(4, HIGH);
+  digitalWrite(2, HIGH);
   LeftDistance = avgLeftDistance / 5;
   MiddleDistance = avgMiddleDistance / 5;
   RightDistance = avgRightDistance / 5;
@@ -685,6 +693,7 @@ void radioSetup( void )
 
   //radio.printDetails();
   Serial.println( "reset" );
+  transmit( 0xFF );
 }
 
 
@@ -782,8 +791,8 @@ void transmit( byte payload )
   // Ping out role.  Repeatedly send the current time
   //
 
-  if ( role == role_ping_out )
-  {
+  //if ( role == role_ping_out )
+  //{
     // First, stop listening so we can talk.
     radio.stopListening();
     
@@ -825,5 +834,5 @@ void transmit( byte payload )
 
     // Try again 1s later
     delay(1000);
-  }
+  //}
 }
