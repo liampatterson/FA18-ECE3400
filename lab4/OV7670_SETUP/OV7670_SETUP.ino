@@ -3,6 +3,13 @@
 #define OV7670_I2C_ADDRESS 0x2A /*TODO: write this in hex (eg. 0xAB) */
 
 
+int reg11;
+int reg0c;
+int reg40;
+int reg3e;
+int reg12;
+int reg42;
+
 ///////// Main Program //////////////
 void setup() {
   Wire.begin();
@@ -15,24 +22,20 @@ void setup() {
   
   // TODO: WRITE KEY REGISTERS
   //there should be 8 of them
-  OV7670_write_register(17, reg11 | 0000010); //Use external clock as internal clock -- reg 11
-  OV7670_write_register(12,00011100); //Enable scaling -- reg 0c
-  OV7670_write_register(64, reg40 | 00000100); //reg 40 Change resolution
-  OV7670_write_register(62, reg3e | 00000100); //reg 3e also changing resolution
-  OV7670_write_register(18, reg12 | 01000001);//color test reg 12 AND reset all registers by enabling last bit
-  OV7670_write_register(66, reg42 | 00010000);//more color test reg 42
+  OV7670_write_register( 17, reg11 | 0000010 ); //Use external clock as internal clock -- reg 11
+  OV7670_write_register( 12, 00011100 ); //Enable scaling -- reg 0c
+  OV7670_write_register( 64, reg40 | 00000100 ); //reg 40 Change resolution
+  OV7670_write_register( 62, reg3e | 00000100 ); //reg 3e also changing resolution
+  OV7670_write_register( 18, reg12 | 01000001 );//color test reg 12 AND reset all registers by enabling last bit
+  OV7670_write_register( 66, reg42 | 00010000 );//more color test reg 42
   read_key_registers();
+  set_color_matrix();
 }
 
 void loop(){
- }
 
-int reg11;
-int reg0c;
-int reg40;
-int reg3e;
-int reg12;
-int reg42;
+}
+
 ///////// Function Definition //////////////
 void read_key_registers(){
   /*TODO: DEFINE THIS FUNCTION*/
@@ -44,6 +47,7 @@ void read_key_registers(){
   reg42 = read_register_value(66); //change res
 }
 
+
 byte read_register_value(int register_address){
   byte data = 0;
   Wire.beginTransmission(OV7670_I2C_ADDRESS);
@@ -54,6 +58,7 @@ byte read_register_value(int register_address){
   data = Wire.read();
   return data;
 }
+
 
 String OV7670_write(int start, const byte *pData, int size){
     int n,error;
@@ -72,10 +77,12 @@ String OV7670_write(int start, const byte *pData, int size){
     }
     return "no errors :)";
  }
+ 
 
 String OV7670_write_register(int reg_address, byte data){
   return OV7670_write(reg_address, &data, 1);
  }
+ 
 
 void set_color_matrix(){
     OV7670_write_register(0x4f, 0x80);
