@@ -153,8 +153,12 @@ void readLightSensors() {
 }
 
 
+
+int caseVariable = B000; //binary value where leftmost bit is left wall, then middle is middle wall, then rightmost bit is right wall
+
 void readDistanceSensors() {
   int counter = 0;
+  caseVariable = B000; // reset case variable
   avgLeftDistance = 0;
   avgMiddleDistance = 0;
   avgRightDistance = 0;
@@ -172,6 +176,22 @@ void readDistanceSensors() {
   LeftDistance = avgLeftDistance / 5;
   MiddleDistance = avgMiddleDistance / 5;
   RightDistance = avgRightDistance / 5;
+  if(LeftDistance>120){
+    
+    caseVariable = caseVariable | 100; //set leftmost bit to 1
+  }
+  
+  if(MiddleDistance>120){
+    
+    caseVariable = caseVariable | 010; //set middle bit to 1
+  }
+  
+  if(RightDistance>120){
+   
+    caseVariable = caseVariable | 001;  //set rightmost bit to 1
+  }
+  
+  
   String l = "left dist ";
   String r = "  right dist ";
   String m = "  middle dist ";
@@ -461,12 +481,31 @@ void loop() {
     else { //found vertex
 
       readDistanceSensors();
+      switch(caseVariable){
+        case B110: //left and front wall
+          goRight();
+          foundVertex = false;
+          //Serial.println( "Left Wall" );
+          break;
+        case B011: //right and front wall
+          goLeft();
+        //Serial.println( "Right Wall" );
+          foundVertex = false;
+          break;
+        case B010: //front wall only, default to turn left
+          goLeft();
+          foundVertex = false;
+          break;
+        default  
+          Straight(); 
+          foundVertex = false;
+          break;
+      }
 
+//NOT USING STUFF BELOW THIS
 //      if ( MiddleDistance > 175) {
 //        if (LeftDistance > 200) {
-//          goRight();
-//          foundVertex = false;
-//          //Serial.println( "Left Wall" );
+//          
 //        }
 //        else if (RightDistance > 175) {
 //          goLeft();
@@ -483,7 +522,7 @@ void loop() {
 //        }
 //      }
 //      else{
-        Straight();
+       
        // foundVertex = false;
 //      }
     }
