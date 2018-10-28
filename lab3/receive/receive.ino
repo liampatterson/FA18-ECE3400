@@ -92,6 +92,141 @@ bool treasureRed;
 bool treasureBlue;
 bool robotPresent;
 
+void orientRobot( Orientation orientation, int wallState )
+{
+  switch( wallState ) {
+   case B110: //left and front wall
+        switch ( orientation ) {
+          case north_up:
+            northWall = true;
+            westWall = true;
+            southWall = false
+            eastWall = false;
+            break;
+
+          case north_left:
+            northWall = true;
+            westWall = false;
+            southWall = false
+            eastWall = true;
+            break;
+
+          case north_back:
+            northWall = false;
+            westWall = false;
+            southWall = true
+            eastWall = true;
+            break;
+
+          case north_right:
+           northWall = false;
+            westWall = true;
+            southWall = true
+            eastWall = false;
+            break;
+        }
+        break;
+      case B011: //right and front wall
+        switch ( orientation ) {
+          case north_up:
+            northWall = true;
+            westWall = false;
+            southWall = false
+            eastWall = true;
+            break;
+
+          case north_left:
+            northWall = false;
+            westWall = false;
+            southWall = true
+            eastWall = true;
+            break;
+
+          case north_back:
+            northWall = false;
+            westWall = true;
+            southWall = true
+            eastWall = false;
+            break;
+
+          case north_right:
+            northWall = true;
+            westWall = true;
+            southWall = false
+            eastWall = false;
+            break;
+        }
+        break;
+      case B010: //front wall only, default to turn left
+        switch ( orientation ) {
+          case north_up:
+            northWall = true;
+            westWall = false;
+            southWall = false
+            eastWall = false;
+            break;
+
+          case north_left:
+            northWall = false;
+            westWall = false;
+            southWall = false;
+            eastWall = true;
+            break;
+
+          case north_back:
+            northWall = false;
+            westWall = false;
+            southWall = true
+            eastWall = false;
+            break;
+
+          case north_right:
+            northWall = false;
+            westWall = true;
+            southWall = false
+            eastWall = false;
+            break;
+        }
+        break;
+      case B111: //front, left, and right walls
+        switch ( orientation ) {
+          case north_up:
+            northWall = true;
+            westWall = true;
+            southWall = false
+            eastWall = true;
+            break;
+
+          case north_left:
+            northWall = true;
+            westWall = false;
+            southWall = true;
+            eastWall = true;
+            break;
+
+          case north_back:
+            northWall = false;
+            westWall = true;
+            southWall = true
+            eastWall = true;
+            break;
+
+          case north_right:
+            northWall = true;
+            westWall = true;
+            southWall = true
+            eastWall = false;
+            break;
+        }
+        break;
+      default:  
+        northWall = false;
+        westWall = false
+        southWall = false;
+        eastWall = false;
+        break;
+    }
+}
 
 String parsedCoordinates;
 String parsedFirstByte;
