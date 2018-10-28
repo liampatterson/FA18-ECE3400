@@ -373,7 +373,7 @@ void transmit( byte payload ) {
   }
 }
 
-void receive( void ) {
+  void receive( void ) {
   //
   // Pong back role.  Receive each packet, dump it out, and send it back
   //

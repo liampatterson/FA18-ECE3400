@@ -148,7 +148,27 @@ void setup(void)
   //
 
   Serial.begin(9600);
-  printf_begin();
+
+}
+
+
+void loop(void)
+{
+  role = role_ping_out;
+  for ( int yVal = 0; yVal < 3; yVal++ ) {
+    for ( int xVal = 0; xVal < 3; xVal++ ) {
+      transmitSqData( xVal, yVal );
+    }
+  }
+  byte ended = 0xFF;
+  transmit( ended );
+  delay( 250 );
+}
+
+
+void radioSetup( void )
+{
+    printf_begin();
   //printf("\n\rRF24/examples/GettingStarted/\n\r");
   //printf("ROLE: %s\n\r", role_friendly_name[role]);
   //printf("*** PRESS 'T' to begin transmitting to the other node\n\r");
@@ -208,43 +228,32 @@ void setup(void)
   Serial.println( "reset" );
 }
 
-void loop(void)
-{
-  while ( role == role_pong_back ) {
-    receive();
-    roleChange();
-  } 
-  for ( int yVal = 0; yVal < 3; yVal++ ) {
-    for ( int xVal = 0; xVal < 3; xVal++ ) {
-      
-      assignGlobalMaze( xVal, yVal );
-      byte coordinates = xVal << 4 | yVal ;
-      byte first = 0x1b;
-      byte second = 0x2b;
-      byte coords = 0xcc;
-      byte firstByte = 0;
-      firstByte = checkWalls( firstByte );
-      firstByte = checkTreasure( firstByte );
-      firstByte = checkIr( firstByte );
-      byte secondByte = EXPLORED;
 
-      transmit( first );
-      delay( 250 );
-      transmit( firstByte );
-      delay( 250 );
-      transmit( second );
-      delay( 250 );
-      transmit( secondByte);
-      delay( 250 );
-      transmit( coords );
-      delay( 250 );
-      transmit( coordinates );
-      delay( 2000 );
-    }
-  }
-  byte ended = 0xFF;
-  transmit( ended );
-  delay( 250 );
+void transmitSqData( int xVal, int yVal )
+{
+    assignGlobalMaze( xVal, yVal );
+    byte coordinates = xVal << 4 | yVal ;
+    byte first = 0x1b;
+    byte second = 0x2b;
+    byte coords = 0xcc;
+    byte firstByte = 0;
+    firstByte = checkWalls( firstByte );
+    firstByte = checkTreasure( firstByte );
+    firstByte = checkIr( firstByte );
+    byte secondByte = EXPLORED;
+
+    transmit( first );
+    delay( 250 );
+    transmit( firstByte );
+    delay( 250 );
+    transmit( second );
+    delay( 250 );
+    transmit( secondByte);
+    delay( 250 );
+    transmit( coords );
+    delay( 250 );
+    transmit( coordinates );
+    delay( 2000 );
 }
 
 
@@ -259,39 +268,6 @@ void assignGlobalMaze ( int xVal, int yVal ) {
   treasureRed = maze[ yVal ][ xVal ].treasureRed;
   treasureBlue = maze[ yVal ][ xVal ].treasureBlue;
   robotPresent = maze[ yVal ][ xVal ].robotPresent;
-}
-
-
-// vim:cin:ai:sts=2 sw=2 ft=cpp
-
-
-void roleChange( void ) {
-  //
-  // Change roles
-  //
-
-  if ( Serial.available() )
-  {
-    char c = toupper(Serial.read());
-    if ( c == 'T' && role == role_pong_back )
-    {
-      printf("*** CHANGING TO TRANSMIT ROLE -- PRESS 'R' TO SWITCH BACK\n\r");
-
-      // Become the primary transmitter (ping out)
-      role = role_ping_out;
-      radio.openWritingPipe(pipes[0]);
-      radio.openReadingPipe(1, pipes[1]);
-    }
-    else if ( c == 'R' && role == role_ping_out )
-    {
-      printf("*** CHANGING TO RECEIVE ROLE -- PRESS 'T' TO SWITCH BACK\n\r");
-
-      // Become the primary receiver (pong back)
-      role = role_pong_back;
-      radio.openWritingPipe(pipes[1]);
-      radio.openReadingPipe(1, pipes[0]);
-    }
-  }
 }
 
 
@@ -373,111 +349,111 @@ void transmit( byte payload ) {
   }
 }
 
-void receive( void ) {
-  //
-  // Pong back role.  Receive each packet, dump it out, and send it back
-  //
-  if ( role == role_pong_back )
-  {
-    // if there is data ready
-    if ( radio.available() )
-    {
-      // Dump the payloads until we've gotten everything
-      unsigned char rxPayload;
-      bool done = false;
-      while (!done)
-      {
-        // Fetch the payload, and see if this was the last one.
-        done = radio.read( &rxPayload, sizeof(unsigned char) );
-        
-        // Spew it
-        //printf("Got payload %x...", rxPayload);
-        if ( rxPayload == 0xFF ) {
-          printf( "reset \r\n" );
-        }
-        else if ( rxPayload == 0x1b ) {
-          //printf( "\r\nThis is the first byte " );
-          printFlag = 1;
-        }
-        else if ( rxPayload == 0x2b ) {
-          //printf( "This is the second byte " );
-          printFlag = 2;
-        }
-        else if ( rxPayload == 0xcc ) {
-          //printf( "These are the coordinates " );
-          printFlag = 3;
-        }
-        else {
-          //printf("%x \n\r", rxPayload);
-          switch ( printFlag ) {
-            case 3: 
-              coordinateString = readCoordinates( rxPayload );
-              Serial.println( coordinateString + firstString );
-              break;
-            case 2:
-              //Serial.println( "2" );
-              break;
-            case 1:
-              firstString = readFirstByte( rxPayload );
-              break;
-            default:
-              break;
-            
-          
-          }
-        }
-        // Delay just a little bit to let the other unit
-        // make the transition to receiver
-        delay(20);
-
-      }
-
-      // First, stop listening so we can talk
-      radio.stopListening();
-
-      // Send the final one back.
-      radio.write( &rxPayload, sizeof(unsigned char) );
-      
-
-      // Now, resume listening so we catch the next packets.
-      radio.startListening();
-    }
-  }
-}
-
-String readCoordinates( byte coordinates ) {
-  String output = "";
-  String xVal = String(coordinates >> 4);
-  String yVal = String(coordinates & 0x0F);
-
-  output = yVal + "," + xVal;
-  return output;
-}
-
-
-String readFirstByte( byte firstByte ) {
-  String output = "";
-  if ( firstByte >> 7 ) output += ",north=true";
-  if ( ( firstByte & B01000000 ) >> 6 ) output += ",east=true";
-  if ( ( firstByte & B00100000 ) >> 5 ) output += ",south=true";
-  if ( ( firstByte & B00010000 ) >> 4 ) output += ",west=true";
-  switch ( ( firstByte & B00001100 ) >> 2 ) {
-    case 1:
-      //triangle
-      output += ",tshape=triangle,tcolor=red";
-      break;
-    case 2: 
-      //circle
-      output += ",tshape=circle,tcolor=red";
-      break;
-    case 3:
-      //square
-      output += ",tshape=square,tcolor=red";
-      break;
-    default:
-      break;
-  }
-  if ( ( firstByte & B00000010 ) >> 1 ) output += ",tcolor=blue";
-  if ( ( firstByte & B00000001 ) ) output += ",robot=true";
-  return output;
-}
+//void receive( void ) {
+//  //
+//  // Pong back role.  Receive each packet, dump it out, and send it back
+//  //
+//  if ( role == role_pong_back )
+//  {
+//    // if there is data ready
+//    if ( radio.available() )
+//    {
+//      // Dump the payloads until we've gotten everything
+//      unsigned char rxPayload;
+//      bool done = false;
+//      while (!done)
+//      {
+//        // Fetch the payload, and see if this was the last one.
+//        done = radio.read( &rxPayload, sizeof(unsigned char) );
+//        
+//        // Spew it
+//        //printf("Got payload %x...", rxPayload);
+//        if ( rxPayload == 0xFF ) {
+//          printf( "reset \r\n" );
+//        }
+//        else if ( rxPayload == 0x1b ) {
+//          //printf( "\r\nThis is the first byte " );
+//          printFlag = 1;
+//        }
+//        else if ( rxPayload == 0x2b ) {
+//          //printf( "This is the second byte " );
+//          printFlag = 2;
+//        }
+//        else if ( rxPayload == 0xcc ) {
+//          //printf( "These are the coordinates " );
+//          printFlag = 3;
+//        }
+//        else {
+//          //printf("%x \n\r", rxPayload);
+//          switch ( printFlag ) {
+//            case 3: 
+//              coordinateString = readCoordinates( rxPayload );
+//              Serial.println( coordinateString + firstString );
+//              break;
+//            case 2:
+//              //Serial.println( "2" );
+//              break;
+//            case 1:
+//              firstString = readFirstByte( rxPayload );
+//              break;
+//            default:
+//              break;
+//            
+//          
+//          }
+//        }
+//        // Delay just a little bit to let the other unit
+//        // make the transition to receiver
+//        delay(20);
+//
+//      }
+//
+//      // First, stop listening so we can talk
+//      radio.stopListening();
+//
+//      // Send the final one back.
+//      radio.write( &rxPayload, sizeof(unsigned char) );
+//      
+//
+//      // Now, resume listening so we catch the next packets.
+//      radio.startListening();
+//    }
+//  }
+//}
+//
+//String readCoordinates( byte coordinates ) {
+//  String output = "";
+//  String xVal = String(coordinates >> 4);
+//  String yVal = String(coordinates & 0x0F);
+//
+//  output = yVal + "," + xVal;
+//  return output;
+//}
+//
+//
+//String readFirstByte( byte firstByte ) {
+//  String output = "";
+//  if ( firstByte >> 7 ) output += ",north=true";
+//  if ( ( firstByte & B01000000 ) >> 6 ) output += ",east=true";
+//  if ( ( firstByte & B00100000 ) >> 5 ) output += ",south=true";
+//  if ( ( firstByte & B00010000 ) >> 4 ) output += ",west=true";
+//  switch ( ( firstByte & B00001100 ) >> 2 ) {
+//    case 1:
+//      //triangle
+//      output += ",tshape=triangle,tcolor=red";
+//      break;
+//    case 2: 
+//      //circle
+//      output += ",tshape=circle,tcolor=red";
+//      break;
+//    case 3:
+//      //square
+//      output += ",tshape=square,tcolor=red";
+//      break;
+//    default:
+//      break;
+//  }
+//  if ( ( firstByte & B00000010 ) >> 1 ) output += ",tcolor=blue";
+//  if ( ( firstByte & B00000001 ) ) output += ",robot=true";
+//  return output;
+//}
