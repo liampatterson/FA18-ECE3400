@@ -137,6 +137,7 @@ int counter = 0;
 int average = 0;
 
 boolean hasStarted = false;
+int caseVariable = B000; //binary value where leftmost bit is left wall, then middle is middle wall, then rightmost bit is right wall
 
 // servo objects
 Servo servoLeft;
@@ -200,7 +201,7 @@ void setup( void )
   // put your setup code here, to run once:
   Serial.begin( 9600 );
   ledSetup();
-  radioSetup();
+  //radioSetup();
   //servoSetup();
   //to be used for mux digital inputs
   pinMode(2, OUTPUT); //enable
@@ -212,13 +213,14 @@ void setup( void )
 
 void loop() {
   // put your main code here, to run repeatedly:
-  for ( int yVal = 0; yVal < 3; yVal++ ) {
-    for ( int xVal = 0; xVal < 3; xVal++ ) {
-      transmitSqData( xVal, yVal );
-    }
-  }
- 
+//  for ( int yVal = 0; yVal < 3; yVal++ ) {
+//    for ( int xVal = 0; xVal < 3; xVal++ ) {
+//      transmitSqData( xVal, yVal );
+//    }
+//  }
+// 
   readLightSensors();
+  //readDistanceSensors();
  
   // put your main code here, to run repeatedly:
 
@@ -244,8 +246,34 @@ void loop() {
       Straight();
     }
     else { //found vertex
-
+      //goStop();
       readDistanceSensors();
+      switch(caseVariable){
+        case B110: //left and front wall
+          goRight();
+          foundVertex = false;
+          //Serial.println( "Left Wall" );
+          break;
+        case B011: //right and front wall
+          goLeft();
+        //Serial.println( "Right Wall" );
+          foundVertex = false;
+          break;
+        case B010: //front wall only, default to turn left
+          goLeft();
+          foundVertex = false;
+          break;
+        case B111: //front, left, and right walls
+          turnAround();
+          foundVertex = false;
+          break;
+        default:  
+          Straight(); 
+          foundVertex = false;
+          break;
+      }
+
+//      readDistanceSensors();
 
 //      if ( MiddleDistance > 175) {
 //        if (LeftDistance > 200) {
@@ -340,15 +368,9 @@ void readLightSensors( void )
 }
 
 
-<<<<<<< HEAD
 
-int caseVariable = B000; //binary value where leftmost bit is left wall, then middle is middle wall, then rightmost bit is right wall
 
 void readDistanceSensors() {
-=======
-void readDistanceSensors( void ) 
-{
->>>>>>> 4cae97ae188c65825bf7bcd9e06a3762df3c678a
   int counter = 0;
   caseVariable = B000; // reset case variable
   avgLeftDistance = 0;
@@ -368,25 +390,29 @@ void readDistanceSensors( void )
   LeftDistance = avgLeftDistance / 5;
   MiddleDistance = avgMiddleDistance / 5;
   RightDistance = avgRightDistance / 5;
+  int a = B100;
+  int b = B010;
+  int c = B001;
   if(LeftDistance>120){
     
-    caseVariable = caseVariable | 100; //set leftmost bit to 1
+    caseVariable = caseVariable | a; //set leftmost bit to 1
   }
   
   if(MiddleDistance>120){
     
-    caseVariable = caseVariable | 010; //set middle bit to 1
+    caseVariable = caseVariable | b; //set middle bit to 1
   }
   
   if(RightDistance>120){
    
-    caseVariable = caseVariable | 001;  //set rightmost bit to 1
+    caseVariable = caseVariable | c;  //set rightmost bit to 1
   }
   
   
   String l = "left dist ";
   String r = "  right dist ";
   String m = "  middle dist ";
+  Serial.println("hi");
   Serial.println(l+LeftDistance+m+MiddleDistance+r+RightDistance);
 //  avgLeftDistance = 0;
 //  avgMiddleDistance = 0;
@@ -455,12 +481,26 @@ void chooseChannel3( void )
         }
       }
       
+      void turnAround( void )
+      {
+        correctLeft();
+        Serial.println( "turning left" );
+        delay( 150 );
+        readLightSensors();
+        while ( !( rightIsBlack && leftIsBlack && middleIsWhite ) ) {
+          servoLeft.write( 180 );
+          servoRight.write( 180 );
+          Serial.println( "turning left" );
+          readLightSensors();
+        }
+        
+      }
       
       void goStop( void )
       {
         servoLeft.write( 90 );
         servoRight.write( 90 );
-        delay(5000);
+        delay(500);
         Serial.println( "going stopped" );
       }
       
@@ -809,28 +849,7 @@ byte checkIr( byte firstByte )
   return firstByte;
 }
 
-<<<<<<< HEAD
-      readDistanceSensors();
-      switch(caseVariable){
-        case B110: //left and front wall
-          goRight();
-          foundVertex = false;
-          //Serial.println( "Left Wall" );
-          break;
-        case B011: //right and front wall
-          goLeft();
-        //Serial.println( "Right Wall" );
-          foundVertex = false;
-          break;
-        case B010: //front wall only, default to turn left
-          goLeft();
-          foundVertex = false;
-          break;
-        default  
-          Straight(); 
-          foundVertex = false;
-          break;
-      }
+
 
 //NOT USING STUFF BELOW THIS
 //      if ( MiddleDistance > 175) {
@@ -855,7 +874,6 @@ byte checkIr( byte firstByte )
        
        // foundVertex = false;
 //      }
-=======
 
 void transmit( byte payload ) 
 {
@@ -888,7 +906,6 @@ void transmit( byte payload )
     if ( timeout )
     {
       printf("Failed, response timed out.\n\r");
->>>>>>> 4cae97ae188c65825bf7bcd9e06a3762df3c678a
     }
     else
     {
