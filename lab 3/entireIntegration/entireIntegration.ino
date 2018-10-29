@@ -29,7 +29,7 @@
     
     */
     
-    typedef struct {
+    /*typedef struct {
       bool northWall;
       bool southWall;
       bool eastWall;
@@ -46,7 +46,7 @@
       { { true, false, false, true }, { true, true, false, false }, { true, true, true, false } },
       { { false, true, false, true }, { true, true, false, false }, { true, false, true, false } },
       { { true, true, false, true }, { true, true, false, false }, {false, true, true, false} }  
-    };
+    };*/
 
     typedef enum { north_up=0, north_left, north_back, north_right } Orientation; //
 
@@ -201,6 +201,8 @@ int S0 = 7;
     bool robotPresent;
 
     Orientation orientation = north_up;
+    int xVal = 0;
+    int yVal = 0;
 
 // END RADIO CONSTANTS
 
@@ -211,7 +213,7 @@ void setup( void )
   // put your setup code here, to run once:
   Serial.begin( 9600 );
   ledSetup();
-  //radioSetup();
+  radioSetup();
   //servoSetup();
   //to be used for mux digital inputs
   pinMode(2, OUTPUT); //enable
@@ -236,38 +238,39 @@ void loop() {
     }
     else { //found vertex
       readDistanceSensors();
+      coordinateCalculation( orientation );
       switch( caseVariable ){
         case B110: //left and front wall
           goRight();
           foundVertex = false;
           //Serial.println( "Left Wall" );
           orientRobot( orientation, caseVariable );
-          transmitSqData( 0, 0 );
+          transmitSqData( yVal, xVal );
           break;
         case B011: //right and front wall
           goLeft();
         //Serial.println( "Right Wall" );
           foundVertex = false;
           orientRobot( orientation, caseVariable );
-          transmitSqData( 0, 0 );
+          transmitSqData( yVal, xVal );
           break;
         case B010: //front wall only, default to turn left
           goLeft();
           foundVertex = false;
           orientRobot( orientation, caseVariable );
-          transmitSqData( 0, 0 );
+          transmitSqData( yVal, xVal );
           break;
-        case B111: //front, left, and right walls
-          turnAround();
-          foundVertex = false;
-          orientRobot( orientation, caseVariable );
-          transmitSqData( 0, 0 );
-          break;
+//        case B111: //front, left, and right walls
+//          turnAround();
+//          foundVertex = false;
+//          orientRobot( orientation, caseVariable );
+//          transmitSqData( yVal, xVal );
+//          break;
         default:  
           Straight(); 
           foundVertex = false;
           orientRobot( orientation, caseVariable );
-          transmitSqData( 0, 0 );
+          transmitSqData( yVal, xVal );
           break;
       }
       Straight();
@@ -372,8 +375,7 @@ void readDistanceSensors() {
   } 
   if(RightDistance>120){   
     caseVariable = caseVariable | c;  //set rightmost bit to 1
-  }
-loo  
+  }  
   
   String l = "left dist ";
   String r = "  right dist ";
@@ -724,6 +726,8 @@ void radioSetup( void )
   //radio.printDetails();
   Serial.println( "reset" );
   transmit( 0xFF );
+  transmit( 0xFF );
+  transmit( 0xFF );
 }
 
 
@@ -732,7 +736,7 @@ void radioSetup( void )
  */
 void transmitSqData( int xVal, int yVal )
 {
-    assignGlobalMaze( xVal, yVal ); //FOR SIMULATION ONLY !!!!!!!!!!
+//    assignGlobalMaze( xVal, yVal ); //FOR SIMULATION ONLY !!!!!!!!!!
     byte coordinates = xVal << 4 | yVal ;
     byte first = 0x1b;
     byte second = 0x2b;
@@ -927,6 +931,27 @@ void orientRobot( Orientation orientation, int wallState )
 }
 
 
+void coordinateCalculation( Orientation orientation ){
+  switch ( orientation ){
+    case north_up:
+      yVal++;
+      break;
+    case north_left:
+      xVal++;
+      break;
+    case north_back:
+      yVal--;
+      break;
+    case north_right:
+      xVal--;
+      break;
+    default:
+      break;
+  }
+}
+
+
+/*
 // FOR SIMULATION ONLY !!!!!!!!!!
 void assignGlobalMaze ( int xVal, int yVal )
 {
@@ -942,7 +967,7 @@ void assignGlobalMaze ( int xVal, int yVal )
   robotPresent = maze[ yVal ][ xVal ].robotPresent;
 }
 
-
+*/
 
 /** USAGE FOR THE BELOW THREE PROGRAMS
  *  checkWalls checks for walls
