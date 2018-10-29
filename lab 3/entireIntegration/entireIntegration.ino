@@ -213,7 +213,7 @@ void setup( void )
   // put your setup code here, to run once:
   Serial.begin( 9600 );
   ledSetup();
-  radioSetup();
+  //radioSetup();
   //servoSetup();
   //to be used for mux digital inputs
   pinMode(2, OUTPUT); //enable
@@ -233,6 +233,9 @@ void loop() {
     }
   }
   else {
+    if(detectIR()){
+      goStop();
+    }
     if ( !foundVertex ) { //no vertex, go straight
       Straight();
     }
@@ -244,21 +247,21 @@ void loop() {
           goRight();
           foundVertex = false;
           //Serial.println( "Left Wall" );
-          orientRobot( orientation, caseVariable );
-          transmitSqData( yVal, xVal );
+ //         orientRobot( orientation, caseVariable );
+ //         transmitSqData( yVal, xVal );
           break;
         case B011: //right and front wall
           goLeft();
         //Serial.println( "Right Wall" );
           foundVertex = false;
-          orientRobot( orientation, caseVariable );
-          transmitSqData( yVal, xVal );
+ //         orientRobot( orientation, caseVariable );
+ //         transmitSqData( yVal, xVal );
           break;
         case B010: //front wall only, default to turn left
           goLeft();
           foundVertex = false;
-          orientRobot( orientation, caseVariable );
-          transmitSqData( yVal, xVal );
+//          orientRobot( orientation, caseVariable );
+//          transmitSqData( yVal, xVal );
           break;
 //        case B111: //front, left, and right walls
 //          turnAround();
@@ -269,8 +272,8 @@ void loop() {
         default:  
           Straight(); 
           foundVertex = false;
-          orientRobot( orientation, caseVariable );
-          transmitSqData( yVal, xVal );
+  //        orientRobot( orientation, caseVariable );
+  //        transmitSqData( yVal, xVal );
           break;
       }
       Straight();
@@ -370,7 +373,7 @@ void readDistanceSensors() {
   if(LeftDistance>120){  
     caseVariable = caseVariable | a; //set leftmost bit to 1
   }  
-  if(MiddleDistance>120){    
+  if(MiddleDistance>150){    
     caseVariable = caseVariable | b; //set middle bit to 1
   } 
   if(RightDistance>120){   
@@ -468,7 +471,7 @@ void chooseChannel3( void )
       {
         servoLeft.write( 90 );
         servoRight.write( 90 );
-        delay(500);
+        delay(5000);
         Serial.println( "going stopped" );
       }
       
@@ -748,17 +751,17 @@ void transmitSqData( int xVal, int yVal )
     byte secondByte = EXPLORED;
 
     transmit( first );
-    delay( 250 );
+    //delay( 250 );
     transmit( firstByte );
-    delay( 250 );
+    //delay( 250 );
     transmit( second );
-    delay( 250 );
+    //delay( 250 );
     transmit( secondByte);
-    delay( 250 );
+    //delay( 250 );
     transmit( coords );
-    delay( 250 );
+    //delay( 250 );
     transmit( coordinates );
-    delay( 2000 );
+    //delay( 2000 );
 }
 
 

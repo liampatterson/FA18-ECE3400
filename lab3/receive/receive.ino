@@ -92,142 +92,6 @@ bool treasureRed;
 bool treasureBlue;
 bool robotPresent;
 
-void orientRobot( Orientation orientation, int wallState )
-{
-  switch( wallState ) {
-   case B110: //left and front wall
-        switch ( orientation ) {
-          case north_up:
-            northWall = true;
-            westWall = true;
-            southWall = false
-            eastWall = false;
-            break;
-
-          case north_left:
-            northWall = true;
-            westWall = false;
-            southWall = false
-            eastWall = true;
-            break;
-
-          case north_back:
-            northWall = false;
-            westWall = false;
-            southWall = true
-            eastWall = true;
-            break;
-
-          case north_right:
-           northWall = false;
-            westWall = true;
-            southWall = true
-            eastWall = false;
-            break;
-        }
-        break;
-      case B011: //right and front wall
-        switch ( orientation ) {
-          case north_up:
-            northWall = true;
-            westWall = false;
-            southWall = false
-            eastWall = true;
-            break;
-
-          case north_left:
-            northWall = false;
-            westWall = false;
-            southWall = true
-            eastWall = true;
-            break;
-
-          case north_back:
-            northWall = false;
-            westWall = true;
-            southWall = true
-            eastWall = false;
-            break;
-
-          case north_right:
-            northWall = true;
-            westWall = true;
-            southWall = false
-            eastWall = false;
-            break;
-        }
-        break;
-      case B010: //front wall only, default to turn left
-        switch ( orientation ) {
-          case north_up:
-            northWall = true;
-            westWall = false;
-            southWall = false
-            eastWall = false;
-            break;
-
-          case north_left:
-            northWall = false;
-            westWall = false;
-            southWall = false;
-            eastWall = true;
-            break;
-
-          case north_back:
-            northWall = false;
-            westWall = false;
-            southWall = true
-            eastWall = false;
-            break;
-
-          case north_right:
-            northWall = false;
-            westWall = true;
-            southWall = false
-            eastWall = false;
-            break;
-        }
-        break;
-      case B111: //front, left, and right walls
-        switch ( orientation ) {
-          case north_up:
-            northWall = true;
-            westWall = true;
-            southWall = false
-            eastWall = true;
-            break;
-
-          case north_left:
-            northWall = true;
-            westWall = false;
-            southWall = true;
-            eastWall = true;
-            break;
-
-          case north_back:
-            northWall = false;
-            westWall = true;
-            southWall = true
-            eastWall = true;
-            break;
-
-          case north_right:
-            northWall = true;
-            westWall = true;
-            southWall = true
-            eastWall = false;
-            break;
-        }
-        break;
-      default:  
-        northWall = false;
-        westWall = false
-        southWall = false;
-        eastWall = false;
-        break;
-    }
-}
-
 String parsedCoordinates;
 String parsedFirstByte;
 String parsedSecondByte;
@@ -266,13 +130,13 @@ typedef struct {
   bool robotPresent;
 } mazeSquare;
 
-mazeSquare maze[3][3] {
+mazeSquare maze[2][3] {
   //{ { true, false, false, true, false, true, false, true }, { true, true, false, false }, { true, true, true, false, false, false, true, false, true } },
-  { { true, false, false, true }, { true, true, false, false }, { true, true, true, false } },
+  { { false, true, false, false }, { true, false, true, false }, { true, true, false, false } },
   //{ { false, true, false, true }, { true, true, false, false, false, false, false, false, false, true }, { true, false, true, false } },
-  { { false, true, false, true }, { true, true, false, false }, { true, false, true, false } },
+  { {}, {}, { false, false, true, false } },
   //{ { true, true, false, true }, { true, true, false, false, true, false, false, true }, {false, true, true, false} }  
-  { { true, true, false, true }, { true, true, false, false }, {false, true, true, false} }  
+  //{ { true, true, false, true }, { true, true, false, false }, {false, true, true, false} }  
 };
 
 
@@ -345,7 +209,7 @@ void setup(void)
 
 void loop(void)
 {
-  while ( role == role_pong_back ) {
+  /*while ( role == role_pong_back ) {
     receive();
     roleChange();
   } 
@@ -379,7 +243,17 @@ void loop(void)
   }
   byte ended = 0xFF;
   transmit( ended );
-  delay( 250 );
+  delay( 250 );*/
+  Serial.println( "reset" );
+  delay( 5000 );
+  Serial.println( "1,2,north=false,east=true,west=true" );
+  delay( 5000 );
+  Serial.println( "0,2,north=true,east=true" );
+  delay( 5000 );
+  Serial.println( "0,1,north=true,south=true" );
+  delay( 5000 );
+  Serial.println( "0,0,north=false,south=true" );
+  delay( 10000 );
 }
 
 
