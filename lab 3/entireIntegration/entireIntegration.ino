@@ -222,25 +222,8 @@ void setup( void )
 
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  /*for ( int yVal = 0; yVal < 3; yVal++ ) {
-    for ( int xVal = 0; xVal < 3; xVal++ ) {
-      transmitSqData( xVal, yVal );
-    }
-  }*/
- 
   readLightSensors();
-  //readDistanceSensors();
- 
-  // put your main code here, to run repeatedly:
-
-//  String left = "left: ";
-//  String middle = "     middle:";
-//  String right = "        right: ";
-//  Serial.println( left + LeftDistance + middle + MiddleDistance + right + RightDistance );
-  //Serial.println( middle + MiddleDistance );
   if (!hasStarted) {
-    //doNotStart();
     Serial.println("here not started");
     if (startSound()) {
       hasStarted = true;
@@ -248,15 +231,10 @@ void loop() {
     }
   }
   else {
-    //readDistanceSensors();
-//    if(detectIR()){
-//      goStop();
-//    }
-    if ( !foundVertex ) {
+    if ( !foundVertex ) { //no vertex, go straight
       Straight();
     }
     else { //found vertex
-      //goStop();
       readDistanceSensors();
       switch( caseVariable ){
         case B110: //left and front wall
@@ -292,36 +270,9 @@ void loop() {
           transmitSqData( 0, 0 );
           break;
       }
-
-//      readDistanceSensors();
-
-//      if ( MiddleDistance > 175) {
-//        if (LeftDistance > 200) {
-//          goRight();
-//          foundVertex = false;
-//          //Serial.println( "Left Wall" );
-//        }
-//        else if (RightDistance > 175) {
-//          goLeft();
-//          //Serial.println( "Right Wall" );
-//          foundVertex = false;
-//        }
-//        //Serial.println( "got right" );
-//        //goStop();
-//        //      delay( 100 );
-//        else {
-//          goLeft();
-//          //Serial.println( "Middle Wall" );
-//          foundVertex = false;
-//        }
-//      }
-//      else{
-        Straight();
-       // foundVertex = false;
-//      }
+      Straight();
     }
   }
-
 }
 
 /*** END MAIN CODE ***/
@@ -413,21 +364,16 @@ void readDistanceSensors() {
   int a = B100;
   int b = B010;
   int c = B001;
-  if(LeftDistance>120){
-    
+  if(LeftDistance>120){  
     caseVariable = caseVariable | a; //set leftmost bit to 1
-  }
-  
-  if(MiddleDistance>120){
-    
+  }  
+  if(MiddleDistance>120){    
     caseVariable = caseVariable | b; //set middle bit to 1
-  }
-  
-  if(RightDistance>120){
-   
+  } 
+  if(RightDistance>120){   
     caseVariable = caseVariable | c;  //set rightmost bit to 1
   }
-  
+loo  
   
   String l = "left dist ";
   String r = "  right dist ";
