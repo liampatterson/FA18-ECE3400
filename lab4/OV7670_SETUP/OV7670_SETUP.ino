@@ -16,7 +16,7 @@ void setup() {
   Serial.begin(9600);
   
   // TODO: READ KEY REGISTERS
-  read_key_registers();
+  read_key_registers();  //set the global registers
   
   delay(100);
   
