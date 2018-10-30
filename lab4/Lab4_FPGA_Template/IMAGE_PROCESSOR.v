@@ -25,14 +25,14 @@ input			VGA_VSYNC_NEG;
 
 output [8:0] RESULT;
 
-always @ (posedge VGA_VSYNC_NEG) begin
-	// average pixel data
-	if (PIXEL_IN[7:5]==3'b111) begin //red
-		RESULT = 1'b1;
-	end
-	else if (PIXEL_IN[1:0]==2'b11) begin //blue
-		RESULT = 1'b0;
-	end
-end
+//always @ (posedge VGA_VSYNC_NEG) begin
+//	// average pixel data
+//	if (PIXEL_IN[7:5]==3'b111) begin //red
+//		RESULT = 1'b1;
+//	end
+//	else if (PIXEL_IN[1:0]==2'b11) begin //blue
+//		RESULT = 1'b0;
+//	end
+//end
 
 endmodule
