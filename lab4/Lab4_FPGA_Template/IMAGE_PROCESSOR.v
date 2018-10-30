@@ -4,35 +4,39 @@
 `define BAR_HEIGHT 48
 
 module IMAGE_PROCESSOR (
-	PIXEL_IN,
-	CLK,
-	VGA_PIXEL_X,
-	VGA_PIXEL_Y,
+	REDCOUNT,
+	BLUECOUNT,
 	VGA_VSYNC_NEG,
-	RESULT
+	COLOR,
+	RESET
 );
 
 
 //=======================================================
 //  PORT declarations
 //=======================================================
-input	[7:0]	PIXEL_IN;
-input 		CLK;
 
-input [9:0] VGA_PIXEL_X;
-input [9:0] VGA_PIXEL_Y;
+
+input [9:0] BLUECOUNT;
+input [9:0] REDCOUNT;
 input			VGA_VSYNC_NEG;
 
-output [8:0] RESULT;
+output reg [1:0] COLOR;
+output reg [1:0] RESET;
 
-//always @ (posedge VGA_VSYNC_NEG) begin
-//	// average pixel data
-//	if (PIXEL_IN[7:5]==3'b111) begin //red
-//		RESULT = 1'b1;
-//	end
-//	else if (PIXEL_IN[1:0]==2'b11) begin //blue
-//		RESULT = 1'b0;
-//	end
-//end
+always @ (VGA_VSYNC_NEG) begin
+		if (VGA_VSYNC_NEG) begin
+			if (BLUECOUNT > REDCOUNT) begin
+				COLOR <= 1'b1; //when color is 1, blue
+			end
+			else begin
+				COLOR <= 1'b0; //when color is 0, red
+			end
+		end
+		else begin
+			RESET <= 1'b1;
+		end
+end
+
 
 endmodule
