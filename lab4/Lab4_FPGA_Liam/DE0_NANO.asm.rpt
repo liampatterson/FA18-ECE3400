@@ -1,6 +1,6 @@
 Assembler report for DE0_NANO
-Fri Oct 26 15:45:37 2018
-Quartus II 64-Bit Version 15.0.0 Build 145 04/22/2015 SJ Web Edition
+Tue Oct 30 22:11:38 2018
+Quartus Prime Version 16.1.0 Build 196 10/24/2016 SJ Lite Edition
 
 
 ---------------------
@@ -10,7 +10,7 @@ Quartus II 64-Bit Version 15.0.0 Build 145 04/22/2015 SJ Web Edition
   2. Assembler Summary
   3. Assembler Settings
   4. Assembler Generated Files
-  5. Assembler Device Options: DE0_NANO.sof
+  5. Assembler Device Options: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Liam/DE0_NANO.sof
   6. Assembler Messages
 
 
@@ -18,18 +18,18 @@ Quartus II 64-Bit Version 15.0.0 Build 145 04/22/2015 SJ Web Edition
 ----------------
 ; Legal Notice ;
 ----------------
-Copyright (C) 1991-2015 Altera Corporation. All rights reserved.
-Your use of Altera Corporation's design tools, logic functions 
+Copyright (C) 2016  Intel Corporation. All rights reserved.
+Your use of Intel Corporation's design tools, logic functions 
 and other software and tools, and its AMPP partner logic 
 functions, and any output files from any of the foregoing 
 (including device programming or simulation files), and any 
 associated documentation or information are expressly subject 
-to the terms and conditions of the Altera Program License 
-Subscription Agreement, the Altera Quartus II License Agreement,
-the Altera MegaCore Function License Agreement, or other 
+to the terms and conditions of the Intel Program License 
+Subscription Agreement, the Intel Quartus Prime License Agreement,
+the Intel MegaCore Function License Agreement, or other 
 applicable license agreement, including, without limitation, 
 that your use is for the sole purpose of programming logic 
-devices manufactured by Altera and sold by Altera or its 
+devices manufactured by Intel and sold by Intel or its 
 authorized distributors.  Please refer to the applicable 
 agreement for further details.
 
@@ -38,7 +38,7 @@ agreement for further details.
 +---------------------------------------------------------------+
 ; Assembler Summary                                             ;
 +-----------------------+---------------------------------------+
-; Assembler Status      ; Successful - Fri Oct 26 15:45:37 2018 ;
+; Assembler Status      ; Successful - Tue Oct 30 22:11:38 2018 ;
 ; Revision Name         ; DE0_NANO                              ;
 ; Top-level Entity Name ; DE0_NANO                              ;
 ; Family                ; Cyclone IV E                          ;
@@ -53,44 +53,45 @@ agreement for further details.
 +--------+---------+---------------+
 
 
-+---------------------------+
-; Assembler Generated Files ;
-+---------------------------+
-; File Name                 ;
-+---------------------------+
-; DE0_NANO.sof              ;
-+---------------------------+
++-------------------------------------------------------------------------------------+
+; Assembler Generated Files                                                           ;
++-------------------------------------------------------------------------------------+
+; File Name                                                                           ;
++-------------------------------------------------------------------------------------+
+; //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Liam/DE0_NANO.sof ;
++-------------------------------------------------------------------------------------+
 
 
-+----------------------------------------+
-; Assembler Device Options: DE0_NANO.sof ;
-+----------------+-----------------------+
-; Option         ; Setting               ;
-+----------------+-----------------------+
-; Device         ; EP4CE22F17C6          ;
-; JTAG usercode  ; 0x0013B028            ;
-; Checksum       ; 0x0013B028            ;
-+----------------+-----------------------+
++---------------------------------------------------------------------------------------------------------------+
+; Assembler Device Options: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Liam/DE0_NANO.sof ;
++----------------+----------------------------------------------------------------------------------------------+
+; Option         ; Setting                                                                                      ;
++----------------+----------------------------------------------------------------------------------------------+
+; Device         ; EP4CE22F17C6                                                                                 ;
+; JTAG usercode  ; 0x0013B063                                                                                   ;
+; Checksum       ; 0x0013B063                                                                                   ;
++----------------+----------------------------------------------------------------------------------------------+
 
 
 +--------------------+
 ; Assembler Messages ;
 +--------------------+
 Info: *******************************************************************
-Info: Running Quartus II 64-Bit Assembler
-    Info: Version 15.0.0 Build 145 04/22/2015 SJ Web Edition
-    Info: Processing started: Fri Oct 26 15:45:32 2018
+Info: Running Quartus Prime Assembler
+    Info: Version 16.1.0 Build 196 10/24/2016 SJ Lite Edition
+    Info: Processing started: Tue Oct 30 22:11:36 2018
 Info: Command: quartus_asm --read_settings_files=off --write_settings_files=off DE0_NANO -c DE0_NANO
 Warning (125092): Tcl Script File DE_NANO_SOPC.qip not found
     Info (125063): set_global_assignment -name QIP_FILE DE_NANO_SOPC.qip
 Warning (125092): Tcl Script File pll.qip not found
     Info (125063): set_global_assignment -name QIP_FILE pll.qip
+Warning (18236): Number of processors has not been specified which may cause overloading on shared machines.  Set the global assignment NUM_PARALLEL_PROCESSORS in your QSF to an appropriate value for best performance.
 Info (115031): Writing out detailed assembly data for power analysis
 Info (115030): Assembler is generating device programming files
-Info: Quartus II 64-Bit Assembler was successful. 0 errors, 2 warnings
-    Info: Peak virtual memory: 844 megabytes
-    Info: Processing ended: Fri Oct 26 15:45:37 2018
-    Info: Elapsed time: 00:00:05
-    Info: Total CPU time (on all processors): 00:00:03
+Info: Quartus Prime Assembler was successful. 0 errors, 3 warnings
+    Info: Peak virtual memory: 561 megabytes
+    Info: Processing ended: Tue Oct 30 22:11:38 2018
+    Info: Elapsed time: 00:00:02
+    Info: Total CPU time (on all processors): 00:00:02
 
 
