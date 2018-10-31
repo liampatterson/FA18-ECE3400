@@ -1,6 +1,6 @@
 Analysis & Synthesis report for DE0_NANO
-Tue Oct 30 18:10:25 2018
-Quartus II 64-Bit Version 15.0.0 Build 145 04/22/2015 SJ Web Edition
+Wed Oct 31 16:48:49 2018
+Quartus Prime Version 16.1.0 Build 196 10/24/2016 SJ Lite Edition
 
 
 ---------------------
@@ -9,62 +9,63 @@ Quartus II 64-Bit Version 15.0.0 Build 145 04/22/2015 SJ Web Edition
   1. Legal Notice
   2. Analysis & Synthesis Summary
   3. Analysis & Synthesis Settings
-  4. Analysis & Synthesis Source Files Read
-  5. Analysis & Synthesis Resource Usage Summary
-  6. Analysis & Synthesis Resource Utilization by Entity
-  7. Analysis & Synthesis IP Cores Summary
-  8. Registers Removed During Synthesis
-  9. Removed Registers Triggering Further Register Optimizations
- 10. General Register Statistics
- 11. Multiplexer Restructuring Statistics (Restructuring Performed)
- 12. Parameter Settings for User Entity Instance: sweetPLL:sweetPLL_inst|altpll:altpll_component
- 13. altpll Parameter Settings by Entity Instance
- 14. Port Connectivity Checks: "IMAGE_PROCESSOR:proc"
- 15. Port Connectivity Checks: "Dual_Port_RAM_M9K:mem"
- 16. Post-Synthesis Netlist Statistics for Top Partition
- 17. Elapsed Time Per Partition
- 18. Analysis & Synthesis Messages
+  4. Parallel Compilation
+  5. Analysis & Synthesis Source Files Read
+  6. Analysis & Synthesis Resource Usage Summary
+  7. Analysis & Synthesis Resource Utilization by Entity
+  8. Analysis & Synthesis IP Cores Summary
+  9. Registers Removed During Synthesis
+ 10. Removed Registers Triggering Further Register Optimizations
+ 11. General Register Statistics
+ 12. Multiplexer Restructuring Statistics (Restructuring Performed)
+ 13. Parameter Settings for User Entity Instance: sweetPLL:sweetPLL_inst|altpll:altpll_component
+ 14. altpll Parameter Settings by Entity Instance
+ 15. Port Connectivity Checks: "IMAGE_PROCESSOR:proc"
+ 16. Port Connectivity Checks: "Dual_Port_RAM_M9K:mem"
+ 17. Post-Synthesis Netlist Statistics for Top Partition
+ 18. Elapsed Time Per Partition
+ 19. Analysis & Synthesis Messages
 
 
 
 ----------------
 ; Legal Notice ;
 ----------------
-Copyright (C) 1991-2015 Altera Corporation. All rights reserved.
-Your use of Altera Corporation's design tools, logic functions 
+Copyright (C) 2016  Intel Corporation. All rights reserved.
+Your use of Intel Corporation's design tools, logic functions 
 and other software and tools, and its AMPP partner logic 
 functions, and any output files from any of the foregoing 
 (including device programming or simulation files), and any 
 associated documentation or information are expressly subject 
-to the terms and conditions of the Altera Program License 
-Subscription Agreement, the Altera Quartus II License Agreement,
-the Altera MegaCore Function License Agreement, or other 
+to the terms and conditions of the Intel Program License 
+Subscription Agreement, the Intel Quartus Prime License Agreement,
+the Intel MegaCore Function License Agreement, or other 
 applicable license agreement, including, without limitation, 
 that your use is for the sole purpose of programming logic 
-devices manufactured by Altera and sold by Altera or its 
+devices manufactured by Intel and sold by Intel or its 
 authorized distributors.  Please refer to the applicable 
 agreement for further details.
 
 
 
-+---------------------------------------------------------------------------------+
-; Analysis & Synthesis Summary                                                    ;
-+------------------------------------+--------------------------------------------+
-; Analysis & Synthesis Status        ; Successful - Tue Oct 30 18:10:25 2018      ;
-; Quartus II 64-Bit Version          ; 15.0.0 Build 145 04/22/2015 SJ Web Edition ;
-; Revision Name                      ; DE0_NANO                                   ;
-; Top-level Entity Name              ; DE0_NANO                                   ;
-; Family                             ; Cyclone IV E                               ;
-; Total logic elements               ; 38                                         ;
-;     Total combinational functions  ; 38                                         ;
-;     Dedicated logic registers      ; 20                                         ;
-; Total registers                    ; 20                                         ;
-; Total pins                         ; 51                                         ;
-; Total virtual pins                 ; 0                                          ;
-; Total memory bits                  ; 0                                          ;
-; Embedded Multiplier 9-bit elements ; 0                                          ;
-; Total PLLs                         ; 1                                          ;
-+------------------------------------+--------------------------------------------+
++----------------------------------------------------------------------------------+
+; Analysis & Synthesis Summary                                                     ;
++------------------------------------+---------------------------------------------+
+; Analysis & Synthesis Status        ; Successful - Wed Oct 31 16:48:48 2018       ;
+; Quartus Prime Version              ; 16.1.0 Build 196 10/24/2016 SJ Lite Edition ;
+; Revision Name                      ; DE0_NANO                                    ;
+; Top-level Entity Name              ; DE0_NANO                                    ;
+; Family                             ; Cyclone IV E                                ;
+; Total logic elements               ; 38                                          ;
+;     Total combinational functions  ; 38                                          ;
+;     Dedicated logic registers      ; 20                                          ;
+; Total registers                    ; 20                                          ;
+; Total pins                         ; 51                                          ;
+; Total virtual pins                 ; 0                                           ;
+; Total memory bits                  ; 0                                           ;
+; Embedded Multiplier 9-bit elements ; 0                                           ;
+; Total PLLs                         ; 1                                           ;
++------------------------------------+---------------------------------------------+
 
 
 +----------------------------------------------------------------------------------------------------------------------+
@@ -81,7 +82,7 @@ agreement for further details.
 ; Restructure Multiplexers                                                   ; Auto               ; Auto               ;
 ; Create Debugging Nodes for IP Cores                                        ; Off                ; Off                ;
 ; Preserve fewer node names                                                  ; On                 ; On                 ;
-; Disable OpenCore Plus hardware evaluation                                  ; Off                ; Off                ;
+; OpenCore Plus hardware evaluation                                          ; Enable             ; Enable             ;
 ; Verilog Version                                                            ; Verilog_2001       ; Verilog_2001       ;
 ; VHDL Version                                                               ; VHDL_1993          ; VHDL_1993          ;
 ; State Machine Processing                                                   ; Auto               ; Auto               ;
@@ -150,28 +151,44 @@ agreement for further details.
 ; Analysis & Synthesis Message Level                                         ; Medium             ; Medium             ;
 ; Disable Register Merging Across Hierarchies                                ; Auto               ; Auto               ;
 ; Resource Aware Inference For Block RAM                                     ; On                 ; On                 ;
-; Synthesis Seed                                                             ; 1                  ; 1                  ;
 +----------------------------------------------------------------------------+--------------------+--------------------+
 
 
-+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-; Analysis & Synthesis Source Files Read                                                                                                                                    ;
-+----------------------------------+-----------------+------------------------------+-----------------------------------------------------------------------------+---------+
-; File Name with User-Entered Path ; Used in Netlist ; File Type                    ; File Name with Absolute Path                                                ; Library ;
-+----------------------------------+-----------------+------------------------------+-----------------------------------------------------------------------------+---------+
-; VGA_DRIVER.v                     ; yes             ; User Verilog HDL File        ; /home/ece2300/Downloads/Lab4_FPGA_Template/VGA_DRIVER.v                     ;         ;
-; DE0_NANO.v                       ; yes             ; User Verilog HDL File        ; /home/ece2300/Downloads/Lab4_FPGA_Template/DE0_NANO.v                       ;         ;
-; Dual_Port_RAM_M9K.v              ; yes             ; User Verilog HDL File        ; /home/ece2300/Downloads/Lab4_FPGA_Template/Dual_Port_RAM_M9K.v              ;         ;
-; IMAGE_PROCESSOR.v                ; yes             ; User Verilog HDL File        ; /home/ece2300/Downloads/Lab4_FPGA_Template/IMAGE_PROCESSOR.v                ;         ;
-; sweetPLL.v                       ; yes             ; User Wizard-Generated File   ; /home/ece2300/Downloads/Lab4_FPGA_Template/sweetPLL.v                       ;         ;
-; IMAGE_PROCESSOR_COUNT.v          ; yes             ; User Verilog HDL File        ; /home/ece2300/Downloads/Lab4_FPGA_Template/IMAGE_PROCESSOR_COUNT.v          ;         ;
-; altpll.tdf                       ; yes             ; Megafunction                 ; /home/ece2300/altera/15.0/quartus/libraries/megafunctions/altpll.tdf        ;         ;
-; aglobal150.inc                   ; yes             ; Megafunction                 ; /home/ece2300/altera/15.0/quartus/libraries/megafunctions/aglobal150.inc    ;         ;
-; stratix_pll.inc                  ; yes             ; Megafunction                 ; /home/ece2300/altera/15.0/quartus/libraries/megafunctions/stratix_pll.inc   ;         ;
-; stratixii_pll.inc                ; yes             ; Megafunction                 ; /home/ece2300/altera/15.0/quartus/libraries/megafunctions/stratixii_pll.inc ;         ;
-; cycloneii_pll.inc                ; yes             ; Megafunction                 ; /home/ece2300/altera/15.0/quartus/libraries/megafunctions/cycloneii_pll.inc ;         ;
-; db/sweetPLL_altpll.v             ; yes             ; Auto-Generated Megafunction  ; /home/ece2300/Downloads/Lab4_FPGA_Template/db/sweetPLL_altpll.v             ;         ;
-+----------------------------------+-----------------+------------------------------+-----------------------------------------------------------------------------+---------+
++------------------------------------------+
+; Parallel Compilation                     ;
++----------------------------+-------------+
+; Processors                 ; Number      ;
++----------------------------+-------------+
+; Number detected on machine ; 2           ;
+; Maximum allowed            ; 2           ;
+;                            ;             ;
+; Average used               ; 1.00        ;
+; Maximum used               ; 2           ;
+;                            ;             ;
+; Usage by Processor         ; % Time Used ;
+;     Processor 1            ; 100.0%      ;
+;     Processor 2            ;   0.0%      ;
++----------------------------+-------------+
+
+
++--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Analysis & Synthesis Source Files Read                                                                                                                                                           ;
++----------------------------------+-----------------+------------------------------+----------------------------------------------------------------------------------------------------+---------+
+; File Name with User-Entered Path ; Used in Netlist ; File Type                    ; File Name with Absolute Path                                                                       ; Library ;
++----------------------------------+-----------------+------------------------------+----------------------------------------------------------------------------------------------------+---------+
+; VGA_DRIVER.v                     ; yes             ; User Verilog HDL File        ; //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/VGA_DRIVER.v            ;         ;
+; DE0_NANO.v                       ; yes             ; User Verilog HDL File        ; //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v              ;         ;
+; Dual_Port_RAM_M9K.v              ; yes             ; User Verilog HDL File        ; //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/Dual_Port_RAM_M9K.v     ;         ;
+; IMAGE_PROCESSOR.v                ; yes             ; User Verilog HDL File        ; //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/IMAGE_PROCESSOR.v       ;         ;
+; sweetPLL.v                       ; yes             ; User Wizard-Generated File   ; //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/sweetPLL.v              ;         ;
+; IMAGE_PROCESSOR_COUNT.v          ; yes             ; User Verilog HDL File        ; //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/IMAGE_PROCESSOR_COUNT.v ;         ;
+; altpll.tdf                       ; yes             ; Megafunction                 ; c:/intelfpga_lite/16.1/quartus/libraries/megafunctions/altpll.tdf                                  ;         ;
+; aglobal161.inc                   ; yes             ; Megafunction                 ; c:/intelfpga_lite/16.1/quartus/libraries/megafunctions/aglobal161.inc                              ;         ;
+; stratix_pll.inc                  ; yes             ; Megafunction                 ; c:/intelfpga_lite/16.1/quartus/libraries/megafunctions/stratix_pll.inc                             ;         ;
+; stratixii_pll.inc                ; yes             ; Megafunction                 ; c:/intelfpga_lite/16.1/quartus/libraries/megafunctions/stratixii_pll.inc                           ;         ;
+; cycloneii_pll.inc                ; yes             ; Megafunction                 ; c:/intelfpga_lite/16.1/quartus/libraries/megafunctions/cycloneii_pll.inc                           ;         ;
+; db/sweetpll_altpll.v             ; yes             ; Auto-Generated Megafunction  ; //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/db/sweetpll_altpll.v    ;         ;
++----------------------------------+-----------------+------------------------------+----------------------------------------------------------------------------------------------------+---------+
 
 
 +----------------------------------------------------------------------------------------------------------------------------------------------+
@@ -204,22 +221,22 @@ agreement for further details.
 ;                                             ;                                                                                                ;
 ; Maximum fan-out node                        ; sweetPLL:sweetPLL_inst|altpll:altpll_component|sweetPLL_altpll:auto_generated|wire_pll1_clk[0] ;
 ; Maximum fan-out                             ; 22                                                                                             ;
-; Total fan-out                               ; 232                                                                                            ;
-; Average fan-out                             ; 1.44                                                                                           ;
+; Total fan-out                               ; 233                                                                                            ;
+; Average fan-out                             ; 1.45                                                                                           ;
 +---------------------------------------------+------------------------------------------------------------------------------------------------+
 
 
-+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-; Analysis & Synthesis Resource Utilization by Entity                                                                                                                                                                                                            ;
-+-------------------------------------------+-------------------+--------------+-------------+--------------+---------+-----------+------+--------------+-----------------------------------------------------------------------------------------+--------------+
-; Compilation Hierarchy Node                ; LC Combinationals ; LC Registers ; Memory Bits ; DSP Elements ; DSP 9x9 ; DSP 18x18 ; Pins ; Virtual Pins ; Full Hierarchy Name                                                                     ; Library Name ;
-+-------------------------------------------+-------------------+--------------+-------------+--------------+---------+-----------+------+--------------+-----------------------------------------------------------------------------------------+--------------+
-; |DE0_NANO                                 ; 38 (0)            ; 20 (0)       ; 0           ; 0            ; 0       ; 0         ; 51   ; 0            ; |DE0_NANO                                                                               ; work         ;
-;    |VGA_DRIVER:driver|                    ; 38 (38)           ; 20 (20)      ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |DE0_NANO|VGA_DRIVER:driver                                                             ; work         ;
-;    |sweetPLL:sweetPLL_inst|               ; 0 (0)             ; 0 (0)        ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |DE0_NANO|sweetPLL:sweetPLL_inst                                                        ; work         ;
-;       |altpll:altpll_component|           ; 0 (0)             ; 0 (0)        ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |DE0_NANO|sweetPLL:sweetPLL_inst|altpll:altpll_component                                ; work         ;
-;          |sweetPLL_altpll:auto_generated| ; 0 (0)             ; 0 (0)        ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |DE0_NANO|sweetPLL:sweetPLL_inst|altpll:altpll_component|sweetPLL_altpll:auto_generated ; work         ;
-+-------------------------------------------+-------------------+--------------+-------------+--------------+---------+-----------+------+--------------+-----------------------------------------------------------------------------------------+--------------+
++-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Analysis & Synthesis Resource Utilization by Entity                                                                                                                                                                                                                                             ;
++-------------------------------------------+---------------------+---------------------------+-------------+--------------+---------+-----------+------+--------------+-----------------------------------------------------------------------------------------+-----------------+--------------+
+; Compilation Hierarchy Node                ; Combinational ALUTs ; Dedicated Logic Registers ; Memory Bits ; DSP Elements ; DSP 9x9 ; DSP 18x18 ; Pins ; Virtual Pins ; Full Hierarchy Name                                                                     ; Entity Name     ; Library Name ;
++-------------------------------------------+---------------------+---------------------------+-------------+--------------+---------+-----------+------+--------------+-----------------------------------------------------------------------------------------+-----------------+--------------+
+; |DE0_NANO                                 ; 38 (0)              ; 20 (0)                    ; 0           ; 0            ; 0       ; 0         ; 51   ; 0            ; |DE0_NANO                                                                               ; DE0_NANO        ; work         ;
+;    |VGA_DRIVER:driver|                    ; 38 (38)             ; 20 (20)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |DE0_NANO|VGA_DRIVER:driver                                                             ; VGA_DRIVER      ; work         ;
+;    |sweetPLL:sweetPLL_inst|               ; 0 (0)               ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |DE0_NANO|sweetPLL:sweetPLL_inst                                                        ; sweetPLL        ; work         ;
+;       |altpll:altpll_component|           ; 0 (0)               ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |DE0_NANO|sweetPLL:sweetPLL_inst|altpll:altpll_component                                ; altpll          ; work         ;
+;          |sweetPLL_altpll:auto_generated| ; 0 (0)               ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |DE0_NANO|sweetPLL:sweetPLL_inst|altpll:altpll_component|sweetPLL_altpll:auto_generated ; sweetPLL_altpll ; work         ;
++-------------------------------------------+---------------------+---------------------------+-------------+--------------+---------+-----------+------+--------------+-----------------------------------------------------------------------------------------+-----------------+--------------+
 Note: For table entries with two numbers listed, the numbers in parentheses indicate the number of resources of the given type used by the specific entity alone. The numbers listed outside of parentheses indicate the total resources of the given type used by the specific entity and all of its sub-entities in the hierarchy.
 
 
@@ -237,37 +254,26 @@ Note: For table entries with two numbers listed, the numbers in parentheses indi
 +-----------------------------------------+----------------------------------------+
 ; Register name                           ; Reason for Removal                     ;
 +-----------------------------------------+----------------------------------------+
-; pixel_data_RGB332[0..2]                 ; Lost fanout                            ;
-; cameradata[8]                           ; Lost fanout                            ;
-; pixel_data_RGB332[3]                    ; Lost fanout                            ;
-; cameradata[9]                           ; Lost fanout                            ;
-; pixel_data_RGB332[4]                    ; Lost fanout                            ;
-; cameradata[10]                          ; Lost fanout                            ;
-; pixel_data_RGB332[5]                    ; Lost fanout                            ;
-; cameradata[13]                          ; Lost fanout                            ;
-; pixel_data_RGB332[6]                    ; Lost fanout                            ;
-; cameradata[14]                          ; Lost fanout                            ;
-; pixel_data_RGB332[7]                    ; Lost fanout                            ;
-; cameradata[15]                          ; Lost fanout                            ;
+; pixel_data_RGB332[0,1]                  ; Stuck at GND due to stuck port data_in ;
+; pixel_data_RGB332[2..7]                 ; Lost fanout                            ;
 ; Dual_Port_RAM_M9K:mem|output_data[0..7] ; Stuck at GND due to stuck port data_in ;
 ; cycle                                   ; Lost fanout                            ;
-; Total Number of Removed Registers = 23  ;                                        ;
+; Total Number of Removed Registers = 17  ;                                        ;
 +-----------------------------------------+----------------------------------------+
 
 
-+------------------------------------------------------------------------------------+
-; Removed Registers Triggering Further Register Optimizations                        ;
-+----------------------+--------------------+----------------------------------------+
-; Register name        ; Reason for Removal ; Registers Removed due to This Register ;
-+----------------------+--------------------+----------------------------------------+
-; pixel_data_RGB332[0] ; Lost Fanouts       ; cycle                                  ;
-; pixel_data_RGB332[2] ; Lost Fanouts       ; cameradata[8]                          ;
-; pixel_data_RGB332[3] ; Lost Fanouts       ; cameradata[9]                          ;
-; pixel_data_RGB332[4] ; Lost Fanouts       ; cameradata[10]                         ;
-; pixel_data_RGB332[5] ; Lost Fanouts       ; cameradata[13]                         ;
-; pixel_data_RGB332[6] ; Lost Fanouts       ; cameradata[14]                         ;
-; pixel_data_RGB332[7] ; Lost Fanouts       ; cameradata[15]                         ;
-+----------------------+--------------------+----------------------------------------+
++--------------------------------------------------------------------------------------------------------------------------------------------+
+; Removed Registers Triggering Further Register Optimizations                                                                                ;
++----------------------+---------------------------+-----------------------------------------------------------------------------------------+
+; Register name        ; Reason for Removal        ; Registers Removed due to This Register                                                  ;
++----------------------+---------------------------+-----------------------------------------------------------------------------------------+
+; pixel_data_RGB332[1] ; Stuck at GND              ; pixel_data_RGB332[2], pixel_data_RGB332[3], pixel_data_RGB332[4], pixel_data_RGB332[5], ;
+;                      ; due to stuck port data_in ; pixel_data_RGB332[6], pixel_data_RGB332[7], Dual_Port_RAM_M9K:mem|output_data[7],       ;
+;                      ;                           ; Dual_Port_RAM_M9K:mem|output_data[6], Dual_Port_RAM_M9K:mem|output_data[5],             ;
+;                      ;                           ; Dual_Port_RAM_M9K:mem|output_data[4], Dual_Port_RAM_M9K:mem|output_data[3],             ;
+;                      ;                           ; Dual_Port_RAM_M9K:mem|output_data[2], Dual_Port_RAM_M9K:mem|output_data[1],             ;
+;                      ;                           ; Dual_Port_RAM_M9K:mem|output_data[0], cycle                                             ;
++----------------------+---------------------------+-----------------------------------------------------------------------------------------+
 
 
 +------------------------------------------------------+
@@ -290,8 +296,8 @@ Note: For table entries with two numbers listed, the numbers in parentheses indi
 +--------------------+-----------+---------------+----------------------+------------------------+------------+--------------------------------------------+
 ; Multiplexer Inputs ; Bus Width ; Baseline Area ; Area if Restructured ; Saving if Restructured ; Registered ; Example Multiplexer Output                 ;
 +--------------------+-----------+---------------+----------------------+------------------------+------------+--------------------------------------------+
-; 3:1                ; 10 bits   ; 20 LEs        ; 10 LEs               ; 10 LEs                 ; Yes        ; |DE0_NANO|VGA_DRIVER:driver|pixel_count[0] ;
-; 4:1                ; 10 bits   ; 20 LEs        ; 10 LEs               ; 10 LEs                 ; Yes        ; |DE0_NANO|VGA_DRIVER:driver|line_count[0]  ;
+; 3:1                ; 10 bits   ; 20 LEs        ; 10 LEs               ; 10 LEs                 ; Yes        ; |DE0_NANO|VGA_DRIVER:driver|pixel_count[9] ;
+; 4:1                ; 10 bits   ; 20 LEs        ; 10 LEs               ; 10 LEs                 ; Yes        ; |DE0_NANO|VGA_DRIVER:driver|line_count[9]  ;
 +--------------------+-----------+---------------+----------------------+------------------------+------------+--------------------------------------------+
 
 
@@ -742,57 +748,53 @@ Note: In order to hide this table in the UI and the text report file, please set
 ; Analysis & Synthesis Messages ;
 +-------------------------------+
 Info: *******************************************************************
-Info: Running Quartus II 64-Bit Analysis & Synthesis
-    Info: Version 15.0.0 Build 145 04/22/2015 SJ Web Edition
-    Info: Processing started: Tue Oct 30 18:09:23 2018
+Info: Running Quartus Prime Analysis & Synthesis
+    Info: Version 16.1.0 Build 196 10/24/2016 SJ Lite Edition
+    Info: Processing started: Wed Oct 31 16:48:03 2018
 Info: Command: quartus_map --read_settings_files=on --write_settings_files=off DE0_NANO -c DE0_NANO
 Warning (125092): Tcl Script File DE_NANO_SOPC.qip not found
     Info (125063): set_global_assignment -name QIP_FILE DE_NANO_SOPC.qip
 Warning (125092): Tcl Script File pll.qip not found
     Info (125063): set_global_assignment -name QIP_FILE pll.qip
-Warning (20028): Parallel compilation is not licensed and has been disabled
-Info (12021): Found 1 design units, including 1 entities, in source file VGA_DRIVER.v
-    Info (12023): Found entity 1: VGA_DRIVER
-Info (12021): Found 1 design units, including 1 entities, in source file DE0_NANO.v
-    Info (12023): Found entity 1: DE0_NANO
-Warning (10274): Verilog HDL macro warning at Dual_Port_RAM_M9K.v(2): overriding existing definition for macro "SCREEN_WIDTH", which was defined in "DE0_NANO.v", line 2
-Warning (10274): Verilog HDL macro warning at Dual_Port_RAM_M9K.v(3): overriding existing definition for macro "SCREEN_HEIGHT", which was defined in "DE0_NANO.v", line 3
-Info (12021): Found 1 design units, including 1 entities, in source file Dual_Port_RAM_M9K.v
-    Info (12023): Found entity 1: Dual_Port_RAM_M9K
-Info (12021): Found 1 design units, including 1 entities, in source file IMAGE_PROCESSOR.v
-    Info (12023): Found entity 1: IMAGE_PROCESSOR
-Info (12021): Found 1 design units, including 1 entities, in source file sweetPLL.v
-    Info (12023): Found entity 1: sweetPLL
-Warning (10274): Verilog HDL macro warning at IMAGE_PROCESSOR_COUNT.v(2): overriding existing definition for macro "SCREEN_WIDTH", which was defined in "DE0_NANO.v", line 2
-Warning (10274): Verilog HDL macro warning at IMAGE_PROCESSOR_COUNT.v(3): overriding existing definition for macro "SCREEN_HEIGHT", which was defined in "DE0_NANO.v", line 3
-Warning (10274): Verilog HDL macro warning at IMAGE_PROCESSOR_COUNT.v(4): overriding existing definition for macro "NUM_BARS", which was defined in "IMAGE_PROCESSOR.v", line 4
-Warning (10274): Verilog HDL macro warning at IMAGE_PROCESSOR_COUNT.v(5): overriding existing definition for macro "BAR_HEIGHT", which was defined in "IMAGE_PROCESSOR.v", line 5
-Info (12021): Found 1 design units, including 1 entities, in source file IMAGE_PROCESSOR_COUNT.v
-    Info (12023): Found entity 1: IMAGE_PROCESSOR_COUNT
+Warning (18236): Number of processors has not been specified which may cause overloading on shared machines.  Set the global assignment NUM_PARALLEL_PROCESSORS in your QSF to an appropriate value for best performance.
+Info (20030): Parallel compilation is enabled and will use 2 of the 2 processors detected
+Info (12021): Found 1 design units, including 1 entities, in source file vga_driver.v
+    Info (12023): Found entity 1: VGA_DRIVER File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/VGA_DRIVER.v Line: 14
+Info (12021): Found 1 design units, including 1 entities, in source file de0_nano.v
+    Info (12023): Found entity 1: DE0_NANO File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 4
+Info (12021): Found 1 design units, including 1 entities, in source file dual_port_ram_m9k.v
+    Info (12023): Found entity 1: Dual_Port_RAM_M9K File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/Dual_Port_RAM_M9K.v Line: 4
+Info (12021): Found 1 design units, including 1 entities, in source file image_processor.v
+    Info (12023): Found entity 1: IMAGE_PROCESSOR File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/IMAGE_PROCESSOR.v Line: 6
+Info (12021): Found 1 design units, including 1 entities, in source file sweetpll.v
+    Info (12023): Found entity 1: sweetPLL File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/sweetPLL.v Line: 40
+Info (12021): Found 1 design units, including 1 entities, in source file image_processor_count.v
+    Info (12023): Found entity 1: IMAGE_PROCESSOR_COUNT File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/IMAGE_PROCESSOR_COUNT.v Line: 6
 Info (12127): Elaborating entity "DE0_NANO" for the top level hierarchy
-Warning (10858): Verilog HDL warning at DE0_NANO.v(55): object X_ADDR used but never assigned
-Warning (10858): Verilog HDL warning at DE0_NANO.v(56): object Y_ADDR used but never assigned
-Warning (10230): Verilog HDL assignment warning at DE0_NANO.v(60): truncated value with size 32 to match size of target (15)
-Warning (10230): Verilog HDL assignment warning at DE0_NANO.v(137): truncated value with size 32 to match size of target (15)
-Warning (10030): Net "X_ADDR" at DE0_NANO.v(55) has no driver or initial value, using a default initial value '0'
-Warning (10030): Net "Y_ADDR" at DE0_NANO.v(56) has no driver or initial value, using a default initial value '0'
-Warning (10030): Net "W_EN" at DE0_NANO.v(81) has no driver or initial value, using a default initial value '0'
-Warning (10034): Output port "GPIO_0_D[33..24]" at DE0_NANO.v(46) has no driver
-Warning (10034): Output port "GPIO_0_D[22]" at DE0_NANO.v(46) has no driver
-Warning (10034): Output port "GPIO_0_D[20]" at DE0_NANO.v(46) has no driver
-Warning (10034): Output port "GPIO_0_D[18]" at DE0_NANO.v(46) has no driver
-Warning (10034): Output port "GPIO_0_D[16]" at DE0_NANO.v(46) has no driver
-Warning (10034): Output port "GPIO_0_D[14]" at DE0_NANO.v(46) has no driver
-Warning (10034): Output port "GPIO_0_D[12]" at DE0_NANO.v(46) has no driver
-Warning (10034): Output port "GPIO_0_D[10]" at DE0_NANO.v(46) has no driver
-Warning (10034): Output port "GPIO_0_D[8]" at DE0_NANO.v(46) has no driver
-Warning (10034): Output port "GPIO_0_D[6]" at DE0_NANO.v(46) has no driver
-Warning (10034): Output port "GPIO_0_D[4..2]" at DE0_NANO.v(46) has no driver
-Warning (10034): Output port "GPIO_0_D[0]" at DE0_NANO.v(46) has no driver
-Info (12128): Elaborating entity "sweetPLL" for hierarchy "sweetPLL:sweetPLL_inst"
-Info (12128): Elaborating entity "altpll" for hierarchy "sweetPLL:sweetPLL_inst|altpll:altpll_component"
-Info (12130): Elaborated megafunction instantiation "sweetPLL:sweetPLL_inst|altpll:altpll_component"
-Info (12133): Instantiated megafunction "sweetPLL:sweetPLL_inst|altpll:altpll_component" with the following parameter:
+Warning (10858): Verilog HDL warning at DE0_NANO.v(55): object X_ADDR used but never assigned File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 55
+Warning (10858): Verilog HDL warning at DE0_NANO.v(56): object Y_ADDR used but never assigned File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 56
+Warning (10230): Verilog HDL assignment warning at DE0_NANO.v(60): truncated value with size 32 to match size of target (15) File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 60
+Warning (10230): Verilog HDL assignment warning at DE0_NANO.v(137): truncated value with size 32 to match size of target (15) File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 137
+Warning (10030): Net "X_ADDR" at DE0_NANO.v(55) has no driver or initial value, using a default initial value '0' File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 55
+Warning (10030): Net "Y_ADDR" at DE0_NANO.v(56) has no driver or initial value, using a default initial value '0' File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 56
+Warning (10030): Net "cameradata[5..4]" at DE0_NANO.v(149) has no driver or initial value, using a default initial value '0' File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 149
+Warning (10030): Net "W_EN" at DE0_NANO.v(81) has no driver or initial value, using a default initial value '0' File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 81
+Warning (10034): Output port "GPIO_0_D[33..24]" at DE0_NANO.v(46) has no driver File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 46
+Warning (10034): Output port "GPIO_0_D[22]" at DE0_NANO.v(46) has no driver File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 46
+Warning (10034): Output port "GPIO_0_D[20]" at DE0_NANO.v(46) has no driver File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 46
+Warning (10034): Output port "GPIO_0_D[18]" at DE0_NANO.v(46) has no driver File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 46
+Warning (10034): Output port "GPIO_0_D[16]" at DE0_NANO.v(46) has no driver File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 46
+Warning (10034): Output port "GPIO_0_D[14]" at DE0_NANO.v(46) has no driver File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 46
+Warning (10034): Output port "GPIO_0_D[12]" at DE0_NANO.v(46) has no driver File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 46
+Warning (10034): Output port "GPIO_0_D[10]" at DE0_NANO.v(46) has no driver File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 46
+Warning (10034): Output port "GPIO_0_D[8]" at DE0_NANO.v(46) has no driver File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 46
+Warning (10034): Output port "GPIO_0_D[6]" at DE0_NANO.v(46) has no driver File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 46
+Warning (10034): Output port "GPIO_0_D[4..2]" at DE0_NANO.v(46) has no driver File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 46
+Warning (10034): Output port "GPIO_0_D[0]" at DE0_NANO.v(46) has no driver File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 46
+Info (12128): Elaborating entity "sweetPLL" for hierarchy "sweetPLL:sweetPLL_inst" File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 39
+Info (12128): Elaborating entity "altpll" for hierarchy "sweetPLL:sweetPLL_inst|altpll:altpll_component" File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/sweetPLL.v Line: 99
+Info (12130): Elaborated megafunction instantiation "sweetPLL:sweetPLL_inst|altpll:altpll_component" File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/sweetPLL.v Line: 99
+Info (12133): Instantiated megafunction "sweetPLL:sweetPLL_inst|altpll:altpll_component" with the following parameter: File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/sweetPLL.v Line: 99
     Info (12134): Parameter "bandwidth_type" = "AUTO"
     Info (12134): Parameter "clk0_divide_by" = "25"
     Info (12134): Parameter "clk0_duty_cycle" = "50"
@@ -855,84 +857,83 @@ Info (12133): Instantiated megafunction "sweetPLL:sweetPLL_inst|altpll:altpll_co
     Info (12134): Parameter "port_extclk2" = "PORT_UNUSED"
     Info (12134): Parameter "port_extclk3" = "PORT_UNUSED"
     Info (12134): Parameter "width_clock" = "5"
-Info (12021): Found 1 design units, including 1 entities, in source file db/sweetPLL_altpll.v
-    Info (12023): Found entity 1: sweetPLL_altpll
-Info (12128): Elaborating entity "sweetPLL_altpll" for hierarchy "sweetPLL:sweetPLL_inst|altpll:altpll_component|sweetPLL_altpll:auto_generated"
-Info (12128): Elaborating entity "Dual_Port_RAM_M9K" for hierarchy "Dual_Port_RAM_M9K:mem"
-Warning (10036): Verilog HDL or VHDL warning at Dual_Port_RAM_M9K.v(34): object "r_addr_reg" assigned a value but never read
-Info (12128): Elaborating entity "VGA_DRIVER" for hierarchy "VGA_DRIVER:driver"
-Warning (10230): Verilog HDL assignment warning at VGA_DRIVER.v(71): truncated value with size 32 to match size of target (10)
-Warning (10230): Verilog HDL assignment warning at VGA_DRIVER.v(75): truncated value with size 32 to match size of target (10)
-Info (12128): Elaborating entity "IMAGE_PROCESSOR" for hierarchy "IMAGE_PROCESSOR:proc"
-Warning (10235): Verilog HDL Always Construct warning at IMAGE_PROCESSOR.v(29): variable "BLUECOUNT" is read inside the Always Construct but isn't in the Always Construct's Event Control
-Warning (10235): Verilog HDL Always Construct warning at IMAGE_PROCESSOR.v(29): variable "REDCOUNT" is read inside the Always Construct but isn't in the Always Construct's Event Control
-Warning (10240): Verilog HDL Always Construct warning at IMAGE_PROCESSOR.v(27): inferring latch(es) for variable "COLOR", which holds its previous value in one or more paths through the always construct
-Warning (10240): Verilog HDL Always Construct warning at IMAGE_PROCESSOR.v(27): inferring latch(es) for variable "RESET", which holds its previous value in one or more paths through the always construct
-Info (10041): Inferred latch for "RESET[0]" at IMAGE_PROCESSOR.v(27)
-Info (10041): Inferred latch for "RESET[1]" at IMAGE_PROCESSOR.v(27)
-Info (10041): Inferred latch for "COLOR[0]" at IMAGE_PROCESSOR.v(27)
-Info (10041): Inferred latch for "COLOR[1]" at IMAGE_PROCESSOR.v(27)
-Info (12128): Elaborating entity "IMAGE_PROCESSOR_COUNT" for hierarchy "IMAGE_PROCESSOR_COUNT:count"
+Info (12021): Found 1 design units, including 1 entities, in source file db/sweetpll_altpll.v
+    Info (12023): Found entity 1: sweetPLL_altpll File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/db/sweetpll_altpll.v Line: 30
+Info (12128): Elaborating entity "sweetPLL_altpll" for hierarchy "sweetPLL:sweetPLL_inst|altpll:altpll_component|sweetPLL_altpll:auto_generated" File: c:/intelfpga_lite/16.1/quartus/libraries/megafunctions/altpll.tdf Line: 898
+Info (12128): Elaborating entity "Dual_Port_RAM_M9K" for hierarchy "Dual_Port_RAM_M9K:mem" File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 96
+Warning (10036): Verilog HDL or VHDL warning at Dual_Port_RAM_M9K.v(34): object "r_addr_reg" assigned a value but never read File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/Dual_Port_RAM_M9K.v Line: 34
+Info (12128): Elaborating entity "VGA_DRIVER" for hierarchy "VGA_DRIVER:driver" File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 108
+Warning (10230): Verilog HDL assignment warning at VGA_DRIVER.v(71): truncated value with size 32 to match size of target (10) File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/VGA_DRIVER.v Line: 71
+Warning (10230): Verilog HDL assignment warning at VGA_DRIVER.v(75): truncated value with size 32 to match size of target (10) File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/VGA_DRIVER.v Line: 75
+Info (12128): Elaborating entity "IMAGE_PROCESSOR" for hierarchy "IMAGE_PROCESSOR:proc" File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 121
+Warning (10235): Verilog HDL Always Construct warning at IMAGE_PROCESSOR.v(29): variable "BLUECOUNT" is read inside the Always Construct but isn't in the Always Construct's Event Control File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/IMAGE_PROCESSOR.v Line: 29
+Warning (10235): Verilog HDL Always Construct warning at IMAGE_PROCESSOR.v(29): variable "REDCOUNT" is read inside the Always Construct but isn't in the Always Construct's Event Control File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/IMAGE_PROCESSOR.v Line: 29
+Warning (10240): Verilog HDL Always Construct warning at IMAGE_PROCESSOR.v(27): inferring latch(es) for variable "COLOR", which holds its previous value in one or more paths through the always construct File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/IMAGE_PROCESSOR.v Line: 27
+Warning (10240): Verilog HDL Always Construct warning at IMAGE_PROCESSOR.v(27): inferring latch(es) for variable "RESET", which holds its previous value in one or more paths through the always construct File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/IMAGE_PROCESSOR.v Line: 27
+Info (10041): Inferred latch for "RESET[0]" at IMAGE_PROCESSOR.v(27) File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/IMAGE_PROCESSOR.v Line: 27
+Info (10041): Inferred latch for "RESET[1]" at IMAGE_PROCESSOR.v(27) File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/IMAGE_PROCESSOR.v Line: 27
+Info (10041): Inferred latch for "COLOR[0]" at IMAGE_PROCESSOR.v(27) File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/IMAGE_PROCESSOR.v Line: 27
+Info (10041): Inferred latch for "COLOR[1]" at IMAGE_PROCESSOR.v(27) File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/IMAGE_PROCESSOR.v Line: 27
+Info (12128): Elaborating entity "IMAGE_PROCESSOR_COUNT" for hierarchy "IMAGE_PROCESSOR_COUNT:count" File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 131
 Warning (13024): Output pins are stuck at VCC or GND
-    Warning (13410): Pin "GPIO_0_D[0]" is stuck at GND
-    Warning (13410): Pin "GPIO_0_D[2]" is stuck at GND
-    Warning (13410): Pin "GPIO_0_D[3]" is stuck at GND
-    Warning (13410): Pin "GPIO_0_D[4]" is stuck at GND
-    Warning (13410): Pin "GPIO_0_D[6]" is stuck at GND
-    Warning (13410): Pin "GPIO_0_D[8]" is stuck at GND
-    Warning (13410): Pin "GPIO_0_D[9]" is stuck at GND
-    Warning (13410): Pin "GPIO_0_D[10]" is stuck at GND
-    Warning (13410): Pin "GPIO_0_D[11]" is stuck at GND
-    Warning (13410): Pin "GPIO_0_D[12]" is stuck at GND
-    Warning (13410): Pin "GPIO_0_D[13]" is stuck at GND
-    Warning (13410): Pin "GPIO_0_D[14]" is stuck at GND
-    Warning (13410): Pin "GPIO_0_D[15]" is stuck at GND
-    Warning (13410): Pin "GPIO_0_D[16]" is stuck at GND
-    Warning (13410): Pin "GPIO_0_D[17]" is stuck at GND
-    Warning (13410): Pin "GPIO_0_D[18]" is stuck at GND
-    Warning (13410): Pin "GPIO_0_D[19]" is stuck at GND
-    Warning (13410): Pin "GPIO_0_D[20]" is stuck at GND
-    Warning (13410): Pin "GPIO_0_D[22]" is stuck at GND
-    Warning (13410): Pin "GPIO_0_D[24]" is stuck at GND
-    Warning (13410): Pin "GPIO_0_D[25]" is stuck at GND
-    Warning (13410): Pin "GPIO_0_D[26]" is stuck at GND
-    Warning (13410): Pin "GPIO_0_D[27]" is stuck at GND
-    Warning (13410): Pin "GPIO_0_D[28]" is stuck at GND
-    Warning (13410): Pin "GPIO_0_D[29]" is stuck at GND
-    Warning (13410): Pin "GPIO_0_D[30]" is stuck at GND
-    Warning (13410): Pin "GPIO_0_D[31]" is stuck at GND
-    Warning (13410): Pin "GPIO_0_D[32]" is stuck at GND
-    Warning (13410): Pin "GPIO_0_D[33]" is stuck at GND
+    Warning (13410): Pin "GPIO_0_D[0]" is stuck at GND File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 46
+    Warning (13410): Pin "GPIO_0_D[2]" is stuck at GND File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 46
+    Warning (13410): Pin "GPIO_0_D[3]" is stuck at GND File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 46
+    Warning (13410): Pin "GPIO_0_D[4]" is stuck at GND File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 46
+    Warning (13410): Pin "GPIO_0_D[6]" is stuck at GND File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 46
+    Warning (13410): Pin "GPIO_0_D[8]" is stuck at GND File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 46
+    Warning (13410): Pin "GPIO_0_D[10]" is stuck at GND File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 46
+    Warning (13410): Pin "GPIO_0_D[12]" is stuck at GND File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 46
+    Warning (13410): Pin "GPIO_0_D[14]" is stuck at GND File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 46
+    Warning (13410): Pin "GPIO_0_D[15]" is stuck at GND File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 46
+    Warning (13410): Pin "GPIO_0_D[16]" is stuck at GND File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 46
+    Warning (13410): Pin "GPIO_0_D[17]" is stuck at GND File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 46
+    Warning (13410): Pin "GPIO_0_D[18]" is stuck at GND File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 46
+    Warning (13410): Pin "GPIO_0_D[19]" is stuck at GND File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 46
+    Warning (13410): Pin "GPIO_0_D[20]" is stuck at GND File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 46
+    Warning (13410): Pin "GPIO_0_D[21]" is stuck at GND File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 46
+    Warning (13410): Pin "GPIO_0_D[22]" is stuck at GND File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 46
+    Warning (13410): Pin "GPIO_0_D[23]" is stuck at GND File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 46
+    Warning (13410): Pin "GPIO_0_D[24]" is stuck at GND File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 46
+    Warning (13410): Pin "GPIO_0_D[25]" is stuck at GND File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 46
+    Warning (13410): Pin "GPIO_0_D[26]" is stuck at GND File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 46
+    Warning (13410): Pin "GPIO_0_D[27]" is stuck at GND File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 46
+    Warning (13410): Pin "GPIO_0_D[28]" is stuck at GND File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 46
+    Warning (13410): Pin "GPIO_0_D[29]" is stuck at GND File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 46
+    Warning (13410): Pin "GPIO_0_D[30]" is stuck at GND File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 46
+    Warning (13410): Pin "GPIO_0_D[31]" is stuck at GND File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 46
+    Warning (13410): Pin "GPIO_0_D[32]" is stuck at GND File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 46
+    Warning (13410): Pin "GPIO_0_D[33]" is stuck at GND File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 46
 Info (286030): Timing-Driven Synthesis is running
-Info (17049): 15 registers lost all their fanouts during netlist optimizations.
+Info (17049): 7 registers lost all their fanouts during netlist optimizations.
 Info (16010): Generating hard_block partition "hard_block:auto_generated_inst"
     Info (16011): Adding 1 node(s), including 0 DDIO, 1 PLL, 0 transceiver and 0 LCELL
-Warning (15899): PLL "sweetPLL:sweetPLL_inst|altpll:altpll_component|sweetPLL_altpll:auto_generated|pll1" has parameters clk2_multiply_by and clk2_divide_by specified but port CLK[2] is not connected
+Warning (15899): PLL "sweetPLL:sweetPLL_inst|altpll:altpll_component|sweetPLL_altpll:auto_generated|pll1" has parameters clk2_multiply_by and clk2_divide_by specified but port CLK[2] is not connected File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/db/sweetpll_altpll.v Line: 44
 Warning (21074): Design contains 15 input pin(s) that do not drive logic
-    Warning (15610): No output dependent on input pin "GPIO_1_D[20]"
-    Warning (15610): No output dependent on input pin "GPIO_1_D[21]"
-    Warning (15610): No output dependent on input pin "GPIO_1_D[22]"
-    Warning (15610): No output dependent on input pin "GPIO_1_D[23]"
-    Warning (15610): No output dependent on input pin "GPIO_1_D[24]"
-    Warning (15610): No output dependent on input pin "GPIO_1_D[25]"
-    Warning (15610): No output dependent on input pin "GPIO_1_D[26]"
-    Warning (15610): No output dependent on input pin "GPIO_1_D[27]"
-    Warning (15610): No output dependent on input pin "GPIO_1_D[28]"
-    Warning (15610): No output dependent on input pin "GPIO_1_D[29]"
-    Warning (15610): No output dependent on input pin "GPIO_1_D[30]"
-    Warning (15610): No output dependent on input pin "GPIO_1_D[31]"
-    Warning (15610): No output dependent on input pin "GPIO_1_D[32]"
-    Warning (15610): No output dependent on input pin "GPIO_1_D[33]"
-    Warning (15610): No output dependent on input pin "KEY[1]"
+    Warning (15610): No output dependent on input pin "GPIO_1_D[20]" File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 48
+    Warning (15610): No output dependent on input pin "GPIO_1_D[21]" File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 48
+    Warning (15610): No output dependent on input pin "GPIO_1_D[22]" File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 48
+    Warning (15610): No output dependent on input pin "GPIO_1_D[23]" File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 48
+    Warning (15610): No output dependent on input pin "GPIO_1_D[24]" File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 48
+    Warning (15610): No output dependent on input pin "GPIO_1_D[25]" File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 48
+    Warning (15610): No output dependent on input pin "GPIO_1_D[26]" File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 48
+    Warning (15610): No output dependent on input pin "GPIO_1_D[27]" File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 48
+    Warning (15610): No output dependent on input pin "GPIO_1_D[28]" File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 48
+    Warning (15610): No output dependent on input pin "GPIO_1_D[29]" File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 48
+    Warning (15610): No output dependent on input pin "GPIO_1_D[30]" File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 48
+    Warning (15610): No output dependent on input pin "GPIO_1_D[31]" File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 48
+    Warning (15610): No output dependent on input pin "GPIO_1_D[32]" File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 48
+    Warning (15610): No output dependent on input pin "GPIO_1_D[33]" File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 48
+    Warning (15610): No output dependent on input pin "KEY[1]" File: //Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Template/DE0_NANO.v Line: 49
 Info (21057): Implemented 90 device resources after synthesis - the final resource count might be different
     Info (21058): Implemented 17 input pins
     Info (21059): Implemented 34 output pins
     Info (21061): Implemented 38 logic cells
     Info (21065): Implemented 1 PLLs
-Info: Quartus II 64-Bit Analysis & Synthesis was successful. 0 errors, 82 warnings
-    Info: Peak virtual memory: 1026 megabytes
-    Info: Processing ended: Tue Oct 30 18:10:25 2018
-    Info: Elapsed time: 00:01:02
-    Info: Total CPU time (on all processors): 00:00:40
+Info: Quartus Prime Analysis & Synthesis was successful. 0 errors, 76 warnings
+    Info: Peak virtual memory: 656 megabytes
+    Info: Processing ended: Wed Oct 31 16:48:49 2018
+    Info: Elapsed time: 00:00:46
+    Info: Total CPU time (on all processors): 00:00:26
 
 

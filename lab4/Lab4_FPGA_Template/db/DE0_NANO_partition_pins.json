@@ -12,11 +12,15 @@
 					"strict" : false
 				},
 				{
-					"name" : "GPIO_0_D[21]",
+					"name" : "GPIO_0_D[9]",
 					"strict" : false
 				},
 				{
-					"name" : "GPIO_0_D[23]",
+					"name" : "GPIO_0_D[11]",
+					"strict" : false
+				},
+				{
+					"name" : "GPIO_0_D[13]",
 					"strict" : false
 				},
 				{
