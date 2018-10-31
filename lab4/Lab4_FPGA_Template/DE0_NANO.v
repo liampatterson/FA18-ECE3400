@@ -74,10 +74,14 @@ assign VGA_RESET = ~KEY[0];
 assign GPIO_0_D[1] = c0_sig;
 
 ///// I/O for Img Proc /////
-wire [8:0] RESULT;
+wire [1:0] COLOR;
+wire [1:0] RESET;
 
 /* WRITE ENABLE */
 reg W_EN;
+
+wire [9:0] REDCOUNT;
+wire [9:0] BLUECOUNT;
 
 
 ///////* M9K Module *///////
@@ -109,12 +113,21 @@ VGA_DRIVER driver (
 
 ///////* Image Processor *///////
 IMAGE_PROCESSOR proc(
-	.PIXEL_IN(MEM_OUTPUT),
+	.REDCOUNT(REDCOUNT),
+	.BLUECOUNT(BLUECOUNT),
+	.VGA_VSYNC_NEG(VGA_VSYNC_NEG),
+	.COLOR(COLOR),
+	.RESET(RESET)
+);
+
+IMAGE_PROCESSOR_COUNT count (
+	.PIXEL_IN (MEM_OUTPUT),
 	.CLK(c1_sig),
+	.RESET(RESET),
 	.VGA_PIXEL_X(VGA_PIXEL_X),
 	.VGA_PIXEL_Y(VGA_PIXEL_Y),
-	.VGA_VSYNC_NEG(VGA_VSYNC_NEG),
-	.RESULT(RESULT)
+	.REDCOUNT(REDCOUNT),
+	.BLUECOUNT(BLUECOUNT)
 );
 
 

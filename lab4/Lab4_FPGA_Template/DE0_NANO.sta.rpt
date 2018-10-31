@@ -1,5 +1,5 @@
 TimeQuest Timing Analyzer report for DE0_NANO
-Fri Oct 26 15:45:56 2018
+Tue Oct 30 18:11:33 2018
 Quartus II 64-Bit Version 15.0.0 Build 145 04/22/2015 SJ Web Edition
 
 
@@ -1795,7 +1795,7 @@ Warning (125092): Tcl Script File pll.qip not found
 Info: *******************************************************************
 Info: Running Quartus II 64-Bit TimeQuest Timing Analyzer
     Info: Version 15.0.0 Build 145 04/22/2015 SJ Web Edition
-    Info: Processing started: Fri Oct 26 15:45:48 2018
+    Info: Processing started: Tue Oct 30 18:11:25 2018
 Info: Command: quartus_sta DE0_NANO -c DE0_NANO
 Info: qsta_default_script.tcl version: #11
 Warning (20028): Parallel compilation is not licensed and has been disabled
@@ -1867,9 +1867,9 @@ Info (332146): Worst-case minimum pulse width slack is 9.416
 Info (332102): Design is not fully constrained for setup requirements
 Info (332102): Design is not fully constrained for hold requirements
 Info: Quartus II 64-Bit TimeQuest Timing Analyzer was successful. 0 errors, 4 warnings
-    Info: Peak virtual memory: 889 megabytes
-    Info: Processing ended: Fri Oct 26 15:45:56 2018
+    Info: Peak virtual memory: 892 megabytes
+    Info: Processing ended: Tue Oct 30 18:11:33 2018
     Info: Elapsed time: 00:00:08
-    Info: Total CPU time (on all processors): 00:00:05
+    Info: Total CPU time (on all processors): 00:00:04
 
 
