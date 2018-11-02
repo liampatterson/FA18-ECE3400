@@ -26,6 +26,8 @@ localparam BLUE = 8'b000_000_11;
 
 //////////// CLOCK //////////
 input CLOCK_50;
+wire PCLK = GPIO_1_D[0];
+wire HREF = GPIO_1_D[1];
 
 wire c0_sig;
 wire c1_sig;
@@ -45,7 +47,7 @@ sweetPLL	sweetPLL_inst (
 //////////// GPIO_0, GPIO_0 connect to GPIO Default //////////
 output 		    [33:0]		GPIO_0_D;
 //////////// GPIO_0, GPIO_1 connect to GPIO Default //////////
-input 		    [16:7]		GPIO_1_D;
+input 		    [9:0]		GPIO_1_D;
 input 		     [1:0]		KEY;
 
 ///// PIXEL DATA /////
@@ -72,6 +74,7 @@ reg			VGA_READ_MEM_EN;
 assign GPIO_0_D[5] = VGA_VSYNC_NEG;
 assign VGA_RESET = ~KEY[0];
 assign GPIO_0_D[1] = c0_sig;
+
 
 ///// I/O for Img Proc /////
 wire [1:0] COLOR;
@@ -158,15 +161,17 @@ end
 reg cycle = 1'b0;
 reg [15:0] cameradata;
 
-always @ (posedge c0_sig) begin 
-	if (!cycle) begin
-		cameradata[15:8] = {GPIO_1_D[16], GPIO_1_D[15], GPIO_1_D[14], GPIO_1_D[13], GPIO_1_D[10], GPIO_1_D[9], GPIO_1_D[8], GPIO_1_D[7]};
-		cycle = 1'b1;
-	end
-	else begin
-		cameradata[7:0] = {GPIO_1_D[16], GPIO_1_D[15], GPIO_1_D[14], GPIO_1_D[13], GPIO_1_D[10], GPIO_1_D[9], GPIO_1_D[8], GPIO_1_D[7]};
-		pixel_data_RGB332[7:0] = {cameradata[15:13], cameradata[10:8], cameradata[4:3]};
-		cycle = 1'b0;
+always @ (posedge PCLK) begin 
+	if (HREF) begin
+		if (!cycle ) begin
+			cameradata[15:8] = {GPIO_1_D[3], GPIO_1_D[2], GPIO_1_D[9], GPIO_1_D[8], GPIO_1_D[7], GPIO_1_D[6], GPIO_1_D[5], GPIO_1_D[4]};
+			cycle = 1'b1;
+		end
+		else begin
+			cameradata[7:0] = {GPIO_1_D[3], GPIO_1_D[2], GPIO_1_D[9], GPIO_1_D[8], GPIO_1_D[7], GPIO_1_D[6], GPIO_1_D[5], GPIO_1_D[4]};
+			pixel_data_RGB332[7:0] = {cameradata[15:13], cameradata[10:8], cameradata[4:3]};
+			cycle = 1'b0;
+		end
 	end
 end
 	

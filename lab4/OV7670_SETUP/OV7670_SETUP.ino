@@ -24,13 +24,38 @@ void setup() {
   
   // TODO: WRITE KEY REGISTERS
   //there should be 8 of them
-  Serial.println(OV7670_write_register( 0x11, 0x80 )); //Use external clock as internal clock -- reg 11  set to 80--set to default
-  Serial.println(OV7670_write_register( 0x0C, 0x08 )); //Enable scaling -- reg 0c
-  Serial.println(OV7670_write_register( 0x40, 0x20 )); //reg 40 Change resolution
-  Serial.println(OV7670_write_register( 0x12, 0x0C )); //change resolution
-  Serial.println(OV7670_write_register( 0x12, 0x80 ));//color test reg 12 AND reset all registers by enabling last bit
-  Serial.println(OV7670_write_register( 0x12, 0x02 ));
+//laasyas stuff
+Serial.println(OV7670_write_register( 0x12, 0x80 )); 
+  //delay
+  delay(100);
+  Serial.println(OV7670_write_register( 0x12, 0x06 )); 
+  Serial.println(OV7670_write_register( 0x11, 0x80 )); 
+  Serial.println(OV7670_write_register( 0x0C, 0x08 )); 
+  Serial.println(OV7670_write_register( 0x40, 0xD0 ));//color test reg 12 AND reset all registers by enabling last bit
   Serial.println(OV7670_write_register( 0x42, 0x08 ));//more color test reg 42
+
+
+
+
+  
+//Serial.println(OV7670_write_register( 0x11, 0x40 )); //Use external clock as internal clock -- reg 11  set to 80--set to default
+//  Serial.println(OV7670_write_register( 0x0C, 0x08 )); //Enable scaling -- reg 0c
+//  Serial.println(OV7670_write_register( 0x40, 0xD0 )); //reg 40 Change resolution
+//  Serial.println(OV7670_write_register( 0x12, 0x06 )); //change resolution
+//  Serial.println(OV7670_write_register( 0x12, 0x80 ));//color test reg 12 AND reset all registers by enabling last bit
+//  Serial.println(OV7670_write_register( 0x42, 0x08 ));//more color test reg 42
+
+  //katarinas stuff
+//  Serial.println(OV7670_write_register( 0x11, 0x80 )); //Use external clock as internal clock -- reg 11  set to 80--set to default
+//  Serial.println(OV7670_write_register( 0x0C, 0x08 )); //Enable scaling -- reg 0c
+//  Serial.println(OV7670_write_register( 0x40, 0x20 )); //reg 40 Change resolution
+//  Serial.println(OV7670_write_register( 0x12, 0x8E )); //or try 8e
+//  //Serial.println(OV7670_write_register( 0x12, 0x0C )); //change resolution
+//  //Serial.println(OV7670_write_register( 0x12, 0x80 ));//color test reg 12 AND reset all registers by enabling last bit
+//  //Serial.println(OV7670_write_register( 0x12, 0x02 ));
+//  Serial.println(OV7670_write_register( 0x42, 0x08 ));//more color test reg 42
+
+//liams stuff
 //  output = OV7670_write_register( 17, reg11 | 0000010 ); //Use external clock as internal clock -- reg 11
 //  Serial.println( output );
 //  output = OV7670_write_register( 12, 00011100 ); //Enable scaling -- reg 0c
