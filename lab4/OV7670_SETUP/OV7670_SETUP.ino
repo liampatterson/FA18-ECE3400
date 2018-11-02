@@ -12,25 +12,32 @@ int reg42;
 
 ///////// Main Program //////////////
 void setup() {
+  String output;
   Wire.begin();
   Serial.begin(9600);
+  Serial.println( "setup starting" );
   
   // TODO: READ KEY REGISTERS
-  //read_key_registers();  //set the global registers
+  read_key_registers();  //set the global registers
   
   delay(100);
   
   // TODO: WRITE KEY REGISTERS
   //there should be 8 of them
-  Serial.println("got here");
-  Serial.println(OV7670_write_register( 0x11, 0x80 )); //Use external clock as internal clock -- reg 11  set to 80--set to default
-  Serial.println(OV7670_write_register( 0x0C, 0x08 )); //Enable scaling -- reg 0c
-  Serial.println(OV7670_write_register( 0x40, 0x20 )); //reg 40 Change resolution
-  Serial.println(OV7670_write_register( 0x12, 0x0C )); //change resolution
-  Serial.println(OV7670_write_register( 0x12, 0x80 ));//color test reg 12 AND reset all registers by enabling last bit
-  Serial.println(OV7670_write_register( 0x12, 0x02 ));
-  Serial.println(OV7670_write_register( 0x42, 0x08 ));//more color test reg 42
-  //read_key_registers();
+
+  output = OV7670_write_register( 17, reg11 | 0000010 ); //Use external clock as internal clock -- reg 11
+  Serial.println( output );
+  output = OV7670_write_register( 12, 00011100 ); //Enable scaling -- reg 0c
+  Serial.println( output );
+  output = OV7670_write_register( 64, reg40 | 00000100 ); //reg 40 Change resolution
+  Serial.println( output );
+  output = OV7670_write_register( 62, reg3e | 00000100 ); //reg 3e also changing resolution
+  Serial.println( output );
+  output = OV7670_write_register( 18, reg12 | 01000001 );//color test reg 12 AND reset all registers by enabling last bit
+  Serial.println( output );
+  output = OV7670_write_register( 66, reg42 | 00010000 );//more color test reg 42
+  Serial.println( output );
+  read_key_registers();
   set_color_matrix();
     // put your setup code here, to run once:
   pinMode(8, INPUT); 
@@ -38,6 +45,7 @@ void setup() {
   //00 means not red or blue
   //01 means red
   //10 means blue
+  Serial.println( "setup finished." );
 }
 
 int MSB = 0; //leftmost
@@ -58,23 +66,33 @@ void loop(){
   else if(MSB == HIGH && LSB == LOW){
     Serial.println("BLUE");
   }
+  Serial.println( "loop" );
 }
 
 ///////// Function Definition //////////////
 void read_key_registers(){
   /*TODO: DEFINE THIS FUNCTION*/
   reg11 = read_register_value(17); //external clock
+  Serial.println( reg11 );
   reg0c = read_register_value(12); //enable scaling
+  Serial.println( reg0c );
   reg40 = read_register_value(64); //change res 
+  Serial.println( reg40 );
   reg3e = read_register_value(62); //change res
+  Serial.println( reg3e );
   reg12 = read_register_value(18); //change res
+  Serial.println( reg12 );
   reg42 = read_register_value(66); //change res
+  Serial.println( reg42 );
+  Serial.println( "finished read" );
 }
 
 
 byte read_register_value(int register_address){
   byte data = 0;
   Wire.beginTransmission(OV7670_I2C_ADDRESS);
+  Serial.println( "begining read_reg_val" );
+  Serial.println( register_address );
   Wire.write(register_address);
   Wire.endTransmission();
   Wire.requestFrom(OV7670_I2C_ADDRESS,1);
@@ -85,9 +103,9 @@ byte read_register_value(int register_address){
 
 
 String OV7670_write(int start, const byte *pData, int size){
-    Serial.println("writing");
     int n,error;
     Wire.beginTransmission(OV7670_I2C_ADDRESS);
+    Serial.println( "starting transmission" );
     n = Wire.write(start);
     if(n != 1){
       return "I2C ERROR WRITING START ADDRESS";   
