@@ -165,7 +165,7 @@ always @ (posedge c0_sig) begin
 	end
 	else begin
 		cameradata[7:0] = {GPIO_1_D[16], GPIO_1_D[15], GPIO_1_D[14], GPIO_1_D[13], GPIO_1_D[10], GPIO_1_D[9], GPIO_1_D[8], GPIO_1_D[7]};
-		pixel_data_RGB332[7:0] = {cameradata[15:13], cameradata[10:8], cameradata[5:4]};
+		pixel_data_RGB332[7:0] = {cameradata[15:13], cameradata[10:8], cameradata[4:3]};
 		cycle = 1'b0;
 	end
 end
