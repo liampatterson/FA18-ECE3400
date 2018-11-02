@@ -24,19 +24,19 @@ input			VGA_VSYNC_NEG;
 output reg [1:0] COLOR;
 output reg [1:0] RESET;
 
-always @ (VGA_VSYNC_NEG) begin
-		if (VGA_VSYNC_NEG) begin
-			if (BLUECOUNT > REDCOUNT) begin
-				COLOR <= 1'b1; //when color is 1, blue
-			end
-			else begin
-				COLOR <= 1'b0; //when color is 0, red
-			end
-		end
-		else begin
-			RESET <= 1'b1;
-		end
-end
+//always @ (VGA_VSYNC_NEG) begin
+//		if (VGA_VSYNC_NEG) begin
+//			if (BLUECOUNT > REDCOUNT) begin
+//				COLOR <= 1'b1; //when color is 1, blue
+//			end
+//			else begin
+//				COLOR <= 1'b0; //when color is 0, red
+//			end
+//		end
+//		else begin
+//			RESET <= 1'b1;
+//		end
+//end
 
 
 endmodule

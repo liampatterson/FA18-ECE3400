@@ -1,6 +1,6 @@
 #include <Wire.h>
 
-#define OV7670_I2C_ADDRESS 0x2A /*TODO: write this in hex (eg. 0xAB) */
+#define OV7670_I2C_ADDRESS 0x21 /*TODO: write this in hex (eg. 0xAB) */
 
 
 int reg11;
@@ -16,19 +16,21 @@ void setup() {
   Serial.begin(9600);
   
   // TODO: READ KEY REGISTERS
-  read_key_registers();  //set the global registers
+  //read_key_registers();  //set the global registers
   
   delay(100);
   
   // TODO: WRITE KEY REGISTERS
   //there should be 8 of them
-  OV7670_write_register( 17, reg11 | 0000010 ); //Use external clock as internal clock -- reg 11
-  OV7670_write_register( 12, 00011100 ); //Enable scaling -- reg 0c
-  OV7670_write_register( 64, reg40 | 00000100 ); //reg 40 Change resolution
-  OV7670_write_register( 62, reg3e | 00000100 ); //reg 3e also changing resolution
-  OV7670_write_register( 18, reg12 | 01000001 );//color test reg 12 AND reset all registers by enabling last bit
-  OV7670_write_register( 66, reg42 | 00010000 );//more color test reg 42
-  read_key_registers();
+  Serial.println("got here");
+  Serial.println(OV7670_write_register( 0x11, 0x80 )); //Use external clock as internal clock -- reg 11  set to 80--set to default
+  Serial.println(OV7670_write_register( 0x0C, 0x08 )); //Enable scaling -- reg 0c
+  Serial.println(OV7670_write_register( 0x40, 0x20 )); //reg 40 Change resolution
+  Serial.println(OV7670_write_register( 0x12, 0x0C )); //change resolution
+  Serial.println(OV7670_write_register( 0x12, 0x80 ));//color test reg 12 AND reset all registers by enabling last bit
+  Serial.println(OV7670_write_register( 0x12, 0x02 ));
+  Serial.println(OV7670_write_register( 0x42, 0x08 ));//more color test reg 42
+  //read_key_registers();
   set_color_matrix();
     // put your setup code here, to run once:
   pinMode(8, INPUT); 
@@ -83,6 +85,7 @@ byte read_register_value(int register_address){
 
 
 String OV7670_write(int start, const byte *pData, int size){
+    Serial.println("writing");
     int n,error;
     Wire.beginTransmission(OV7670_I2C_ADDRESS);
     n = Wire.write(start);
