@@ -244,16 +244,6 @@ void loop(void)
   byte ended = 0xFF;
   transmit( ended );
   delay( 250 );*/
-  Serial.println( "reset" );
-  delay( 5000 );
-  Serial.println( "1,2,north=false,east=true,west=true" );
-  delay( 5000 );
-  Serial.println( "0,2,north=true,east=true" );
-  delay( 5000 );
-  Serial.println( "0,1,north=true,south=true" );
-  delay( 5000 );
-  Serial.println( "0,0,north=false,south=true" );
-  delay( 10000 );
 }
 
 
