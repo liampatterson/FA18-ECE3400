@@ -28,19 +28,19 @@ output reg [9:0] REDCOUNT;
 output reg [9:0] BLUECOUNT;
 
 
-always @ (posedge CLK) begin
-	if (RESET) begin
-		REDCOUNT <= 9'b0;
-		BLUECOUNT <= 9'b0;
-	end
-	if (VGA_PIXEL_Y > 9'b001000110 && VGA_PIXEL_Y < 001001011) begin
-		if (PIXEL_IN[7:5]==3'b111) begin //red
-			REDCOUNT <= REDCOUNT + 1'b1;
-		end
-		else if (PIXEL_IN[1:0]==2'b11) begin //blue
-			BLUECOUNT <= BLUECOUNT + 1'b1;
-		end
-	end
-end
+//always @ (posedge CLK) begin
+//	if (RESET) begin
+//		REDCOUNT <= 9'b0;
+//		BLUECOUNT <= 9'b0;
+//	end
+//	if (VGA_PIXEL_Y > 9'b001000110 && VGA_PIXEL_Y < 001001011) begin
+//		if (PIXEL_IN[7:5]==3'b111) begin //red
+//			REDCOUNT <= REDCOUNT + 1'b1;
+//		end
+//		else if (PIXEL_IN[1:0]==2'b11) begin //blue
+//			BLUECOUNT <= BLUECOUNT + 1'b1;
+//		end
+//	end
+//end
 
 endmodule

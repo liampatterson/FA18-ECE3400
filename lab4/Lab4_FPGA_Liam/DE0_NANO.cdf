@@ -4,7 +4,7 @@ JedecChain;
 	DefaultMfr(6E);
 
 	P ActionCode(Cfg)
-		Device PartName(EP4CE22F17) Path("//Mac/Dropbox/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Liam/") File("DE0_NANO.sof") MfrSpec(OpMask(1));
+		Device PartName(EP4CE22F17) Path("W:/School 2018-2019/FA/ECE 3400/Project/lab4/Lab4_FPGA_Liam/") File("DE0_NANO.sof") MfrSpec(OpMask(1));
 
 ChainEnd;
 

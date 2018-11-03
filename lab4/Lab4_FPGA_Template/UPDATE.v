@@ -24,9 +24,10 @@ always @ (posedge PCLK) begin
 	end
 	else begin
 		X_ADDR <= X_ADDR + 1;
-		Y_ADDR <= Y_ADDR + 1;
+		Y_ADDR <= Y_ADDR;
 	end
 end
+
 
 endmodule
 
