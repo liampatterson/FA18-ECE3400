@@ -171,27 +171,27 @@ always @ (posedge PCLK) begin
 		if (HREF) begin
 			if (!cycle ) begin
 				cameradata[15:8] = {GPIO_1_D[28], GPIO_1_D[29], GPIO_1_D[22], GPIO_1_D[23], GPIO_1_D[24], GPIO_1_D[25], GPIO_1_D[26], GPIO_1_D[27]};
-				cycle = 1'b1;
-				W_EN = 0;
+				cycle <= 1'b1;
+				W_EN <= 0;
 			end
 			else begin
 				cameradata[7:0] = {GPIO_1_D[28], GPIO_1_D[29], GPIO_1_D[22], GPIO_1_D[23], GPIO_1_D[24], GPIO_1_D[25], GPIO_1_D[26], GPIO_1_D[27]};
 				pixel_data_RGB332[7:0] = {cameradata[15:13], cameradata[10:8], cameradata[4:3]};
-				cycle = 1'b0;
-				W_EN = 1;
-				X_ADDR = X_ADDR + 1;
+				cycle <= 1'b0;
+				W_EN <= 1;
+				X_ADDR <= X_ADDR + 1;
 			end
 		end
 		else begin
-			X_ADDR = 0;
-			cycle = 0;
-			W_EN = 0;
+			X_ADDR <= 0;
+			cycle <= 0;
+			W_EN <= 0;
 		end
 	end
 	else begin
-		X_ADDR = 0;
-		cycle = 0;
-		W_EN = 0;
+		X_ADDR <= 0;
+		cycle <= 0;
+		W_EN <= 0;
 	end
 end
 
