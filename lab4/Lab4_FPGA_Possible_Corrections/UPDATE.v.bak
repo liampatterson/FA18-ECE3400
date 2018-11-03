@@ -1,0 +1,25 @@
+module UPDATE (
+	RESET,
+	X_ADDR,
+	Y_ADDR,
+	HREF
+);
+
+input RESET;
+input HREF;
+
+output reg [14:0] X_ADDR;
+output reg [14:0] Y_ADDR;
+
+always @ (posedge HREF) begin
+	if (RESET) begin
+		X_ADDR <= 0;
+		Y_ADDR <= 0;
+	end
+	else begin
+		X_ADDR <= 0;
+		Y_ADDR <= Y_ADDR + 1;
+	end
+end
+
+	
