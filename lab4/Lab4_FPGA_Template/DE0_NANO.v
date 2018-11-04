@@ -28,6 +28,8 @@ localparam BLUE = 8'b000_000_11;
 input CLOCK_50;
 wire PCLK = GPIO_1_D[32];
 wire HREF = GPIO_1_D[30];
+//wire HREF = GPIO_1_D[29];
+//wire VSYNC = GPIO_1_D[30];
 wire VSYNC = GPIO_1_D[31];
 
 wire c0_sig;
@@ -52,11 +54,11 @@ input 		    [33:0]		GPIO_1_D;
 input 		     [1:0]		KEY;
 
 ///// PIXEL DATA /////
-reg [7:0]	pixel_data_RGB332 = 8'd0;
+reg [7:0]	pixel_data_RGB332;
 
 ///// READ/WRITE ADDRESS /////
-wire [14:0] X_ADDR;
-wire [14:0] Y_ADDR;
+reg [14:0] X_ADDR;
+reg [14:0] Y_ADDR;
 wire [14:0] WRITE_ADDRESS;
 reg [14:0] READ_ADDRESS; 
 
@@ -112,6 +114,7 @@ VGA_DRIVER driver (
 );
 
 
+	
 
 
 ///////* Image Processor *///////
@@ -133,18 +136,20 @@ IMAGE_PROCESSOR_COUNT count (
 	.BLUECOUNT(BLUECOUNT)
 );
 
-UPDATE up (
-	.RESET(VSYNC),
-	.X_ADDR(X_ADDR),
-	.Y_ADDR(Y_ADDR),
-	.HREF(HREF),
-	.PCLK(PCLK)
-);
+
+always @ (negedge HREF) begin
+	if (Y_ADDR >= `SCREEN_HEIGHT - 1) begin
+		Y_ADDR = 0;
+	end
+	else begin
+		Y_ADDR = Y_ADDR + 1;
+	end
+end
 
 
 ///////* Update Read Address *///////
 //buffer reader
-always @ (*) begin
+always @ (VGA_PIXEL_X, VGA_PIXEL_Y) begin
 		READ_ADDRESS = (VGA_PIXEL_X + VGA_PIXEL_Y*`SCREEN_WIDTH);
 		if((VGA_PIXEL_X>`SCREEN_WIDTH-1) || VGA_PIXEL_Y>(`SCREEN_HEIGHT-1)) begin 
 				VGA_READ_MEM_EN = 1'b0;
@@ -167,21 +172,39 @@ reg [15:0] cameradata;
 
 
 always @ (posedge PCLK) begin 
-	//if (~VSYNC) begin 
-		if (HREF) begin
+	if (VSYNC) begin 
+		X_ADDR <= 0;
+		cycle <= 0;
+		W_EN <= 0;
+		pixel_data_RGB332[7:0] <= 0;
+		cameradata[15:0] <= 0;
+	end
+	else begin 
+		if (!HREF) begin
+			X_ADDR <= 0;
+			cycle <= 0;
+			W_EN <= 0;
+			pixel_data_RGB332[7:0] <= 0;
+			cameradata[15:0] <= 0;
+		end
+		else begin
 			if (!cycle ) begin
-				cameradata[15:8] = {GPIO_1_D[28], GPIO_1_D[29], GPIO_1_D[22], GPIO_1_D[23], GPIO_1_D[24], GPIO_1_D[25], GPIO_1_D[26], GPIO_1_D[27]};
-				cycle = 1'b1;
-				W_EN = 0;
-			end
-			else if (cycle) begin
 				cameradata[7:0] = {GPIO_1_D[28], GPIO_1_D[29], GPIO_1_D[22], GPIO_1_D[23], GPIO_1_D[24], GPIO_1_D[25], GPIO_1_D[26], GPIO_1_D[27]};
-				pixel_data_RGB332[7:0] = {cameradata[15:13], cameradata[10:8], cameradata[4:3]};
-				cycle = 1'b0;
-				W_EN = 1;
+				cycle <= 1'b1;
+				W_EN <= 0;
+				X_ADDR <= X_ADDR;
+				pixel_data_RGB332[7:0] <= 0;
+			end
+			else begin
+				cameradata[15:8] = {GPIO_1_D[28], GPIO_1_D[29], GPIO_1_D[22], GPIO_1_D[23], GPIO_1_D[24], GPIO_1_D[25], GPIO_1_D[26], GPIO_1_D[27]};
+				pixel_data_RGB332[7:0] <= {cameradata[15:13], cameradata[10:8], cameradata[4:3]};
+				cycle <= 1'b0;
+				W_EN <= 1;
+				X_ADDR <= X_ADDR + 1;
 			end
 		end
-	//end
+	end
 end
+
 	
 endmodule 

@@ -33,6 +33,8 @@ Serial.println(OV7670_write_register( 0x12, 0x80 ));
   Serial.println(OV7670_write_register( 0x0C, 0x08 )); 
   Serial.println(OV7670_write_register( 0x40, 0xD0 ));//color test reg 12 AND reset all registers by enabling last bit
   Serial.println(OV7670_write_register( 0x42, 0x08 ));//more color test reg 42
+  Serial.println(OV7670_write_register( 0x14, 0x0B ));
+   
 
 
 
