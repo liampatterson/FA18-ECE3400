@@ -5,7 +5,8 @@ module DE0_NANO(
    CLOCK_50,
 	GPIO_0_D,
 	GPIO_1_D,
-	KEY 
+	KEY,
+	RESULT
 
 );
 
@@ -27,8 +28,10 @@ localparam BLUE = 8'b000_000_11;
 //////////// CLOCK //////////
 input CLOCK_50;
 wire PCLK = GPIO_1_D[32];
-wire HREF = GPIO_1_D[30];
-wire VSYNC = GPIO_1_D[31];
+//wire HREF = GPIO_1_D[30];
+wire HREF = GPIO_1_D[29];
+wire VSYNC = GPIO_1_D[30];
+//wire VSYNC = GPIO_1_D[31];
 
 wire c0_sig;
 wire c1_sig;
@@ -52,11 +55,11 @@ input 		    [33:0]		GPIO_1_D;
 input 		     [1:0]		KEY;
 
 ///// PIXEL DATA /////
-reg [7:0]	pixel_data_RGB332 = 8'd0;
+reg [7:0]	pixel_data_RGB332;
 
 ///// READ/WRITE ADDRESS /////
-wire [14:0] X_ADDR;
-wire [14:0] Y_ADDR;
+reg [14:0] X_ADDR;
+reg [14:0] Y_ADDR;
 wire [14:0] WRITE_ADDRESS;
 reg [14:0] READ_ADDRESS; 
 
@@ -78,14 +81,10 @@ assign GPIO_0_D[1] = c0_sig;
 
 
 ///// I/O for Img Proc /////
-wire [1:0] COLOR;
-wire [1:0] RESET;
+output wire [1:0] RESULT;
 
 /* WRITE ENABLE */
 reg W_EN;
-
-wire [9:0] REDCOUNT;
-wire [9:0] BLUECOUNT;
 
 
 ///////* M9K Module *///////
@@ -112,39 +111,34 @@ VGA_DRIVER driver (
 );
 
 
+	
 
 
 ///////* Image Processor *///////
-IMAGE_PROCESSOR proc(
-	.REDCOUNT(REDCOUNT),
-	.BLUECOUNT(BLUECOUNT),
-	.VGA_VSYNC_NEG(VGA_VSYNC_NEG),
-	.COLOR(COLOR),
-	.RESET(RESET)
-);
 
-IMAGE_PROCESSOR_COUNT count (
+IMAGE_PROCESSOR proc (
 	.PIXEL_IN (MEM_OUTPUT),
 	.CLK(c1_sig),
-	.RESET(RESET),
 	.VGA_PIXEL_X(VGA_PIXEL_X),
 	.VGA_PIXEL_Y(VGA_PIXEL_Y),
-	.REDCOUNT(REDCOUNT),
-	.BLUECOUNT(BLUECOUNT)
+	.VGA_VSYNC_NEG(VGA_VSYNC_NEG),
+	.RESULT(RESULT)
 );
 
-UPDATE up (
-	.RESET(VSYNC),
-	.X_ADDR(X_ADDR),
-	.Y_ADDR(Y_ADDR),
-	.HREF(HREF),
-	.PCLK(PCLK)
-);
+
+always @ (negedge HREF) begin
+	if (Y_ADDR >= `SCREEN_HEIGHT - 1) begin
+		Y_ADDR = 0;
+	end
+	else begin
+		Y_ADDR = Y_ADDR + 1;
+	end
+end
 
 
 ///////* Update Read Address *///////
 //buffer reader
-always @ (*) begin
+always @ (VGA_PIXEL_X, VGA_PIXEL_Y) begin
 		READ_ADDRESS = (VGA_PIXEL_X + VGA_PIXEL_Y*`SCREEN_WIDTH);
 		if((VGA_PIXEL_X>`SCREEN_WIDTH-1) || VGA_PIXEL_Y>(`SCREEN_HEIGHT-1)) begin 
 				VGA_READ_MEM_EN = 1'b0;
@@ -163,25 +157,47 @@ end
 
 //downsampler
 reg cycle = 1'b0;
-reg [15:0] cameradata;
+//reg [15:0] cameradata;
 
 
 always @ (posedge PCLK) begin 
-	//if (~VSYNC) begin 
-		if (HREF) begin
+	if (VSYNC) begin 
+		X_ADDR = 0;
+		cycle = 0;
+		W_EN = 0;
+		pixel_data_RGB332[7:0] = 0;
+		//cameradata[15:0] = 0;
+	end
+	else begin 
+		if (!HREF) begin
+			X_ADDR = 0;
+			cycle = 0;
+			W_EN = 0;
+			pixel_data_RGB332[7:0] = 0;
+			//cameradata[15:0] = 0;
+		end
+		else begin
 			if (!cycle ) begin
-				cameradata[15:8] = {GPIO_1_D[28], GPIO_1_D[29], GPIO_1_D[22], GPIO_1_D[23], GPIO_1_D[24], GPIO_1_D[25], GPIO_1_D[26], GPIO_1_D[27]};
+				//cameradata[15:0] = {GPIO_1_D[15], GPIO_1_D[14], GPIO_1_D[13], GPIO_1_D[12], GPIO_1_D[11], GPIO_1_D[10], GPIO_1_D[9], GPIO_1_D[8]};
 				cycle = 1'b1;
 				W_EN = 0;
+				X_ADDR = X_ADDR;
+				//pixel_data_RGB332[7:5] = {GPIO_1_D[15], GPIO_1_D[14], GPIO_1_D[13]};
+				//pixel_data_RGB332[4:2] = {GPIO_1_D[10], GPIO_1_D[9], GPIO_1_D[8]};
+				pixel_data_RGB332[1:0] = {GPIO_1_D[12], GPIO_1_D[11]}; //something is wrong with the cycles, blue being output before red/green, but this code works
 			end
-			else if (cycle) begin
-				cameradata[7:0] = {GPIO_1_D[28], GPIO_1_D[29], GPIO_1_D[22], GPIO_1_D[23], GPIO_1_D[24], GPIO_1_D[25], GPIO_1_D[26], GPIO_1_D[27]};
-				pixel_data_RGB332[7:0] = {cameradata[15:13], cameradata[10:8], cameradata[4:3]};
+			else begin
+				//cameradata[15:8] = {GPIO_1_D[15], GPIO_1_D[14], GPIO_1_D[13], GPIO_1_D[12], GPIO_1_D[11], GPIO_1_D[10], GPIO_1_D[9], GPIO_1_D[8]};
+				//pixel_data_RGB332[7:0] = {cameradata[4], cameradata[3], cameradata[2], cameradata[10], cameradata[9], cameradata[8], cameradata[15], cameradata[14]};
+				pixel_data_RGB332[7:5] = {GPIO_1_D[15], GPIO_1_D[14], GPIO_1_D[13]};
+				pixel_data_RGB332[4:2] = {GPIO_1_D[10], GPIO_1_D[9], GPIO_1_D[8]};
 				cycle = 1'b0;
 				W_EN = 1;
+				X_ADDR = X_ADDR + 1'b1;
 			end
 		end
-	//end
+	end
 end
+
 	
 endmodule 

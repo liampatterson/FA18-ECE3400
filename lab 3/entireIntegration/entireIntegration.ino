@@ -167,9 +167,9 @@ Servo servoLeft;
 Servo servoRight;
 
 // to be used for mux digital inputs
-int S2 = 3;
-int S1 = 4;
-int S0 = 7;
+int S2 = 2;
+int S1 = 3;
+int S0 = 4;
 // Chn 000 left wall sensor
 // Chn 001 middle wall sensor
 // Chn 010 right wall sensor
@@ -230,7 +230,7 @@ void setup( void )
   ledSetup();
   radioSetup();
   //to be used for mux digital inputs
-  pinMode(2, OUTPUT); //enable
+  pinMode(7, OUTPUT); //enable bit is dig 7
   pinMode(S2, OUTPUT);
   pinMode(S1, OUTPUT);
   pinMode(S0, OUTPUT);
@@ -367,7 +367,7 @@ void readDistanceSensors() {
   avgLeftDistance = 0;
   avgMiddleDistance = 0;
   avgRightDistance = 0;
-  digitalWrite(2, LOW);
+  digitalWrite(7, LOW);
   while (counter < 5) {
     chooseChannel0();
     avgLeftDistance = avgLeftDistance + analogRead(muxOut);    
@@ -377,7 +377,7 @@ void readDistanceSensors() {
     avgRightDistance = avgRightDistance + analogRead(muxOut);
     counter += 1;
   }
-  digitalWrite(2, HIGH);
+  digitalWrite(7, HIGH);
   LeftDistance = avgLeftDistance / 5;
   MiddleDistance = avgMiddleDistance / 5;
   RightDistance = avgRightDistance / 5;
@@ -397,7 +397,7 @@ void readDistanceSensors() {
   String l = "left dist ";
   String r = "  right dist ";
   String m = "  middle dist ";
-  Serial.println("hi");
+ // Serial.println("hi");
   Serial.println(l+LeftDistance+m+MiddleDistance+r+RightDistance);
 //  avgLeftDistance = 0;
 //  avgMiddleDistance = 0;
@@ -555,7 +555,7 @@ boolean startSound( void )
     tempDIDR0 = DIDR0;    
     TIMSK0 = 0; // turn off timer0 for lower jitter
     ADCSRA = 0xe5; // set the adc to free running mode
-    ADMUX = 0x44; // use adc4
+    ADMUX = 0x44; // use adc4 yellow wire A4
     DIDR0 = 0x01; // turn off the digital input for adc0
     //while(1) { // reduces jitter
       //counter = counter+1;
@@ -621,7 +621,7 @@ boolean detectIR( void )
     tempDIDR0 = DIDR0;    
     TIMSK0 = 0; // turn off timer0 for lower jitter
     ADCSRA = 0xe5; // set the adc to free running mode
-    ADMUX = 0x45; // use adc5
+    ADMUX = 0x45; // use adc5 purple wire A5
     DIDR0 = 0x01; // turn off the digital input for adc0
     //while(1) { // reduces jitter
       //counter = counter+1;
@@ -682,6 +682,7 @@ boolean detectIR( void )
 /*********** RADIO STUFF BELOW THIS LINE **********/
 
 /*********** TO BE RUN IN setup() ***********/
+//grey ground, green power
 void radioSetup( void )
 {
     printf_begin();
