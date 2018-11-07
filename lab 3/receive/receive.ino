@@ -209,10 +209,12 @@ void setup(void)
 
 void loop(void)
 {
-  /*while ( role == role_pong_back ) {
+  while ( role == role_pong_back ) {
     receive();
     roleChange();
+    //printf("I'm waiting for a message...");
   } 
+  /*
   for ( int yVal = 0; yVal < 3; yVal++ ) {
     for ( int xVal = 0; xVal < 3; xVal++ ) {
       

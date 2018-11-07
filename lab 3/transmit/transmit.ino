@@ -78,7 +78,7 @@ typedef enum { role_ping_out = 1, role_pong_back } role_e;
 const char* role_friendly_name[] = { "invalid", "Ping out", "Pong back"};
 
 // The role of the current running sketch
-role_e role = role_pong_back;
+role_e role = role_ping_out;
 
 
 bool northWall;
@@ -146,8 +146,11 @@ void setup(void)
   //
   // Print preamble
   //
-
+  role = role_ping_out;
+  radioSetup();
   Serial.begin(9600);
+  transmit( 0xFF );
+
 
 }
 
@@ -157,7 +160,30 @@ void loop(void)
   role = role_ping_out;
   for ( int yVal = 0; yVal < 3; yVal++ ) {
     for ( int xVal = 0; xVal < 3; xVal++ ) {
-      transmitSqData( xVal, yVal );
+      
+      assignGlobalMaze( xVal, yVal );
+      byte coordinates = xVal << 4 | yVal ;
+      byte first = 0x1b;
+      byte second = 0x2b;
+      byte coords = 0xcc;
+      byte firstByte = 0;
+      firstByte = checkWalls( firstByte );
+      firstByte = checkTreasure( firstByte );
+      firstByte = checkIr( firstByte );
+      byte secondByte = EXPLORED;
+
+      transmit( first );
+      delay( 250 );
+      transmit( firstByte );
+      delay( 250 );
+      transmit( second );
+      delay( 250 );
+      transmit( secondByte);
+      delay( 250 );
+      transmit( coords );
+      delay( 250 );
+      transmit( coordinates );
+      delay( 2000 );
     }
   }
   byte ended = 0xFF;

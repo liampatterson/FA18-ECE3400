@@ -83,9 +83,9 @@
 // END BIT MASKS
 
 // BEGIN light sensor port numbers
-int lightLeftPort = A0;
-int lightMiddlePort = A1;
-int lightRightPort = A2;
+const int lightLeftPort = A0;
+const int lightMiddlePort = A1;
+const int lightRightPort = A2;
 
 int avgRightDistance = 0;
 int avgMiddleDistance = 0;
@@ -96,37 +96,51 @@ int lightMiddleVal = 0;
 int lightRightVal = 0;
 int lightLeftVal = 0;
 
-//MIDDLE
-int upperMiddleBoundWhite = 550;
-int lowerMiddleBoundWhite = 0;
+//#define   UPPER_MIDDLE_BOUND_WHITE   550;
+//#define   LOWER_MIDDLE_BOUND_WHITE   0;
+//#define   UPPER_MIDDLE_BOUND_BLACK   1000;
+//#define   LOWER_MIDDLE_BOUND_BLACK   550;
+//#define   UPPER_RIGHT_BOUND_WHITE   550;
+//#define   LOWER_RIGHT_BOUND_WHITE   0;
+//#define   UPPER_RIGHT_BOUND_BLACK   1000;
+//#define   LOWER_RIGHT_BOUND_BLACK   550;
+//#define   UPPER_LEFT_BOUND_WHITE   550;
+//#define   LOWER_LEFT_BOUND_WHITE   0;
+//#define   UPPER_LEFT_BOUND_BLACK   1000;
+//#define   LOWER_LEFT_BOUND_BLACK   550;
 
-int upperMiddleBoundBlack = 1000;
-int lowerMiddleBoundBlack = 550;
+//MIDDLE
+const int UPPER_MIDDLE_BOUND_WHITE = 550;
+const int LOWER_MIDDLE_BOUND_WHITE = 0;
+
+const int UPPER_MIDDLE_BOUND_BLACK = 1000;
+const int LOWER_MIDDLE_BOUND_BLACK = 550;
 
 //RIGHT
-int upperRightBoundWhite = 550;
-int lowerRightBoundWhite = 0;
+const int UPPER_RIGHT_BOUND_WHITE = 550;
+const int LOWER_RIGHT_BOUND_WHITE = 0;
 
-int upperRightBoundBlack = 1000;
-int lowerRightBoundBlack = 550;
+const int UPPER_RIGHT_BOUND_BLACK = 1000;
+const int LOWER_RIGHT_BOUND_BLACK = 550;
 
 ////LEFT
-int upperLeftBoundWhite = 550;
-int lowerLeftBoundWhite = 0 ; 
+const int UPPER_LEFT_BOUND_WHITE = 550;
+const int LOWER_LEFT_BOUND_WHITE = 0 ; 
 
-int upperLeftBoundBlack = 1000;
-int lowerLeftBoundBlack = 550;
+const int UPPER_LEFT_BOUND_BLACK = 1000;
+const int LOWER_LEFT_BOUND_BLACK = 550;
+
 
 // a vertex for the left
 //int upperLeftBoundVertexWhite = 65;
 //int lowerLeftBoundVertexWhite = 0;
 
-boolean middleIsWhite = (lightMiddleVal < upperMiddleBoundWhite );
-boolean rightIsBlack = (lightRightVal > lowerRightBoundBlack && lightRightVal < upperRightBoundBlack );
-boolean rightIsWhite = ( lightRightVal < upperRightBoundWhite );
-boolean leftIsBlack = (lightLeftVal > lowerLeftBoundBlack && lightLeftVal < upperLeftBoundBlack );
-boolean leftIsWhite = (lightLeftVal < upperLeftBoundWhite );
-boolean middleIsBlack = (lightMiddleVal > lowerMiddleBoundBlack && lightMiddleVal < upperMiddleBoundBlack );
+boolean middleIsWhite = (lightMiddleVal < UPPER_MIDDLE_BOUND_WHITE );
+boolean rightIsBlack = (lightRightVal > LOWER_RIGHT_BOUND_BLACK && lightRightVal < UPPER_RIGHT_BOUND_BLACK );
+boolean rightIsWhite = ( lightRightVal < UPPER_RIGHT_BOUND_WHITE );
+boolean leftIsBlack = (lightLeftVal > LOWER_LEFT_BOUND_BLACK && lightLeftVal < UPPER_LEFT_BOUND_BLACK );
+boolean leftIsWhite = (lightLeftVal < UPPER_LEFT_BOUND_WHITE );
+boolean middleIsBlack = (lightMiddleVal > LOWER_MIDDLE_BOUND_BLACK && lightMiddleVal < UPPER_MIDDLE_BOUND_BLACK );
 
 boolean foundVertex = ( leftIsWhite && middleIsWhite && rightIsWhite );
 
@@ -145,6 +159,7 @@ int counter = 0;
 int average = 0;
 
 boolean hasStarted = false;
+
 int caseVariable = B000; //binary value where leftmost bit is left wall, then middle is middle wall, then rightmost bit is right wall
 
 // servo objects
@@ -213,8 +228,7 @@ void setup( void )
   // put your setup code here, to run once:
   Serial.begin( 9600 );
   ledSetup();
-  //radioSetup();
-  //servoSetup();
+  radioSetup();
   //to be used for mux digital inputs
   pinMode(2, OUTPUT); //enable
   pinMode(S2, OUTPUT);
@@ -233,9 +247,9 @@ void loop() {
     }
   }
   else {
-    if(detectIR()){
-      goStop();
-    }
+//    if(detectIR()){
+//      goStop();
+//    }
     if ( !foundVertex ) { //no vertex, go straight
       Straight();
     }
@@ -247,21 +261,21 @@ void loop() {
           goRight();
           foundVertex = false;
           //Serial.println( "Left Wall" );
- //         orientRobot( orientation, caseVariable );
- //         transmitSqData( yVal, xVal );
+          orientRobot( orientation, caseVariable );
+          transmitSqData( yVal, xVal );
           break;
         case B011: //right and front wall
           goLeft();
         //Serial.println( "Right Wall" );
           foundVertex = false;
- //         orientRobot( orientation, caseVariable );
- //         transmitSqData( yVal, xVal );
+          orientRobot( orientation, caseVariable );
+          transmitSqData( yVal, xVal );
           break;
         case B010: //front wall only, default to turn left
           goLeft();
           foundVertex = false;
-//          orientRobot( orientation, caseVariable );
-//          transmitSqData( yVal, xVal );
+          orientRobot( orientation, caseVariable );
+          transmitSqData( yVal, xVal );
           break;
 //        case B111: //front, left, and right walls
 //          turnAround();
@@ -272,8 +286,8 @@ void loop() {
         default:  
           Straight(); 
           foundVertex = false;
-  //        orientRobot( orientation, caseVariable );
-  //        transmitSqData( yVal, xVal );
+          orientRobot( orientation, caseVariable );
+          transmitSqData( yVal, xVal );
           break;
       }
       Straight();
@@ -330,12 +344,12 @@ void readLightSensors( void )
 //  String lightOutput = left + lightLeftVal + middle + lightMiddleVal + right + lightRightVal;
 //  Serial.println( lightOutput );
   
-  middleIsWhite = (lightMiddleVal < upperMiddleBoundWhite );
-  middleIsBlack = (lightMiddleVal > lowerMiddleBoundBlack);
-  rightIsBlack = (lightRightVal > lowerRightBoundBlack);
-  rightIsWhite = ( lightRightVal < upperRightBoundWhite );
-  leftIsBlack = (lightLeftVal > lowerLeftBoundBlack);
-  leftIsWhite = (lightLeftVal < upperLeftBoundWhite );
+  middleIsWhite = (lightMiddleVal < UPPER_MIDDLE_BOUND_WHITE );
+  middleIsBlack = (lightMiddleVal > LOWER_MIDDLE_BOUND_BLACK);
+  rightIsBlack = (lightRightVal > LOWER_RIGHT_BOUND_BLACK);
+  rightIsWhite = ( lightRightVal < UPPER_RIGHT_BOUND_WHITE );
+  leftIsBlack = (lightLeftVal > LOWER_LEFT_BOUND_BLACK);
+  leftIsWhite = (lightLeftVal < UPPER_LEFT_BOUND_WHITE );
 
   foundVertex = ( leftIsWhite && middleIsWhite && rightIsWhite );
 
@@ -1085,6 +1099,6 @@ void transmit( byte payload )
     }
 
     // Try again 1s later
-    delay(1000);
+    //delay(1000);
   //}
 }
