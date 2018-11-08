@@ -31,10 +31,10 @@ reg [15:0] BLUECOUNTTEMP = 0;
 
 always @ (posedge CLK, negedge VGA_VSYNC_NEG) begin
 		if (!VGA_VSYNC_NEG) begin
-			if (BLUECOUNTTEMP > REDCOUNTTEMP) begin //100 is arbitrary, can change && BLUECOUNT > 10'b0001100100
+			if (BLUECOUNTTEMP > REDCOUNTTEMP && BLUECOUNTTEMP > 16’d4000) begin //100 is arbitrary, can change
 				RESULT = 2'b10; //when color is 10, blue
 			end
-			else if (REDCOUNTTEMP > BLUECOUNTTEMP) begin //&& REDCOUNT > 10'b0001100100
+			else if (REDCOUNTTEMP > BLUECOUNTTEMP && REDCOUNTTEMP > 16’d4000) begin //
 				RESULT = 2'b01; //when color is 01, red
 			end
 			else begin

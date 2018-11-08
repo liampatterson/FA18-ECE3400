@@ -58,13 +58,15 @@ input 		     [1:0]		KEY;
 reg [7:0]	pixel_data_RGB332;
 
 ///// READ/WRITE ADDRESS /////
-reg [14:0] X_ADDR;
-reg [14:0] Y_ADDR;
+reg [14:0] X_ADDR = 0;
+reg [14:0] Y_ADDR = 0;
 wire [14:0] WRITE_ADDRESS;
 reg [14:0] READ_ADDRESS; 
 
 assign WRITE_ADDRESS = X_ADDR + Y_ADDR*(`SCREEN_WIDTH);
-
+assign GPIO_0_D[31] = RESULT[1];
+assign GPIO_0_D[33] = RESULT[0];
+assign GPIO_0_D[29] = 1'b1;
 ///// VGA INPUTS/OUTPUTS /////
 wire 			VGA_RESET;
 wire [7:0]	VGA_COLOR_IN;
@@ -126,14 +128,14 @@ IMAGE_PROCESSOR proc (
 );
 
 
-always @ (negedge HREF) begin
-	if (Y_ADDR >= `SCREEN_HEIGHT - 1) begin
-		Y_ADDR = 0;
-	end
-	else begin
-		Y_ADDR = Y_ADDR + 1;
-	end
-end
+//always @ (negedge HREF) begin
+//	if (Y_ADDR >= `SCREEN_HEIGHT - 1 || VSYNC) begin
+//		Y_ADDR = 0;
+//	end
+//	else begin
+//		Y_ADDR = Y_ADDR + 1;
+//	end
+//end
 
 
 ///////* Update Read Address *///////
@@ -157,27 +159,31 @@ end
 
 //downsampler
 reg cycle = 1'b0;
+reg prevHREF;
+reg prevVSYNC;
 //reg [15:0] cameradata;
 
 
 always @ (posedge PCLK) begin 
-	if (VSYNC) begin 
+	if (VSYNC && !prevVSYNC) begin 
 		X_ADDR = 0;
+		Y_ADDR = 0;
 		cycle = 0;
 		W_EN = 0;
 		pixel_data_RGB332[7:0] = 0;
 		//cameradata[15:0] = 0;
 	end
-	else begin 
-		if (!HREF) begin
+	else if (!HREF && prevHREF) begin
 			X_ADDR = 0;
+			Y_ADDR = Y_ADDR + 1;
 			cycle = 0;
 			W_EN = 0;
 			pixel_data_RGB332[7:0] = 0;
 			//cameradata[15:0] = 0;
-		end
-		else begin
-			if (!cycle ) begin
+	end
+	else begin
+			Y_ADDR = Y_ADDR;
+			if (!cycle && HREF) begin
 				//cameradata[15:0] = {GPIO_1_D[15], GPIO_1_D[14], GPIO_1_D[13], GPIO_1_D[12], GPIO_1_D[11], GPIO_1_D[10], GPIO_1_D[9], GPIO_1_D[8]};
 				cycle = 1'b1;
 				W_EN = 0;
@@ -186,17 +192,22 @@ always @ (posedge PCLK) begin
 				//pixel_data_RGB332[4:2] = {GPIO_1_D[10], GPIO_1_D[9], GPIO_1_D[8]};
 				pixel_data_RGB332[1:0] = {GPIO_1_D[12], GPIO_1_D[11]}; //something is wrong with the cycles, blue being output before red/green, but this code works
 			end
-			else begin
+			else if (cycle && HREF) begin
 				//cameradata[15:8] = {GPIO_1_D[15], GPIO_1_D[14], GPIO_1_D[13], GPIO_1_D[12], GPIO_1_D[11], GPIO_1_D[10], GPIO_1_D[9], GPIO_1_D[8]};
 				//pixel_data_RGB332[7:0] = {cameradata[4], cameradata[3], cameradata[2], cameradata[10], cameradata[9], cameradata[8], cameradata[15], cameradata[14]};
 				pixel_data_RGB332[7:5] = {GPIO_1_D[15], GPIO_1_D[14], GPIO_1_D[13]};
 				pixel_data_RGB332[4:2] = {GPIO_1_D[10], GPIO_1_D[9], GPIO_1_D[8]};
+				//pixel_data_RGB332[1:0] = {GPIO_1_D[12], GPIO_1_D[11]};
 				cycle = 1'b0;
 				W_EN = 1;
 				X_ADDR = X_ADDR + 1'b1;
 			end
-		end
+			else begin
+				X_ADDR = 0;
+			end
 	end
+	prevHREF = HREF;
+	prevVSYNC = VSYNC;
 end
 
 	
