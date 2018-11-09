@@ -13,6 +13,8 @@ visited = []; //frontier set
 startNode = (0,0);
 stack.push(startNode);
 
+
+//not sure how to write possibleForwardNode etc, need to know orientation and coordinate mapping stuff
 while(!stack.empty()){
   curent = stack.pop;
   current.visited = true;
