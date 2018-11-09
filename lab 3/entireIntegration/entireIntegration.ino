@@ -167,9 +167,9 @@ Servo servoLeft;
 Servo servoRight;
 
 // to be used for mux digital inputs
-int S2 = 2;
+int S2 = 4;
 int S1 = 3;
-int S0 = 4;
+int S0 = 2;
 // Chn 000 left wall sensor
 // Chn 001 middle wall sensor
 // Chn 010 right wall sensor
@@ -247,16 +247,23 @@ void loop() {
     }
   }
   else {
+    //detect IR at any time, currently not in it
 //    if(detectIR()){
 //      goStop();
+//      delay(2000);
+//      Straight();
 //    }
     if ( !foundVertex ) { //no vertex, go straight
       Straight();
     }
     else { //found vertex
       //delay(500);
-     // goStop();
-      
+      goStop();
+      delay(500);
+//      if(detectIR()){
+//        goStop();
+//        Straight();
+//      }
       Serial.println("found vertex ********************");
       readDistanceSensors();
 //      coordinateCalculation( orientation );
@@ -281,20 +288,22 @@ void loop() {
         //  orientRobot( orientation, caseVariable );
          // transmitSqData( yVal, xVal );
           break;
-//        case B111: //front, left, and right walls
-//          turnAround();
-//          foundVertex = false;
+        case B111: //front, left, and right walls
+          turnAround();
+          foundVertex = false;
 //          orientRobot( orientation, caseVariable );
 //          transmitSqData( yVal, xVal );
-//          break;
+          break;
         default:  
-          Straight(); 
+          goStraight(); 
+          delay(200);
+          Straight();
           foundVertex = false;
          // orientRobot( orientation, caseVariable );
          // transmitSqData( yVal, xVal );
           break;
       }
-      Straight();
+      
     }
   }
 }
@@ -336,17 +345,17 @@ void readLightSensors( void )
   //Serial.println("hello");
   lightLeftVal = avgLightLeft/3;
   lightRightVal = avgLightRight/3;
-//  String left = "Left: ";
-//  Serial.println(left);
-//  Serial.println(lightLeftVal);
-//  String middle = ", Middle: ";
-//  Serial.println(middle);
-//  Serial.println(lightMiddleVal);
-//  String right = ", Right: ";
-//  Serial.println(right);
-//  Serial.println(lightRightVal);
-//  String lightOutput = left + lightLeftVal + middle + lightMiddleVal + right + lightRightVal;
-//  Serial.println( lightOutput );
+  String left = "Left: ";
+  Serial.println(left);
+  Serial.println(lightLeftVal);
+  String middle = ", Middle: ";
+  Serial.println(middle);
+  Serial.println(lightMiddleVal);
+  String right = ", Right: ";
+  Serial.println(right);
+  Serial.println(lightRightVal);
+  String lightOutput = left + lightLeftVal + middle + lightMiddleVal + right + lightRightVal;
+  Serial.println( lightOutput );
   
   middleIsWhite = (lightMiddleVal < UPPER_MIDDLE_BOUND_WHITE );
   middleIsBlack = (lightMiddleVal > LOWER_MIDDLE_BOUND_BLACK);
@@ -388,10 +397,10 @@ void readDistanceSensors() {
   int a = B100;
   int b = B010;
   int c = B001;
-  if(LeftDistance>120){  
+  if(LeftDistance>150){  
     caseVariable = caseVariable | a; //set leftmost bit to 1
   }  
-  if(MiddleDistance>70){    
+  if(MiddleDistance>150){    
     caseVariable = caseVariable | b; //set middle bit to 1
   } 
   if(RightDistance>160){   
@@ -402,7 +411,7 @@ void readDistanceSensors() {
   String r = "  right dist ";
   String m = "  middle dist ";
  // Serial.println("hi");
-  Serial.println(l+LeftDistance+m+MiddleDistance+r+RightDistance);
+//  Serial.println(l+LeftDistance+m+MiddleDistance+r+RightDistance);
 //  avgLeftDistance = 0;
 //  avgMiddleDistance = 0;
 //  avgRightDistance = 0;
@@ -455,7 +464,7 @@ void chooseChannel3( void )
         }
       }
       
-      
+      //changed to write both to 80
       void goLeft( void ) 
       {
         correctLeft();
@@ -463,8 +472,8 @@ void chooseChannel3( void )
         delay( 150 );
         readLightSensors();
         while ( !( rightIsBlack && leftIsBlack && middleIsWhite ) ) {
-          servoLeft.write( 90 );
-          servoRight.write( 60 );
+          servoLeft.write( 80 );
+          servoRight.write( 80 );
           Serial.println( "turning left" );
           readLightSensors();
         }
@@ -477,9 +486,9 @@ void chooseChannel3( void )
         delay( 150 );
         readLightSensors();
         while ( !( rightIsBlack && leftIsBlack && middleIsWhite ) ) {
-          servoLeft.write( 180 );
-          servoRight.write( 180 );
-          Serial.println( "turning left" );
+          servoLeft.write( 0 );
+          servoRight.write( 0 );
+          //Serial.println( "turning left" );
           readLightSensors();
         }
         
@@ -489,7 +498,7 @@ void chooseChannel3( void )
       {
         servoLeft.write( 90 );
         servoRight.write( 90 );
-        delay(200);
+//        delay(2000);
         Serial.println( "going stopped" );
       }
       
@@ -536,8 +545,8 @@ void chooseChannel3( void )
 
       void goStraight( void )
       {
-        servoLeft.write( 95 );
-        servoRight.write( 85 );
+        servoLeft.write( 100 );
+        servoRight.write( 80 );
         Serial.println( "going straight" );
       }
 // END MOVEMENT DEFINITIONS
