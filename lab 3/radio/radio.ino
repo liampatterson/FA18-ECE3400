@@ -161,7 +161,7 @@ void setup(void)
 
   // optionally, increase the delay between retries & # of retries
   radio.setRetries(15, 15);
-  radio.setAutoAck(true);
+  radio.setAutoAck(true); //radio.enableAckPayload(); radio.enableDynamicPayload();
   // set the channel
   radio.setChannel(0x50);
   // set the power
