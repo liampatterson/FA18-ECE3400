@@ -478,12 +478,15 @@ void chooseChannel3( void )
         servoLeft.write( 0 );
         servoRight.write( 0 );
         Serial.println( "turning left" );
-        delay( 150 );
+        delay( 200 );
         readLightSensors();
-        while ( !( rightIsBlack && leftIsBlack && middleIsWhite ) ) {
-          readLightSensors();
-          
+        while ( middleIsBlack ) {
+          readLightSensors();   
         }
+//        delay( 100 );
+//        while ( middleIsBlack ) {
+//          readLightSensors();   
+//        }
         
       }
       
