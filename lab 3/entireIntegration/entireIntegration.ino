@@ -259,7 +259,7 @@ void loop() {
     else { //found vertex
       //delay(500);
       goStop();
-      delay(500);
+      delay(300);
 //      if(detectIR()){
 //        goStop();
 //        Straight();
@@ -452,44 +452,37 @@ void chooseChannel3( void )
 // BEGIN MOVEMENT DEFINITIONS
       void goRight( void )
       {
-        correctRight();
-        Serial.println( "turning right" );
-        delay( 150 );
+        servoLeft.write( 100 );
+        servoRight.write( 90 );
+        delay( 200 );
         readLightSensors();
-        while ( !( rightIsBlack && leftIsBlack && middleIsWhite ) ) {
-          servoLeft.write( 120 );
-          servoRight.write( 90 );
-          //Serial.println( "turning right" );
+        while ( middleIsBlack ) {
           readLightSensors();
         }
       }
       
-      //changed to write both to 80
+      //used to be 90 and 80 just changed it to 90 and 60 as of 2:17pm 11/11
       void goLeft( void ) 
       {
-        correctLeft();
-        //Serial.println( "turning left" );
-        delay( 150 );
+        servoLeft.write( 90 );
+        servoRight.write( 80 );    
+        delay( 200 );
         readLightSensors();
-        while ( !( rightIsBlack && leftIsBlack && middleIsWhite ) ) {
-          servoLeft.write( 80 );
-          servoRight.write( 80 );
-          Serial.println( "turning left" );
-          readLightSensors();
+        while ( middleIsBlack) {
+          readLightSensors();       
         }
       }
       
       void turnAround( void )
       {
-        correctLeft();
+        servoLeft.write( 0 );
+        servoRight.write( 0 );
         Serial.println( "turning left" );
         delay( 150 );
         readLightSensors();
         while ( !( rightIsBlack && leftIsBlack && middleIsWhite ) ) {
-          servoLeft.write( 0 );
-          servoRight.write( 0 );
-          //Serial.println( "turning left" );
           readLightSensors();
+          
         }
         
       }
@@ -505,7 +498,7 @@ void chooseChannel3( void )
       
       void correctLeft( void )
       {
-        servoLeft.write( 90 ); //stop one wheel
+        servoLeft.write( 92 ); //stop one wheel
         servoRight.write( 85 );
         Serial.println( "correcting left" );
       }
@@ -514,7 +507,7 @@ void chooseChannel3( void )
       void correctRight( void )
       {
         servoLeft.write( 95 );
-        servoRight.write( 90 ); //stop one wheel
+        servoRight.write( 88 ); //stop one wheel
         Serial.println( "correcting right" );
       }
       
@@ -545,8 +538,8 @@ void chooseChannel3( void )
 
       void goStraight( void )
       {
-        servoLeft.write( 100 );
-        servoRight.write( 80 );
+        servoLeft.write( 95 );
+        servoRight.write( 85 );
         Serial.println( "going straight" );
       }
 // END MOVEMENT DEFINITIONS
