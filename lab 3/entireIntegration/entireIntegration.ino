@@ -1,15 +1,11 @@
 #define LOG_OUT 1 // use the log output function
 #define FFT_N 256 // set to 256 point fft
-#define BLUE_LED 4
-#define RED_LED 2
-#define WHITE_LED 1
-#define GREEN_LED 0
 
 #include <FFT.h> // include the library
 #include <Servo.h>
 #include <SPI.h>
-//#include "nRF24L01.h"
-//#include "RF24.h"
+#include "nRF24L01.h"
+#include "RF24.h"
 #include "printf.h"
 
 
@@ -48,7 +44,7 @@
       { { true, true, false, true }, { true, true, false, false }, {false, true, true, false} }  
     };*/
 
-    typedef enum { north_up=0, north_left, north_back, north_right } Orientation; //
+    typedef enum { north_up=0, north_left=1, north_back=2, north_right=3 } Orientation; //
 
     /**         __360º__
      *        /  N-Up    \
@@ -178,14 +174,14 @@ int S0 = 2;
 // RADIO CONSTANTS
     // Set up nRF24L01 radio on SPI bus plus pins 9 & 10
     
-//    RF24 radio(9, 10);
+    RF24 radio(9, 10);
     
     //
     // Topology
     //
     
     // Radio pipe addresses for the 2 nodes to communicate.
-   // const uint64_t pipes[2] = { 0x000000000ALL, 0x000000000BLL };
+    const uint64_t pipes[2] = { 0x000000000ALL, 0x000000000BLL };
     
     //
     // Role management
@@ -195,29 +191,29 @@ int S0 = 2;
     //
     
     // The various roles supported by this sketch
- ////   typedef enum { role_ping_out = 1, role_pong_back } role_e;
+  typedef enum { role_ping_out = 1, role_pong_back } role_e;
     
     // The debug-friendly names of those roles
     const char* role_friendly_name[] = { "invalid", "Ping out", "Pong back"};
     
     // The role of the current running sketch
-   // role_e role = role_ping_out;
+    role_e role = role_ping_out;
     
 //    
-//    bool northWall;
-//    bool southWall;
-//    bool eastWall;
-//    bool westWall;
-//    bool treasureCircle;
-//    bool treasureTriangle;
-//    bool treasureSquare;
-//    bool treasureRed;
-//    bool treasureBlue;
-//    bool robotPresent;
+    bool northWall;
+    bool southWall;
+    bool eastWall;
+    bool westWall;
+    bool treasureCircle;
+    bool treasureTriangle;
+    bool treasureSquare;
+    bool treasureRed;
+    bool treasureBlue;
+    bool robotPresent;
 //
-//    Orientation orientation = north_up;
-//    int xVal = 0;
-//    int yVal = 0;
+    Orientation orientation = north_left;
+    int xVal = 0;
+    int yVal = 0;
 
 // END RADIO CONSTANTS
 
@@ -228,7 +224,8 @@ void setup( void )
   // put your setup code here, to run once:
   Serial.begin( 9600 );
   ledSetup();
-  //radioSetup();
+  radioSetup();
+  // Serial.println("completed radio setup***************************");
   //to be used for mux digital inputs
   pinMode(7, OUTPUT); //enable bit is dig 7
   pinMode(S2, OUTPUT);
@@ -240,7 +237,7 @@ void setup( void )
 void loop() {
   readLightSensors();
   if (!hasStarted) {
-    Serial.println("here not started");
+    // Serial.println("here not started");
     if (startSound()) {
       hasStarted = true;
       servoSetup();
@@ -264,43 +261,43 @@ void loop() {
 //        goStop();
 //        Straight();
 //      }
-      Serial.println("found vertex ********************");
+      // Serial.println("found vertex ********************");
       readDistanceSensors();
-//      coordinateCalculation( orientation );
+      coordinateCalculation( orientation );
       switch( caseVariable ){
         case B110: //left and front wall
           goRight();
           foundVertex = false;
-          //Serial.println( "Left Wall" );
-         // orientRobot( orientation, caseVariable );
-        //  transmitSqData( yVal, xVal );
+          //// Serial.println( "Left Wall" );
+          orientRobot( caseVariable );
+          transmitSqData( yVal, xVal );
           break;
         case B011: //right and front wall
           goLeft();
-        //Serial.println( "Right Wall" );
+        //// Serial.println( "Right Wall" );
           foundVertex = false;
-         // orientRobot( orientation, caseVariable );
-       //   transmitSqData( yVal, xVal );
+          orientRobot( caseVariable );
+          transmitSqData( yVal, xVal );
           break;
         case B010: //front wall only, default to turn left
           goLeft();
           foundVertex = false;
-        //  orientRobot( orientation, caseVariable );
-         // transmitSqData( yVal, xVal );
+          orientRobot( caseVariable );
+          transmitSqData( yVal, xVal );
           break;
         case B111: //front, left, and right walls
           turnAround();
           foundVertex = false;
-//          orientRobot( orientation, caseVariable );
-//          transmitSqData( yVal, xVal );
+          orientRobot( caseVariable );
+          transmitSqData( yVal, xVal );
           break;
         default:  
           goStraight(); 
           delay(200);
           Straight();
           foundVertex = false;
-         // orientRobot( orientation, caseVariable );
-         // transmitSqData( yVal, xVal );
+          orientRobot( caseVariable );
+          transmitSqData( yVal, xVal );
           break;
       }
       
@@ -334,7 +331,7 @@ int avgLightMiddle = 0;
 void readLightSensors( void )
 {
   while (counterLight < 3) {
-    // Serial.println("got here");
+    // // Serial.println("got here");
      avgLightMiddle= avgLightMiddle + analogRead( lightMiddlePort );
      avgLightLeft= avgLightLeft+analogRead( lightLeftPort );
      avgLightRight= avgLightRight+ analogRead( lightRightPort );
@@ -342,20 +339,20 @@ void readLightSensors( void )
   }
   counterLight = 0;
   lightMiddleVal = avgLightMiddle/3;
-  //Serial.println("hello");
+  //// Serial.println("hello");
   lightLeftVal = avgLightLeft/3;
   lightRightVal = avgLightRight/3;
   String left = "Left: ";
-  Serial.println(left);
-  Serial.println(lightLeftVal);
+  // Serial.println(left);
+  // Serial.println(lightLeftVal);
   String middle = ", Middle: ";
-  Serial.println(middle);
-  Serial.println(lightMiddleVal);
+  // Serial.println(middle);
+  // Serial.println(lightMiddleVal);
   String right = ", Right: ";
-  Serial.println(right);
-  Serial.println(lightRightVal);
+  // Serial.println(right);
+  // Serial.println(lightRightVal);
   String lightOutput = left + lightLeftVal + middle + lightMiddleVal + right + lightRightVal;
-  Serial.println( lightOutput );
+  // Serial.println( lightOutput );
   
   middleIsWhite = (lightMiddleVal < UPPER_MIDDLE_BOUND_WHITE );
   middleIsBlack = (lightMiddleVal > LOWER_MIDDLE_BOUND_BLACK);
@@ -410,8 +407,8 @@ void readDistanceSensors() {
   String l = "left dist ";
   String r = "  right dist ";
   String m = "  middle dist ";
- // Serial.println("hi");
-//  Serial.println(l+LeftDistance+m+MiddleDistance+r+RightDistance);
+ // // Serial.println("hi");
+//  // Serial.println(l+LeftDistance+m+MiddleDistance+r+RightDistance);
 //  avgLeftDistance = 0;
 //  avgMiddleDistance = 0;
 //  avgRightDistance = 0;
@@ -477,7 +474,7 @@ void chooseChannel3( void )
       {
         servoLeft.write( 0 );
         servoRight.write( 0 );
-        Serial.println( "turning left" );
+        // Serial.println( "turning left" );
         delay( 200 );
         readLightSensors();
         while ( middleIsBlack ) {
@@ -495,7 +492,7 @@ void chooseChannel3( void )
         servoLeft.write( 90 );
         servoRight.write( 90 );
 //        delay(2000);
-        Serial.println( "going stopped" );
+        // Serial.println( "going stopped" );
       }
       
       
@@ -503,7 +500,7 @@ void chooseChannel3( void )
       {
         servoLeft.write( 92 ); //stop one wheel
         servoRight.write( 85 );
-        Serial.println( "correcting left" );
+        // Serial.println( "correcting left" );
       }
       
       
@@ -511,7 +508,7 @@ void chooseChannel3( void )
       {
         servoLeft.write( 95 );
         servoRight.write( 88 ); //stop one wheel
-        Serial.println( "correcting right" );
+        // Serial.println( "correcting right" );
       }
       
       void doNotStart( void )
@@ -525,17 +522,17 @@ void chooseChannel3( void )
         //case 1, follow line straight, middle should see white, left/right on black.
         if ( middleIsWhite && leftIsBlack && rightIsBlack ) {
           goStraight();
-          Serial.println("not correcting");
+          // Serial.println("not correcting");
         }
         //case 2, correct left, because I see left white.
         if ( leftIsWhite && rightIsBlack ) {
           correctLeft();
-          Serial.println("correcting left");
+          // Serial.println("correcting left");
         }
         //case 3, correct right, because I see right white.
         if ( rightIsWhite && leftIsBlack ) {
           correctRight();
-          Serial.println("correcting right");
+          // Serial.println("correcting right");
         }
       }
 
@@ -543,7 +540,7 @@ void chooseChannel3( void )
       {
         servoLeft.write( 95 );
         servoRight.write( 85 );
-        Serial.println( "going straight" );
+        // Serial.println( "going straight" );
       }
 // END MOVEMENT DEFINITIONS
 
@@ -585,21 +582,21 @@ boolean startSound( void )
       fft_run(); // process the data in the fft
       fft_mag_log(); // take the output of the fft
       sei();
-      //Serial.println("start");
+      //// Serial.println("start");
       for (byte i = 0 ; i < FFT_N/2 ; i++) { 
-        //Serial.println(fft_log_out[i]); // send out the data
+        //// Serial.println(fft_log_out[i]); // send out the data
       }
-      //Serial.println(fft_log_out[5]);
+      //// Serial.println(fft_log_out[5]);
       start = false;
       average = average + fft_log_out[5];
       String avg = "average ";
-      //Serial.println(avg+average);
+      //// Serial.println(avg+average);
       if(counter == 5){ 
         average = average/5; 
         
-        //Serial.println(avg+average);
+        //// Serial.println(avg+average);
         if(average > 150){
-          Serial.println("****************************this is 6.6Hz"); 
+          // Serial.println("****************************this is 6.6Hz"); 
           //goStop();
           //delay(5000);
           start = true;
@@ -611,7 +608,7 @@ boolean startSound( void )
         average = 0;
       }
      counter+=1; 
-     //Serial.println(counter);
+     //// Serial.println(counter);
     //}
     ADCSRA = tempADCSRA;
     TIMSK0= tempTIMSK0;
@@ -651,21 +648,21 @@ boolean detectIR( void )
       fft_run(); // process the data in the fft
       fft_mag_log(); // take the output of the fft
       sei();
-      //Serial.println("start");
+      //// Serial.println("start");
       for (byte i = 0 ; i < FFT_N/2 ; i++) { 
-       // Serial.println(fft_log_out[i]); // send out the data
+       // // Serial.println(fft_log_out[i]); // send out the data
       }
 
       r = false;
       average = average + fft_log_out[42];
       String avg = "average ";
-      //Serial.println(avg+average);
+      //// Serial.println(avg+average);
       if(counter == 5){ 
         average = average/5; 
         
-        //Serial.println(avg+average);
+        //// Serial.println(avg+average);
         if(average > 120){
-          Serial.println("****************************this is 6kHz"); 
+          // Serial.println("****************************this is 6kHz"); 
           //goStop();
           //delay(5000);
           r = true;
@@ -677,7 +674,7 @@ boolean detectIR( void )
         average = 0;
       }
      counter+=1; 
-     //Serial.println(counter);
+     //// Serial.println(counter);
     //}
     ADCSRA = tempADCSRA;
     TIMSK0= tempTIMSK0;
@@ -691,424 +688,512 @@ boolean detectIR( void )
 /*********** RADIO STUFF BELOW THIS LINE **********/
 
 /*********** TO BE RUN IN setup() ***********/
-////grey ground, green power
-//void radioSetup( void )
-//{
-//    printf_begin();
-//  //printf("\n\rRF24/examples/GettingStarted/\n\r");
-//  //printf("ROLE: %s\n\r", role_friendly_name[role]);
-//  //printf("*** PRESS 'T' to begin transmitting to the other node\n\r");
-//
-//  //
-//  // Setup and configure rf radio
-//  //
-//
-//  radio.begin();
-//
-//  // optionally, increase the delay between retries & # of retries
-//  radio.setRetries(15, 15);
-//  radio.setAutoAck(true);
-//  // set the channel
-//  radio.setChannel(0x50);
-//  // set the power
-//  // RF24_PA_MIN=-18dBm, RF24_PA_LOW=-12dBm, RF24_PA_HIGH=-6dBM, and RF24_PA_MAX=0dBm.
-//  radio.setPALevel(RF24_PA_MAX);
-//  //RF24_250KBPS for 250kbs, RF24_1MBPS for 1Mbps, or RF24_2MBPS for 2Mbps
-//  radio.setDataRate(RF24_2MBPS);
-//
-//  // optionally, reduce the payload size.  seems to
-//  // improve reliability
-//  radio.setPayloadSize(8);
-//
-//  //
-//  // Open pipes to other nodes for communication
-//  //
-//
-//  // This simple sketch opens two pipes for these two nodes to communicate
-//  // back and forth.
-//  // Open 'our' pipe for writing
-//  // Open the 'other' pipe for reading, in position #1 (we can have up to 5 pipes open for reading)
-//
-//  if ( role == role_ping_out )
-//  {
-//    radio.openWritingPipe(pipes[0]);
-//    radio.openReadingPipe(1, pipes[1]);
-//  }
-//  else
-//  {
-//    radio.openWritingPipe(pipes[1]);
-//    radio.openReadingPipe(1, pipes[0]);
-//  }
-//
-//  //
-//  // Start listening
-//  //
-//
-//  radio.startListening();
-//
-//  //
-//  // Dump the configuration of the rf unit for debugging
-//  //
-//
-//  //radio.printDetails();
-//  Serial.println( "reset" );
-//  transmit( 0xFF );
-//  transmit( 0xFF );
-//  transmit( 0xFF );
-//}
-//
-//
-///* MAIN TRANSMIT FUNCTION, CALL ON TRAVERSING TO 
-// *  NEW SQUARE
-// */
-//void transmitSqData( int xVal, int yVal )
-//{
-////    assignGlobalMaze( xVal, yVal ); //FOR SIMULATION ONLY !!!!!!!!!!
-//    byte coordinates = xVal << 4 | yVal ;
-//    byte first = 0x1b;
-//    byte second = 0x2b;
-//    byte coords = 0xcc;
-//    byte firstByte = 0;
-//    firstByte = checkWalls( firstByte );
-//    firstByte = checkTreasure( firstByte );
-//    firstByte = checkIr( firstByte );
-//    byte secondByte = EXPLORED;
-//
-//    transmit( first );
-//    //delay( 250 );
-//    transmit( firstByte );
-//    //delay( 250 );
-//    transmit( second );
-//    //delay( 250 );
-//    transmit( secondByte);
-//    //delay( 250 );
-//    transmit( coords );
-//    //delay( 250 );
-//    transmit( coordinates );
-//    //delay( 2000 );
-//}
-//
-//
-//void orientRobot( Orientation orientation, int wallState )
-//{
-//  switch( wallState ) {
-//   case B110: //left and front wall
-//        switch ( orientation ) {
-//          case north_up:
-//            northWall = true;
-//            westWall = true;
-//            southWall = false;
-//            eastWall = false;
-//            break;
-//
-//          case north_left:
-//            northWall = true;
-//            westWall = false;
-//            southWall = false;
-//            eastWall = true;
-//            break;
-//
-//          case north_back:
-//            northWall = false;
-//            westWall = false;
-//            southWall = true;
-//            eastWall = true;
-//            break;
-//
-//          case north_right:
-//           northWall = false;
-//            westWall = true;
-//            southWall = true;
-//            eastWall = false;
-//            break;
-//          default:
-//            break;
+//grey ground, green power
+void radioSetup( void )
+{
+    printf_begin();
+  //printf("\n\rRF24/examples/GettingStarted/\n\r");
+  //printf("ROLE: %s\n\r", role_friendly_name[role]);
+  //printf("*** PRESS 'T' to begin transmitting to the other node\n\r");
+
+  //
+  // Setup and configure rf radio
+  //
+
+  radio.begin();
+
+  // optionally, increase the delay between retries & # of retries
+  radio.setRetries(15, 15);
+  radio.setAutoAck(true);
+  // set the channel
+  radio.setChannel(0x50);
+  // set the power
+  // RF24_PA_MIN=-18dBm, RF24_PA_LOW=-12dBm, RF24_PA_HIGH=-6dBM, and RF24_PA_MAX=0dBm.
+  radio.setPALevel(RF24_PA_MAX);
+  //RF24_250KBPS for 250kbs, RF24_1MBPS for 1Mbps, or RF24_2MBPS for 2Mbps
+  radio.setDataRate(RF24_2MBPS);
+
+  // optionally, reduce the payload size.  seems to
+  // improve reliability
+  radio.setPayloadSize(8);
+
+  //
+  // Open pipes to other nodes for communication
+  //
+
+  // This simple sketch opens two pipes for these two nodes to communicate
+  // back and forth.
+  // Open 'our' pipe for writing
+  // Open the 'other' pipe for reading, in position #1 (we can have up to 5 pipes open for reading)
+
+  if ( role == role_ping_out )
+  {
+    radio.openWritingPipe(pipes[0]);
+    radio.openReadingPipe(1, pipes[1]);
+  }
+  else
+  {
+    radio.openWritingPipe(pipes[1]);
+    radio.openReadingPipe(1, pipes[0]);
+  }
+
+  //
+  // Start listening
+  //
+
+  radio.startListening();
+
+  //
+  // Dump the configuration of the rf unit for debugging
+  //
+
+  //radio.printDetails();
+  // Serial.println( "reset" );
+  transmit( 0xFF );
+  //transmit( 0xFF );
+  //transmit( 0xFF );
+}
+
+
+/* MAIN TRANSMIT FUNCTION, CALL ON TRAVERSING TO 
+ *  NEW SQUARE
+ */
+void transmitSqData( int xVal, int yVal )
+{
+//    assignGlobalMaze( xVal, yVal ); //FOR SIMULATION ONLY !!!!!!!!!!
+    byte coordinates = xVal << 4 | yVal ;
+    byte first = 0x1b;
+    byte second = 0x2b;
+    byte coords = 0xcc;
+    byte firstByte = 0;
+    firstByte = checkWalls( firstByte );
+    firstByte = checkTreasure( firstByte );
+    firstByte = checkIr( firstByte );
+    byte secondByte = EXPLORED;
+
+    transmit( first );
+    //delay( 250 );
+    transmit( firstByte );
+    //delay( 250 );
+    transmit( second );
+    //delay( 250 );
+    transmit( secondByte);
+    //delay( 250 );
+    transmit( coords );
+    //delay( 250 );
+    transmit( coordinates );
+    //delay( 2000 );
+}
+
+
+void orientRobot( int wallState )
+{
+  switch( wallState ) {
+      case B001: //right wall only 
+        switch ( orientation ) {
+          case north_up:
+            northWall = false;
+            westWall = false;
+            southWall = false;
+            eastWall = true;
+            break;
+          case north_left:
+            northWall = false;
+            westWall = false;
+            southWall = true;
+            eastWall = false;
+            break;
+          case north_back:
+            northWall = false;
+            westWall = true;
+            southWall = false;
+            eastWall = false;
+            break;
+          case north_right:
+            northWall = true;
+            westWall = false;
+            southWall = false;
+            eastWall = false;
+            break;
+        }
+        break; 
+      case B101: //left and right only 
+        switch ( orientation ) {
+          case north_up:
+            northWall = false;
+            westWall = true;
+            southWall = false;
+            eastWall = true;
+            break;
+          case north_left:
+            northWall = true;
+            westWall = false;
+            southWall = true;
+            eastWall = false;
+            break;
+          case north_back:
+            northWall = false;
+            westWall = true;
+            southWall = false;
+            eastWall = true;
+            break;
+          case north_right:
+            northWall = true;
+            westWall = false;
+            southWall = true;
+            eastWall = false;
+            break;
+        }
+        break; 
+   case B100: //left wall only 
+        switch ( orientation ) {
+          case north_up:
+            northWall = false;
+            westWall = true;
+            southWall = false;
+            eastWall = false;
+            break;
+          case north_left:
+            northWall = true;
+            westWall = false;
+            southWall = false;
+            eastWall = false;
+            break;
+          case north_back:
+            northWall = false;
+            westWall = false;
+            southWall = false;
+            eastWall = true;
+            break;
+          case north_right:
+            northWall = false;
+            westWall = false;
+            southWall = true;
+            eastWall = false;
+            break;
+        }
+        break; 
+   case B110: //left and front wall
+        switch ( orientation ) {
+          case north_up:
+            northWall = true;
+            westWall = true;
+            southWall = false;
+            eastWall = false;
+            break;
+
+          case north_left:
+            northWall = true;
+            westWall = false;
+            southWall = false;
+            eastWall = true;
+            break;
+
+          case north_back:
+            northWall = false;
+            westWall = false;
+            southWall = true;
+            eastWall = true;
+            break;
+
+          case north_right:
+           northWall = false;
+            westWall = true;
+            southWall = true;
+            eastWall = false;
+            break;
+          default:
+            break;
+        }
+        if ( orientation < 3 ) {
+          orientation = orientation + 1;
+        }
+        else {
+          orientation = 0;
+        }
+        break;
+      case B011: //right and front wall
+        switch ( orientation ) {
+          case north_up:
+            northWall = true;
+            westWall = false;
+            southWall = false;
+            eastWall = true;
+            break;
+
+          case north_left:
+            northWall = false;
+            westWall = false;
+            southWall = true;
+            eastWall = true;
+            break;
+
+          case north_back:
+            northWall = false;
+            westWall = true;
+            southWall = true;
+            eastWall = false;
+            break;
+
+          case north_right:
+            northWall = true;
+            westWall = true;
+            southWall = false;
+            eastWall = false;
+            break;
+          default:
+            break;
+        }
+        if ( orientation > 0 ) {
+          orientation = orientation - 1;
+        }
+        else {
+          orientation = 3;
+        }
+        break;
+      case B010: //front wall only, default to turn left
+        switch ( orientation ) {
+          case north_up:
+            northWall = true;
+            westWall = false;
+            southWall = false;
+            eastWall = false;
+            break;
+
+          case north_left:
+            northWall = false;
+            westWall = false;
+            southWall = false;
+            eastWall = true;
+            break;
+
+          case north_back:
+            northWall = false;
+            westWall = false;
+            southWall = true;
+            eastWall = false;
+            break;
+
+          case north_right:
+            northWall = false;
+            westWall = true;
+            southWall = false;
+            eastWall = false;
+            break;
+          default:
+            break;
+        }
+        if ( orientation > 0 ) {
+          orientation = orientation - 1;
+        }
+        else {
+          orientation = 3;
+        }
+        break;
+      case B111: //front, left, and right walls
+        switch ( orientation ) {
+          case north_up:
+            northWall = true;
+            westWall = true;
+            southWall = false;
+            eastWall = true;
+            break;
+
+          case north_left:
+            northWall = true;
+            westWall = false;
+            southWall = true;
+            eastWall = true;
+            break;
+
+          case north_back:
+            northWall = false;
+            westWall = true;
+            southWall = true;
+            eastWall = true;
+            break;
+
+          case north_right:
+            northWall = true;
+            westWall = true;
+            southWall = true;
+            eastWall = false;
+            break;
+          default:
+            break;
+        }
+        if ( orientation > 1 ) {
+          orientation = orientation - 2;
+        }
+        else {
+          orientation = 2;
+        }
+        break;
+      default:  
+        northWall = false;
+        westWall = false;
+        southWall = false;
+        eastWall = false;
+        break;
+    }
+}
+
+
+void coordinateCalculation( Orientation orientation ){
+  switch ( orientation ){
+    //case north_up:
+    case 0:
+      yVal-= 1;
+      break;
+    //case north_left:
+    case 1:
+      xVal+= 1;
+      break;
+    //case north_back:
+    case 2:
+      yVal+= 1;
+      break;
+    //case north_right:
+    case 3:
+      xVal-= 1;
+      break;
+    default:
+      break;
+  }
+}
+
+
+/*
+// FOR SIMULATION ONLY !!!!!!!!!!
+void assignGlobalMaze ( int xVal, int yVal )
+{
+  northWall = maze[ yVal ][ xVal ].northWall;
+  southWall = maze[ yVal ][ xVal ].southWall;
+  eastWall = maze[ yVal ][ xVal ].eastWall;
+  westWall = maze[ yVal ][ xVal ].westWall;
+  treasureCircle  = maze[ yVal ][ xVal ].treasureCircle;
+  treasureTriangle = maze[ yVal ][ xVal ].treasureTriangle;
+  treasureSquare = maze[ yVal ][ xVal ].treasureSquare;
+  treasureRed = maze[ yVal ][ xVal ].treasureRed;
+  treasureBlue = maze[ yVal ][ xVal ].treasureBlue;
+  robotPresent = maze[ yVal ][ xVal ].robotPresent;
+}
+
+*/
+
+/** USAGE FOR THE BELOW THREE PROGRAMS
+ *  checkWalls checks for walls
+ *    north/south/east/westWall are global variables
+ *    please assign them values when checking in each square
+ *  checkTreasure checks the value of treasure
+ *    again, they're global variables, assign them 
+ *    values and this will byte encode them
+ *  checkIr does the same thing for other robots
+ *    again it's a global variable
+ */
+byte checkWalls( byte firstByte )
+{
+  if ( northWall ) firstByte |= WALL_NORTH_PRESENT;
+  if ( southWall ) firstByte |= WALL_SOUTH_PRESENT;
+  if ( eastWall ) firstByte |= WALL_EAST_PRESENT;
+  if ( westWall ) firstByte |= WALL_WEST_PRESENT;
+  return firstByte;
+}
+
+
+byte checkTreasure( byte firstByte )
+{
+  if ( treasureTriangle ) firstByte |= TREASURE_TRIANGLE;
+  if ( treasureCircle ) firstByte |= TREASURE_CIRCLE;
+  if ( treasureSquare ) firstByte |= TREASURE_SQUARE;
+  if ( treasureRed ) firstByte |= TREASURE_RED;
+  if ( treasureBlue ) firstByte |= TREASURE_BLUE;
+  return firstByte;
+}
+
+
+byte checkIr( byte firstByte ) 
+{
+  if ( robotPresent ) {
+    firstByte |= ROBOT_PRESENT; 
+    }
+  else if ( !robotPresent ) firstByte &= ROBOT_NOT_PRESENT;
+  return firstByte;
+}
+
+
+
+//NOT USING STUFF BELOW THIS
+//      if ( MiddleDistance > 175) {
+//        if (LeftDistance > 200) {
+//          
 //        }
-//        if ( orientation < 3 ) {
-//          orientation = orientation + 1;
+//        else if (RightDistance > 175) {
+//          goLeft();
+//          //// Serial.println( "Right Wall" );
+//          foundVertex = false;
 //        }
+//        //// Serial.println( "got right" );
+//        //goStop();
+//        //      delay( 100 );
 //        else {
-//          orientation = 0;
+//          goLeft();
+//          //// Serial.println( "Middle Wall" );
+//          foundVertex = false;
 //        }
-//        break;
-//      case B011: //right and front wall
-//        switch ( orientation ) {
-//          case north_up:
-//            northWall = true;
-//            westWall = false;
-//            southWall = false;
-//            eastWall = true;
-//            break;
-//
-//          case north_left:
-//            northWall = false;
-//            westWall = false;
-//            southWall = true;
-//            eastWall = true;
-//            break;
-//
-//          case north_back:
-//            northWall = false;
-//            westWall = true;
-//            southWall = true;
-//            eastWall = false;
-//            break;
-//
-//          case north_right:
-//            northWall = true;
-//            westWall = true;
-//            southWall = false;
-//            eastWall = false;
-//            break;
-//          default:
-//            break;
-//        }
-//        if ( orientation > 0 ) {
-//          orientation = orientation - 1;
-//        }
-//        else {
-//          orientation = 3;
-//        }
-//        break;
-//      case B010: //front wall only, default to turn left
-//        switch ( orientation ) {
-//          case north_up:
-//            northWall = true;
-//            westWall = false;
-//            southWall = false;
-//            eastWall = false;
-//            break;
-//
-//          case north_left:
-//            northWall = false;
-//            westWall = false;
-//            southWall = false;
-//            eastWall = true;
-//            break;
-//
-//          case north_back:
-//            northWall = false;
-//            westWall = false;
-//            southWall = true;
-//            eastWall = false;
-//            break;
-//
-//          case north_right:
-//            northWall = false;
-//            westWall = true;
-//            southWall = false;
-//            eastWall = false;
-//            break;
-//          default:
-//            break;
-//        }
-//        if ( orientation > 0 ) {
-//          orientation = orientation - 1;
-//        }
-//        else {
-//          orientation = 3;
-//        }
-//        break;
-//      case B111: //front, left, and right walls
-//        switch ( orientation ) {
-//          case north_up:
-//            northWall = true;
-//            westWall = true;
-//            southWall = false;
-//            eastWall = true;
-//            break;
-//
-//          case north_left:
-//            northWall = true;
-//            westWall = false;
-//            southWall = true;
-//            eastWall = true;
-//            break;
-//
-//          case north_back:
-//            northWall = false;
-//            westWall = true;
-//            southWall = true;
-//            eastWall = true;
-//            break;
-//
-//          case north_right:
-//            northWall = true;
-//            westWall = true;
-//            southWall = true;
-//            eastWall = false;
-//            break;
-//          default:
-//            break;
-//        }
-//        if ( orientation > 0 ) {
-//          orientation = orientation - 1;
-//        }
-//        else {
-//          orientation = 3;
-//        }
-//        break;
-//      default:  
-//        northWall = false;
-//        westWall = false;
-//        southWall = false;
-//        eastWall = false;
-//        break;
-//    }
-//}
-//
-//
-//void coordinateCalculation( Orientation orientation ){
-//  switch ( orientation ){
-//    case north_up:
-//      yVal++;
-//      break;
-//    case north_left:
-//      xVal++;
-//      break;
-//    case north_back:
-//      yVal--;
-//      break;
-//    case north_right:
-//      xVal--;
-//      break;
-//    default:
-//      break;
-//  }
-//}
-//
-//
-///*
-//// FOR SIMULATION ONLY !!!!!!!!!!
-//void assignGlobalMaze ( int xVal, int yVal )
-//{
-//  northWall = maze[ yVal ][ xVal ].northWall;
-//  southWall = maze[ yVal ][ xVal ].southWall;
-//  eastWall = maze[ yVal ][ xVal ].eastWall;
-//  westWall = maze[ yVal ][ xVal ].westWall;
-//  treasureCircle  = maze[ yVal ][ xVal ].treasureCircle;
-//  treasureTriangle = maze[ yVal ][ xVal ].treasureTriangle;
-//  treasureSquare = maze[ yVal ][ xVal ].treasureSquare;
-//  treasureRed = maze[ yVal ][ xVal ].treasureRed;
-//  treasureBlue = maze[ yVal ][ xVal ].treasureBlue;
-//  robotPresent = maze[ yVal ][ xVal ].robotPresent;
-//}
-//
-//*/
-//
-///** USAGE FOR THE BELOW THREE PROGRAMS
-// *  checkWalls checks for walls
-// *    north/south/east/westWall are global variables
-// *    please assign them values when checking in each square
-// *  checkTreasure checks the value of treasure
-// *    again, they're global variables, assign them 
-// *    values and this will byte encode them
-// *  checkIr does the same thing for other robots
-// *    again it's a global variable
-// */
-//byte checkWalls( byte firstByte )
-//{
-//  if ( northWall ) firstByte |= WALL_NORTH_PRESENT;
-//  if ( southWall ) firstByte |= WALL_SOUTH_PRESENT;
-//  if ( eastWall ) firstByte |= WALL_EAST_PRESENT;
-//  if ( westWall ) firstByte |= WALL_WEST_PRESENT;
-//  return firstByte;
-//}
-//
-//
-//byte checkTreasure( byte firstByte )
-//{
-//  if ( treasureTriangle ) firstByte |= TREASURE_TRIANGLE;
-//  if ( treasureCircle ) firstByte |= TREASURE_CIRCLE;
-//  if ( treasureSquare ) firstByte |= TREASURE_SQUARE;
-//  if ( treasureRed ) firstByte |= TREASURE_RED;
-//  if ( treasureBlue ) firstByte |= TREASURE_BLUE;
-//  return firstByte;
-//}
-//
-//
-//byte checkIr( byte firstByte ) 
-//{
-//  if ( robotPresent ) {
-//    firstByte |= ROBOT_PRESENT; 
-//    }
-//  else if ( !robotPresent ) firstByte &= ROBOT_NOT_PRESENT;
-//  return firstByte;
-//}
-//
-//
-//
-////NOT USING STUFF BELOW THIS
-////      if ( MiddleDistance > 175) {
-////        if (LeftDistance > 200) {
-////          
-////        }
-////        else if (RightDistance > 175) {
-////          goLeft();
-////          //Serial.println( "Right Wall" );
-////          foundVertex = false;
-////        }
-////        //Serial.println( "got right" );
-////        //goStop();
-////        //      delay( 100 );
-////        else {
-////          goLeft();
-////          //Serial.println( "Middle Wall" );
-////          foundVertex = false;
-////        }
-////      }
-////      else{
-//       
-//       // foundVertex = false;
-////      }
-//
-//void transmit( byte payload ) 
-//{
-//  // Ping out role.  Repeatedly send the current time
-//  //
-//
-//  //if ( role == role_ping_out )
-//  //{
-//    // First, stop listening so we can talk.
-//    radio.stopListening();
-//    
-//    printf( "Now sending %x...", payload );
-//    bool ok = radio.write( &payload, sizeof(unsigned char) );
-//    if ( ok )
-//      printf( "ok..." );
-//    else
-//      printf( "failed.\n\r" );
-//
-//    // Now, continue listening
-//    radio.startListening();
-//
-//    // Wait here until we get a response, or timeout (250ms)
-//    unsigned long started_waiting_at = millis();
-//    bool timeout = false;
-//    while ( ! radio.available() && ! timeout )
-//      if (millis() - started_waiting_at > 1000 )
-//        timeout = true;
-//
-//    // Describe the results
-//    if ( timeout )
-//    {
-//      printf("Failed, response timed out.\n\r");
-//    }
-//    else
-//    {
-//      // Grab the response, compare, and send to debugging spew
-//      unsigned char rxPayload;
-//      radio.read( &rxPayload, sizeof(unsigned char) );
-//      if ( rxPayload == payload ) {
-//        // Spew it
-//        printf("Received correct data %x, RT delay: %lu\n\r", rxPayload, millis() - started_waiting_at);
 //      }
-//      else {
-//        printf("That's not what I sent, received %x, RT delay: %lu\n\r", rxPayload, millis() - started_waiting_at);
+//      else{
+       
+       // foundVertex = false;
 //      }
-//    }
-//
-//    // Try again 1s later
-//    //delay(1000);
-//  //}
-//}
+
+void transmit( byte payload ) 
+{
+  // Ping out role.  Repeatedly send the current time
+  //
+  
+  //if ( role == role_ping_out )
+  //{
+    // First, stop listening so we can talk.
+    radio.stopListening();
+    
+    printf( "Now sending %x...", payload );
+    bool ok = radio.write( &payload, sizeof(unsigned char) );
+    if ( ok )
+      printf( "ok..." );
+    else
+      printf( "failed.\n\r" );
+
+    // Now, continue listening
+    radio.startListening();
+
+    // Wait here until we get a response, or timeout (250ms)
+    unsigned long started_waiting_at = millis();
+    bool timeout = false;
+    while ( ! radio.available() && ! timeout )
+      if (millis() - started_waiting_at > 1000 )
+        timeout = true;
+
+    // Describe the results
+    if ( timeout )
+    {
+      printf("Failed, response timed out.\n\r");
+    }
+    else
+    {
+      // Grab the response, compare, and send to debugging spew
+      unsigned char rxPayload;
+      radio.read( &rxPayload, sizeof(unsigned char) );
+      if ( rxPayload == payload ) {
+        // Spew it
+        printf("Received correct data %x, RT delay: %lu\n\r", rxPayload, millis() - started_waiting_at);
+      }
+      else {
+        printf("That's not what I sent, received %x, RT delay: %lu\n\r", rxPayload, millis() - started_waiting_at);
+      }
+    }
+
+    // Try again 1s later
+    //delay(1000);
+  //}
+}

@@ -8,17 +8,22 @@ void loop() {
 
 }
 
+byte visited[81]; 
+StackArray <byte> stack;
+
 void DFSimplementation( void ) {
-  visited = []; //frontier set
+  
   
   startNode = (0,0);
   stack.push(startNode);
-  
+ 
   
   //not sure how to write possibleForwardNode etc, need to know orientation and coordinate mapping stuff
   while(!stack.empty()){
     current = stack.pop;
-    current.visited = true;
+    if(!visited.contains(current)){  //TODO add a contains function
+      visited.add(current); //set current coordinate to be visited, TODO add an add function
+    }
     decodePossibleSets( orientation );
     //unvisited
     if(noFrontWall && possibleForwardNode.visited == false){
@@ -94,4 +99,3 @@ byte intToByte( int xVal, int yVal ){
   returnVal = ( xVal << 4 ) || ( yVal % 15);
   return returnVal;
 }
-
