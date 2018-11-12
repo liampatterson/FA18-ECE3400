@@ -47,6 +47,7 @@ void setup() {
     // put your setup code here, to run once:
   pinMode(8, INPUT); 
   pinMode(9, INPUT); 
+  pinMode(10, INPUT);
   //00 means not red or blue
   //01 means red
   //10 means blue
@@ -55,21 +56,35 @@ void setup() {
 
 int MSB = 0; //leftmost
 int LSB = 0; //rightmost
+int B = 0;
 
 
 void loop(){
     // put your main code here, to run repeatedly:
   
   MSB = digitalRead(8);
-  LSB = digitalRead(9);
-  if(MSB == LOW && LSB == LOW){ //nothing
+  B = digitalRead(9);
+  LSB = digitalRead(10);
+  if(MSB == LOW && B == LOW && LSB == LOW){ //nothing
     Serial.println("no color");
   }
-  else if(MSB == LOW && LSB == HIGH){
-    Serial.println("RED");
+  else if(MSB == LOW && B == LOW && LSB == HIGH){
+    Serial.println("BLUE TRIANGLE");
   }
-  else if(MSB == HIGH && LSB == LOW){
-    Serial.println("BLUE");
+  else if(MSB == LOW && B == HIGH && LSB == LOW){
+    Serial.println("BLUE DIAMOND");
+  }
+  else if(MSB == LOW && B == HIGH && LSB == HIGH){
+    Serial.println("BLUE SQUARE");
+  }
+  else if(MSB == HIGH && B == LOW && LSB == LOW){
+    Serial.println("RED TRIANGLE");
+  }
+  else if(MSB == HIGH && B == LOW && LSB == HIGH){
+    Serial.println("RED DIAMOND");
+  }
+  else if(MSB == HIGH && B == HIGH && LSB == LOW){
+    Serial.println("RED DIAMOND");
   }
   Serial.println( "loop" );
 }
