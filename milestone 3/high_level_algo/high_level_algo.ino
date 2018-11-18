@@ -10,54 +10,123 @@ void loop() {
 
 byte visited[81]; 
 StackArray <byte> stack;
-
+byte startNode;
+byte current;
 void DFSimplementation( void ) {
   
   
-  startNode = (0,0);
+  startNode = B0;
   stack.push(startNode);
- 
+
+
+  /*Helper function to add a new byte to visited[]*/
+  void add(byte b){
+    for(int k = 1; k< 81; k++)
+    {
+      if(visited[k] == B0){
+        visited[k] = b; //add it to the end of the array
+      }
+    }
+  }
+
+  boolean in(byte b){
+    for(i = 0; i<81; i++){
+        if(visited[i] == b){
+          return true;
+        }
+    }
+    return false;
+  }
   
+  boolean didSomething = false;
   //not sure how to write possibleForwardNode etc, need to know orientation and coordinate mapping stuff
   while(!stack.empty()){
     current = stack.pop;
-    if(!visited.contains(current)){  //TODO add a contains function
+    if(in(current)){  //if current is not in visited
       visited.add(current); //set current coordinate to be visited, TODO add an add function
     }
     decodePossibleSets( orientation );
-    //unvisited
-    if(noFrontWall && possibleForwardNode.visited == false){
-      Straight();
-      stack.push(possibleForwardNode);
+    //check the unvisited nodes first
+    switch(caseVariable){
+      case B101:
+      case B001:
+      case B100:
+      case B000:
+        if(in(possibleForwardNode)){
+          Straight();
+          didSomething = true;
+          foundVertex = false;
+          orientRobot( caseVariable );
+          transmitSqData( yVal, xVal );
+          stack.push(possibleForwardNode);
+        }
+        break;
+      case B001:
+      case B011:
+      case B010:
+        if(in(possibleLeftNode)){
+          goLeft();
+          didSomething = true;
+          foundVertex = false;
+          orientRobot( caseVariable );
+          transmitSqData( yVal, xVal );
+          stack.push(possibleLeftNode);
+        }
+        break;
+      case B100:
+      case B110:
+        if(in(possibleRightNode)){
+          goRight();
+          didSomething = true;
+          foundVertex = false;
+          orientRobot( caseVariable );
+          transmitSqData( yVal, xVal );
+          stack.push(possibleRightNode);
+        }
+        break;   
+      default:
+        break; 
     }
-    else if(noLeftWall && possibleLeftNode.visited == false){
-      goLeft();
-      stack.push(possibleLeftNode);
+    if(!didSomething){
+      //now check everything around you if you have to go to a visited node
+      switch(caseVariable){
+        case B101:
+        case B001:
+        case B100:
+        case B000:
+          Straight();
+          foundVertex = false;
+          orientRobot( caseVariable );
+          transmitSqData( yVal, xVal );
+          stack.push(possibleForwardNode);
+          break;
+        case B001:
+        case B011:
+        case B010:
+          goLeft();
+          foundVertex = false;
+          orientRobot( caseVariable );
+          transmitSqData( yVal, xVal );
+          stack.push(possibleLeftNode);
+          break;
+        case B100:
+        case B110:
+          goRight();
+          foundVertex = false;
+          orientRobot( caseVariable );
+          transmitSqData( yVal, xVal );
+          stack.push(possibleRightNode);
+          break;
+        case B111:
+          turnAround();
+          foundVertex = false;
+          orientRobot( caseVariable );
+          transmitSqData( yVal, xVal );
+          break;
+        default:
+          break;          
+      }
     }
-    else if(noRightWall && possibleRightNode.visited == false){
-      goRight();
-      stack.push(possibleRightNode);
-    }
-    else{
-      turnAround();
-    }
-    //has to visit a visited node
-    if(noFrontWall){
-      Straight();
-      stack.push(possibleForwardNode);
-    }
-    else if(noLeftWall){
-      goLeft();
-      stack.push(possibleLeftNode);
-    }
-    else if(noRightWall){
-      goRight();
-      stack.push(possibleRightNode);
-    }
-    else{
-      turnAround();
-    }
-  
   }
 }
 
