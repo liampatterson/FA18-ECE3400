@@ -84,7 +84,7 @@ void loop(){
     Serial.println("RED DIAMOND");
   }
   else if(MSB == HIGH && B == HIGH && LSB == LOW){
-    Serial.println("RED DIAMOND");
+    Serial.println("RED SQUARE");
   }
   Serial.println( "loop" );
 }

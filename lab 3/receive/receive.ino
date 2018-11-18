@@ -204,7 +204,7 @@ void setup(void)
   //
 
   //radio.printDetails();
-  Serial.println( "reset" );
+  //Serial.println( "reset" );
 }
 
 void loop(void)
@@ -448,8 +448,8 @@ void transmit( byte payload ) {
 
 String readCoordinates( byte coordinates ) {
   String output = "";
-  String xVal = String(coordinates >> 4);
-  String yVal = String(coordinates & 0x0F);
+  String yVal = String(coordinates >> 4);
+  String xVal = String(coordinates & 0x0F);
 
   output = yVal + "," + xVal;
   return output;
