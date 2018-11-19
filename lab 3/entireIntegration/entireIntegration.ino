@@ -1,5 +1,5 @@
 #define LOG_OUT 1 // use the log output function
-#define FFT_N 64 // set to 256 point fft
+#define FFT_N 256 // set to 256 point fft
 
 #include <FFT.h> // include the library
 #include <Servo.h>
@@ -7,7 +7,6 @@
 #include "nRF24L01.h"
 #include "RF24.h"
 #include "printf.h"
-#include <StackArray.h>
 
 
 // BEGIN MAZE SIMULATION DEFINITIONS
@@ -218,16 +217,6 @@ int S0 = 4;
 
 // END RADIO CONSTANTS
 
-//variables for DFS
-  byte visited[81]; 
-  StackArray<byte> stack;
-  byte startNode = B0;
-  byte current;
-  boolean didSomething;
-
-  byte possibleForwardNode;
-  byte possibleLeftNode;
-  byte possibleRightNode;
 
 /*** BEGIN MAIN CODE ***/
 void setup( void )
@@ -242,75 +231,8 @@ void setup( void )
   pinMode(S2, OUTPUT);
   pinMode(S1, OUTPUT);
   pinMode(S0, OUTPUT);
-  
- 
-  stack.push(startNode);
-  
 }
 
-
-/*** BEGIN HELPER FUNCTIONS FOR DFS ***/
-
-/*Helper function to add a new byte to visited[]*/
-
-  //end variables for DFS
-void add(byte b){
-  for(int k = 1; k< 81; k++)
-    {
-      if(visited[k] == B0){
-        visited[k] = b; //add it to the end of the array
-      }
-    }
-  }
-
-boolean in(byte b){
-  for( int i = 0; i<81; i++ ){
-        if(visited[i] == b){
-          return true;
-        }
-    }
-    return false;
-  }
-
-//assumes coordinates are in format char xVal,yVal
-void decodePossibleSets( Orientation orientation, byte currentCoords ) {
-    //00010001 is coordinate (1,1)
-    //00100001 is coordinate (2,1)
-    int xVal = ( currentCoords >> 4 );
-    int yVal = ( currentCoords && B00001111 );
-    
-    switch( orientation ) {
-      case north_up:
-        possibleForwardNode = intToByte( xVal, yVal+1 );
-        possibleLeftNode = intToByte( xVal-1, yVal );
-        possibleRightNode = intToByte( xVal+1, yVal );
-        break;
-      case north_left:
-        possibleForwardNode = intToByte( xVal+1, yVal );
-        possibleLeftNode = intToByte( xVal, yVal+1 );
-        possibleRightNode = intToByte( xVal, yVal-1 );
-        break;
-      case north_back:
-        possibleForwardNode = intToByte( xVal, yVal-1 );
-        possibleLeftNode = intToByte( xVal+1, yVal );
-        possibleRightNode = intToByte( xVal-1, yVal );
-        break;
-      case north_right:
-        possibleForwardNode = intToByte( xVal-1, yVal );
-        possibleLeftNode = intToByte( xVal, yVal-1 );
-        possibleRightNode = intToByte( xVal, yVal+1 );
-        break;
-      default:
-        break;
-    }
-}
-
-byte intToByte( int xVal, int yVal ){
-      byte returnVal;
-      returnVal = ( xVal << 4 ) || ( yVal % 15);
-      return returnVal;
-    }
-/*** END HELPER FUNCTIONS FOR DFS ***/
 
 void loop() {
  // Serial.println("got inside loop");
@@ -343,94 +265,49 @@ void loop() {
       //delay(500);
       goStop();
       delay(300);
-      didSomething = false;
-      current = stack.pop();
-      if(in(current)){  //if current is not in visited
-        add(current); //set current coordinate to be visited, TODO add an add function
-      }
-      decodePossibleSets( orientation, intToByte(xVal, yVal) );
-      //check the unvisited nodes first
-      switch(caseVariable){
-        case B101:
-        case B001:
-        case B100:
-        case B000:
-          if(in(possibleForwardNode)){
-            Straight();
-            didSomething = true;
-            foundVertex = false;
-            orientRobot( caseVariable );
-            transmitSqData( yVal, xVal );
-            stack.push(possibleForwardNode);
-          }
-          break;
-        case B011:
-        case B010:
-          if(in(possibleLeftNode)){
-            goLeft();
-            didSomething = true;
-            foundVertex = false;
-            orientRobot( caseVariable );
-            transmitSqData( yVal, xVal );
-            stack.push(possibleLeftNode);
-          }
-          break;
-        case B110:
-          if(in(possibleRightNode)){
-            goRight();
-            didSomething = true;
-            foundVertex = false;
-            orientRobot( caseVariable );
-            transmitSqData( yVal, xVal );
-            stack.push(possibleRightNode);
-          }
-          break;   
-        default:
-          break; 
-      }
-      if(!didSomething){
-        //now check everything around you if you have to go to a visited node
-        switch(caseVariable){
-          case B101:
-          case B001:
-          case B100:
-          case B000:
-            Straight();
-            foundVertex = false;
-            orientRobot( caseVariable );
-            transmitSqData( yVal, xVal );
-            stack.push(possibleForwardNode);
-            break;
-          case B011:
-          case B010:
-            goLeft();
-            foundVertex = false;
-            orientRobot( caseVariable );
-            transmitSqData( yVal, xVal );
-            stack.push(possibleLeftNode);
-            break;
-          case B110:
-            goRight();
-            foundVertex = false;
-            orientRobot( caseVariable );
-            transmitSqData( yVal, xVal );
-            stack.push(possibleRightNode);
-            break;
-          case B111:
-            turnAround();
-            foundVertex = false;
-            orientRobot( caseVariable );
-            transmitSqData( yVal, xVal );
-            break;
-          default:
-            break;          
-        }
-      }
-      
+//      if(detectIR()){
+//        goStop();
+//        Straight();
+//      }
       // Serial.println("found vertex ********************");
       readDistanceSensors();
       coordinateCalculation( orientation );
-      
+      switch( caseVariable ){
+        case B110: //left and front wall
+          goRight();
+          foundVertex = false;
+          //// Serial.println( "Left Wall" );
+          orientRobot( caseVariable );
+          transmitSqData( yVal, xVal );
+          break;
+        case B011: //right and front wall
+          goLeft();
+        //// Serial.println( "Right Wall" );
+          foundVertex = false;
+          orientRobot( caseVariable );
+          transmitSqData( yVal, xVal );
+          break;
+        case B010: //front wall only, default to turn left
+          goLeft();
+          foundVertex = false;
+          orientRobot( caseVariable );
+          transmitSqData( yVal, xVal );
+          break;
+        case B111: //front, left, and right walls
+          turnAround();
+          foundVertex = false;
+          orientRobot( caseVariable );
+          transmitSqData( yVal, xVal );
+          break;
+        default:  
+          goStraight(); 
+          delay(200);
+          Straight();
+          foundVertex = false;
+          orientRobot( caseVariable );
+          transmitSqData( yVal, xVal );
+          break;
+      }
       
     }
   }
@@ -697,7 +574,7 @@ boolean startSound( void )
     //while(1) { // reduces jitter
       //counter = counter+1;
      //cli();  // UDRE interrupt slows this way down on arduino1.0
-      for (int i = 0 ; i < 128 ; i += 2) { // save 256 samples
+      for (int i = 0 ; i < 512 ; i += 2) { // save 256 samples
         while(!(ADCSRA & 0x10)); // wait for adc to be ready
         ADCSRA = 0xf5; // restart adc
         byte m = ADCL; // fetch adc data
@@ -713,21 +590,21 @@ boolean startSound( void )
       fft_run(); // process the data in the fft
       fft_mag_log(); // take the output of the fft
       sei();
-       Serial.println("start");
+      //// Serial.println("start");
       for (byte i = 0 ; i < FFT_N/2 ; i++) { 
-         Serial.println(fft_log_out[i]); // send out the data
+        //// Serial.println(fft_log_out[i]); // send out the data
       }
       //// Serial.println(fft_log_out[5]);
       start = false;
-      average = average + fft_log_out[3];
+      average = average + fft_log_out[5];
       String avg = "average ";
       //// Serial.println(avg+average);
       if(counter == 5){ 
         average = average/5; 
         
         //// Serial.println(avg+average);
-        if(average > 105){
-          Serial.println("****************************this is 6.6kHz"); 
+        if(average > 150){
+          // Serial.println("****************************this is 6.6Hz"); 
           //goStop();
           //delay(5000);
           start = true;
