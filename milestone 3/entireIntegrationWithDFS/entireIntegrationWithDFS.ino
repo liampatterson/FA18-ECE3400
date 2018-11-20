@@ -319,7 +319,7 @@ void loop() {
   if (!hasStarted) {
    // Serial.println("not started");
      Serial.println(digitalRead(8));
-     if(digitalRead(8) == HIGH){
+     if( digitalRead(8) == HIGH ){
         hasStarted = true;
         Serial.println("8 is high");
         servoSetup();
@@ -345,6 +345,8 @@ void loop() {
       readDistanceSensors();
       goStop();
       delay(300);
+      readDistanceSensors();
+      coordinateCalculation( orientation );
       didSomething = false;
       current = stack.pop();
       if(in(current)){  //if current is not in visited
@@ -359,7 +361,6 @@ void loop() {
         case B001:
         case B100:
         case B000:
-          
           if(in(possibleForwardNode)){
             Straight();
             didSomething = true;
@@ -369,6 +370,7 @@ void loop() {
             stack.push(possibleForwardNode);
           }
           break;
+          
         case B011:
         case B010:
           if(in(possibleLeftNode)){
@@ -380,6 +382,7 @@ void loop() {
             stack.push(possibleLeftNode);
           }
           break;
+          
         case B110:
           if(in(possibleRightNode)){
             goRight();
@@ -389,9 +392,11 @@ void loop() {
             transmitSqData( yVal, xVal );
             stack.push(possibleRightNode);
           }
-          break;   
+          break; 
+            
         default:
           break; 
+          
       }
       if(!didSomething){
         //now check everything around you if you have to go to a visited node
@@ -400,6 +405,8 @@ void loop() {
           case B001:
           case B100:
           case B000:
+            goStraight(); 
+            delay(200);
             Straight();
             tempFoundVertex = false;
             orientRobot( caseVariable );
@@ -431,15 +438,13 @@ void loop() {
             break;          
         }
       }
-      coordinateCalculation( orientation );
+//      coordinateCalculation( orientation );
       Serial.println("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
       //goStraight();
       //delay(100);
       foundVertex = tempFoundVertex;
       // Serial.println("found vertex ********************");
-//      readDistanceSensors();
-      
-      
+//      readDistanceSensors(); 
       
     }
   }
@@ -565,9 +570,9 @@ void chooseChannel0( void )
 
 void chooseChannel1( void )
 {
-  digitalWrite(S2, HIGH);
+  digitalWrite(S2, LOW);
   digitalWrite(S1, LOW);
-  digitalWrite(S0, LOW);
+  digitalWrite(S0, HIGH);
 }
 
 void chooseChannel2( void )

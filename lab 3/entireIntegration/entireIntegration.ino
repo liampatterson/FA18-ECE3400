@@ -240,7 +240,7 @@ void loop() {
   if (!hasStarted) {
    // Serial.println("not started");
      Serial.println(digitalRead(8));
-     if(digitalRead(8) == HIGH){
+     if(digitalRead(8) == HIGH  | startSound()){
         hasStarted = true;
         Serial.println("8 is high");
         servoSetup();
@@ -435,9 +435,9 @@ void chooseChannel0( void )
 
 void chooseChannel1( void )
 {
-  digitalWrite(S2, HIGH);
+  digitalWrite(S2, LOW);
   digitalWrite(S1, LOW);
-  digitalWrite(S0, LOW);
+  digitalWrite(S0, HIGH);
 }
 
 void chooseChannel2( void )
