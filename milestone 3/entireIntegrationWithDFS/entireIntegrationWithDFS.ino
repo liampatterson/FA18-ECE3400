@@ -311,6 +311,7 @@ byte intToByte( int xVal, int yVal ){
       return returnVal;
     }
 /*** END HELPER FUNCTIONS FOR DFS ***/
+boolean tempFoundVertex;
 
 void loop() {
  // Serial.println("got inside loop");
@@ -329,6 +330,7 @@ void loop() {
 //    }
   }
   else {
+    
     //detect IR at any time, currently not in it
 //    if(detectIR()){
 //      goStop();
@@ -339,8 +341,8 @@ void loop() {
       Straight();
     }
     else { //found vertex
+      tempFoundVertex = true; //found a vertex for now
       readDistanceSensors();
-      //delay(500);
       goStop();
       delay(300);
       didSomething = false;
@@ -349,16 +351,19 @@ void loop() {
         add(current); //set current coordinate to be visited, TODO add an add function
       }
       decodePossibleSets( orientation, intToByte(xVal, yVal) );
+      
+      Serial.println(caseVariable);
       //check the unvisited nodes first
       switch(caseVariable){
         case B101:
         case B001:
         case B100:
         case B000:
+          
           if(in(possibleForwardNode)){
             Straight();
             didSomething = true;
-            foundVertex = false;
+            tempFoundVertex = false;
             orientRobot( caseVariable );
             transmitSqData( yVal, xVal );
             stack.push(possibleForwardNode);
@@ -369,7 +374,7 @@ void loop() {
           if(in(possibleLeftNode)){
             goLeft();
             didSomething = true;
-            foundVertex = false;
+            tempFoundVertex = false;
             orientRobot( caseVariable );
             transmitSqData( yVal, xVal );
             stack.push(possibleLeftNode);
@@ -379,7 +384,7 @@ void loop() {
           if(in(possibleRightNode)){
             goRight();
             didSomething = true;
-            foundVertex = false;
+            tempFoundVertex = false;
             orientRobot( caseVariable );
             transmitSqData( yVal, xVal );
             stack.push(possibleRightNode);
@@ -396,7 +401,7 @@ void loop() {
           case B100:
           case B000:
             Straight();
-            foundVertex = false;
+            tempFoundVertex = false;
             orientRobot( caseVariable );
             transmitSqData( yVal, xVal );
             stack.push(possibleForwardNode);
@@ -404,21 +409,21 @@ void loop() {
           case B011:
           case B010:
             goLeft();
-            foundVertex = false;
+            tempFoundVertex = false;
             orientRobot( caseVariable );
             transmitSqData( yVal, xVal );
             stack.push(possibleLeftNode);
             break;
           case B110:
             goRight();
-            foundVertex = false;
+            tempFoundVertex = false;
             orientRobot( caseVariable );
             transmitSqData( yVal, xVal );
             stack.push(possibleRightNode);
             break;
           case B111:
             turnAround();
-            foundVertex = false;
+            tempFoundVertex = false;
             orientRobot( caseVariable );
             transmitSqData( yVal, xVal );
             break;
@@ -426,10 +431,14 @@ void loop() {
             break;          
         }
       }
-      
-      // Serial.println("found vertex ********************");
-      readDistanceSensors();
       coordinateCalculation( orientation );
+      Serial.println("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
+      //goStraight();
+      //delay(100);
+      foundVertex = tempFoundVertex;
+      // Serial.println("found vertex ********************");
+//      readDistanceSensors();
+      
       
       
     }

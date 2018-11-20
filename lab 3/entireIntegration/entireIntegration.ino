@@ -262,6 +262,7 @@ void loop() {
     }
     else { //found vertex
       readDistanceSensors();
+      Serial.println("found vertex");
       //delay(500);
       goStop();
       delay(300);
@@ -360,7 +361,7 @@ void readLightSensors( void )
   // Serial.println(right);
   // Serial.println(lightRightVal);
   String lightOutput = left + lightLeftVal + middle + lightMiddleVal + right + lightRightVal;
-  // Serial.println( lightOutput );
+   Serial.println( lightOutput );
   
   middleIsWhite = (lightMiddleVal < UPPER_MIDDLE_BOUND_WHITE );
   middleIsBlack = (lightMiddleVal > LOWER_MIDDLE_BOUND_BLACK);
