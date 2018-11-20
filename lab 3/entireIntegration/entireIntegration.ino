@@ -381,6 +381,7 @@ void readLightSensors( void )
 
 
 void readDistanceSensors() {
+  Serial.println("got inside dist sensor");
   int counter = 0;
   caseVariable = B000; // reset case variable
   avgLeftDistance = 0;
