@@ -259,6 +259,7 @@ void add(byte b){
     {
       if(visited[k] == B0){
         visited[k] = b; //add it to the end of the array
+        break;
       }
     }
   }
@@ -318,12 +319,22 @@ void loop() {
   readLightSensors();
   if (!hasStarted) {
    // Serial.println("not started");
-     Serial.println(digitalRead(8));
-     if( digitalRead(8) == HIGH ){
+     while(!hasStarted){
+       int m =0;
+       for(int x = 5; x>=0; x--){
+         delay(250);
+         if( digitalRead(8) == HIGH ){
+            Serial.println(digitalRead(8));
+            m++;
+         }
+       }
+       if(m>5){
         hasStarted = true;
         Serial.println("8 is high");
         servoSetup();
+       }
      }
+     
 //    if (startSound()) {
 //      hasStarted = true;
 //      servoSetup();
@@ -355,6 +366,11 @@ void loop() {
       decodePossibleSets( orientation, intToByte(xVal, yVal) );
       
       Serial.println(caseVariable);
+      Serial.print("visited list ");
+      for(int y = 0; y<81; y++){
+        Serial.print(visited[y]+" ");
+      }
+      printf(visited);
       //check the unvisited nodes first
       switch(caseVariable){
         case B101:
@@ -370,7 +386,6 @@ void loop() {
             stack.push(possibleForwardNode);
           }
           break;
-          
         case B011:
         case B010:
           if(in(possibleLeftNode)){
@@ -396,7 +411,6 @@ void loop() {
             
         default:
           break; 
-          
       }
       if(!didSomething){
         //now check everything around you if you have to go to a visited node
@@ -439,7 +453,7 @@ void loop() {
         }
       }
 //      coordinateCalculation( orientation );
-      Serial.println("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeee");
+      
       //goStraight();
       //delay(100);
       foundVertex = tempFoundVertex;
@@ -539,13 +553,13 @@ void readDistanceSensors() {
   int a = B100;
   int b = B010;
   int c = B001;
-  if(LeftDistance>150){  
+  if(LeftDistance>170){  
     caseVariable = caseVariable | a; //set leftmost bit to 1
   }  
-  if(MiddleDistance>150){    
+  if(MiddleDistance>170){    
     caseVariable = caseVariable | b; //set middle bit to 1
   } 
-  if(RightDistance>160){   
+  if(RightDistance>170){   
     caseVariable = caseVariable | c;  //set rightmost bit to 1
   }  
   
@@ -553,7 +567,8 @@ void readDistanceSensors() {
   String r = "  right dist ";
   String m = "  middle dist ";
   // Serial.println("hi");
-   Serial.println(l+LeftDistance+m+MiddleDistance+r+RightDistance);
+  // Serial.println(l+LeftDistance+m+MiddleDistance+r+RightDistance);
+  Serial.println(caseVariable);
   avgLeftDistance = 0;
   avgMiddleDistance = 0;
   avgRightDistance = 0;
