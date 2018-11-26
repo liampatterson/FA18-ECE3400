@@ -378,6 +378,8 @@ void loop() {
         case B100:
         case B000:
           if(in(possibleForwardNode)){
+            goStraight(); 
+            delay(200);
             Straight();
             didSomething = true;
             tempFoundVertex = false;
