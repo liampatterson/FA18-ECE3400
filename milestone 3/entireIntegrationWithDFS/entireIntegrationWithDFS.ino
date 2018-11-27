@@ -267,10 +267,10 @@ void add(byte b) {
 boolean in(byte b) {
   for ( int i = 0; i < 81; i++ ) {
     if (visited[i] == b) {
-      return true;
+      return false;
     }
   }
-  return false;
+  return true;
 }
 
 //assumes coordinates are in format char xVal,yVal
@@ -360,7 +360,7 @@ void loop() {
       coordinateCalculation( orientation );
       didSomething = false;
       current = stack.pop();
-      if (in(current)) { //if current is not in visited
+      if (!in(current)) { //if current is not in visited
         add(current); //set current coordinate to be visited, TODO add an add function
       }
       decodePossibleSets( orientation, intToByte(xVal, yVal) );
@@ -495,7 +495,7 @@ void loop() {
           break;
       }
       if (!didSomething) {
-        delay(2000);
+        
         //now check everything around you if you have to go to a visited node
         switch (caseVariable) {
           case B101:
@@ -564,6 +564,18 @@ void ledSetup( void )
   pinMode( 1, OUTPUT ); //white LED
   pinMode( 2, OUTPUT ); //red LED
   pinMode( 4, OUTPUT ); //blue LED
+}
+
+int otherCounterLight = 0;
+int otherAvgLightMiddle = 0;
+void readMiddleSensorOnly( void ){
+  while (otherCounterLight < 3) {
+    otherAvgLightMiddle = otherAvgLightMiddle + analogRead( lightMiddlePort );
+    otherCounterLight = otherCounterLight + 1;
+  }
+  otherCounterLight = 0;
+  lightMiddleVal = otherAvgLightMiddle / 3;
+  otherAvgLightMiddle = 0;
 }
 
 int counterLight = 0;
@@ -637,13 +649,13 @@ void readDistanceSensors() {
   int a = B100;
   int b = B010;
   int c = B001;
-  if (LeftDistance > 170) {
+  if (LeftDistance > 200) {
     caseVariable = caseVariable | a; //set leftmost bit to 1
   }
-  if (MiddleDistance > 170) {
+  if (MiddleDistance > 200) {
     caseVariable = caseVariable | b; //set middle bit to 1
   }
-  if (RightDistance > 170) {
+  if (RightDistance > 200) {
     caseVariable = caseVariable | c;  //set rightmost bit to 1
   }
 
@@ -696,9 +708,9 @@ void goRight( void )
   servoLeft.write( 100 );
   servoRight.write( 90 );
   delay( 200 );
-  readLightSensors();
+  readMiddleSensorOnly();
   while ( middleIsBlack ) {
-    readLightSensors();
+   readMiddleSensorOnly();
   }
 }
 
@@ -708,9 +720,9 @@ void goLeft( void )
   servoLeft.write( 90 );
   servoRight.write( 80 );
   delay( 200 );
-  readLightSensors();
+  readMiddleSensorOnly();
   while ( middleIsBlack) {
-    readLightSensors();
+    readMiddleSensorOnly();
   }
 }
 
@@ -719,7 +731,7 @@ void turnAround( void )
   servoLeft.write( 0 );
   servoRight.write( 0 );
   // Serial.println( "turning left" );
-  delay( 200 );
+  delay( 100 );
   readLightSensors();
   while ( middleIsBlack ) {
     readLightSensors();
