@@ -238,13 +238,23 @@ void loop() {
  // Serial.println("got inside loop");
   readLightSensors();
   if (!hasStarted) {
-   // Serial.println("not started");
-     Serial.println(digitalRead(8));
-     if(digitalRead(8) == HIGH  | startSound()){
+    // Serial.println("not started");
+    while (!hasStarted) {
+      int m = 0;
+      for (int x = 5; x >= 0; x--) {
+        delay(250);
+        if ( digitalRead(8) == HIGH ) {
+          Serial.println(digitalRead(8));
+          m++;
+        }
+      }
+      if (m > 5) {
         hasStarted = true;
         Serial.println("8 is high");
         servoSetup();
-     }
+      }
+    }
+
 //    if (startSound()) {
 //      hasStarted = true;
 //      servoSetup();
@@ -485,7 +495,7 @@ void chooseChannel3( void )
         servoLeft.write( 0 );
         servoRight.write( 0 );
         // Serial.println( "turning left" );
-        delay( 200 );
+        delay( 100 );
         readLightSensors();
         while ( middleIsBlack ) {
           readLightSensors();   

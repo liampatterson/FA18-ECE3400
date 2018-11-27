@@ -236,6 +236,7 @@ void setup( void )
   Serial.begin( 9600 );
   ledSetup();
   radioSetup();
+
   // Serial.println("completed radio setup***************************");
   //to be used for mux digital inputs
   pinMode(7, OUTPUT); //enable bit is dig 7
@@ -267,10 +268,10 @@ void add(byte b) {
 boolean in(byte b) {
   for ( int i = 0; i < 81; i++ ) {
     if (visited[i] == b) {
-      return true;
+      return false;
     }
   }
-  return false;
+  return true;
 }
 
 //assumes coordinates are in format char xVal,yVal
@@ -350,6 +351,7 @@ void loop() {
     //    }
     if ( !foundVertex ) { //no vertex, go straight
       Straight();
+      
     }
     else { //found vertex
       tempFoundVertex = true; //found a vertex for now
@@ -502,7 +504,6 @@ void loop() {
           case B001:
           case B100:
           case B000:
-            
             goStraight();
             delay(200);
             Straight();
@@ -695,7 +696,7 @@ void goRight( void )
 {
   servoLeft.write( 100 );
   servoRight.write( 90 );
-  delay( 200 );
+  delay( 75 );
   readLightSensors();
   while ( middleIsBlack ) {
     readLightSensors();
@@ -707,7 +708,7 @@ void goLeft( void )
 {
   servoLeft.write( 90 );
   servoRight.write( 80 );
-  delay( 200 );
+  delay( 75 );
   readLightSensors();
   while ( middleIsBlack) {
     readLightSensors();
