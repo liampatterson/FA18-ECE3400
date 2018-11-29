@@ -1265,7 +1265,7 @@ case B010: //front wall only, default to turn left
     }
   }
   else if (turn == 2) {
-    if ( orientation > 0 ) {
+    if ( orientation > 3 ) {
       orientation = orientation + 1;
     }
     else {
