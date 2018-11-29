@@ -215,8 +215,7 @@ bool robotPresent;
 Orientation orientation = north_left;
 int xVal = 0;
 int yVal = 0;
-bool turnedLeft = false;
-bool turnedRight = false;
+int turn = 0;
 
 // END RADIO CONSTANTS
 
@@ -356,8 +355,7 @@ void loop() {
 
     }
     else { //found vertex
-      turnedLeft = false;
-      turnedRight = false;
+      turn = 0;
       tempFoundVertex = true; //found a vertex for now
       readDistanceSensors();
       goStop();
@@ -386,25 +384,25 @@ void loop() {
             Straight();
             didSomething = true;
             tempFoundVertex = false;
-            orientRobot( caseVariable, turnedLeft, turnedRight );
+            orientRobot( caseVariable, turn );
             transmitSqData( yVal, xVal );
             stack.push(possibleForwardNode);
           }
           else if (in(possibleLeftNode)) {
             goLeft();
-            turnedLeft = true;
+            turn = 1;
             didSomething = true;
             tempFoundVertex = false;
-            orientRobot( caseVariable, turnedLeft, turnedRight );
+            orientRobot( caseVariable, turn );
             transmitSqData( yVal, xVal );
             stack.push(possibleLeftNode);
           }
           else if (in(possibleRightNode)) {
             goRight();
-            turnedRight = true;
+            turn = 2;
             didSomething = true;
             tempFoundVertex = false;
-            orientRobot( caseVariable, turnedLeft, turnedRight );
+            orientRobot( caseVariable, turn );
             transmitSqData( yVal, xVal );
             stack.push(possibleRightNode);
           }
@@ -416,7 +414,7 @@ void loop() {
             Straight();
             didSomething = true;
             tempFoundVertex = false;
-            orientRobot( caseVariable, turnedLeft, turnedRight );
+            orientRobot( caseVariable, turn );
             transmitSqData( yVal, xVal );
             stack.push(possibleForwardNode);
           }
@@ -428,16 +426,16 @@ void loop() {
             Straight();
             didSomething = true;
             tempFoundVertex = false;
-            orientRobot( caseVariable, turnedLeft, turnedRight );
+            orientRobot( caseVariable, turn );
             transmitSqData( yVal, xVal );
             stack.push(possibleForwardNode);
           }
           else if (in(possibleLeftNode)) {
             goLeft();
-            turnedLeft = true;
+            turn = 1;
             didSomething = true;
             tempFoundVertex = false;
-            orientRobot( caseVariable, turnedLeft, turnedRight );
+            orientRobot( caseVariable, turn );
             transmitSqData( yVal, xVal );
             stack.push(possibleLeftNode);
           }
@@ -449,16 +447,16 @@ void loop() {
             Straight();
             didSomething = true;
             tempFoundVertex = false;
-            orientRobot( caseVariable, turnedLeft, turnedRight );
+            orientRobot( caseVariable, turn );
             transmitSqData( yVal, xVal );
             stack.push(possibleForwardNode);
           }
           else if (in(possibleRightNode)) {
             goRight();
-            turnedRight = true;
+            turn = 2;
             didSomething = true;
             tempFoundVertex = false;
-            orientRobot( caseVariable, turnedLeft, turnedRight );
+            orientRobot( caseVariable, turn );
             transmitSqData( yVal, xVal );
             stack.push(possibleRightNode);
           }
@@ -466,9 +464,10 @@ void loop() {
         case B011:
           if (in(possibleLeftNode)) {
             goLeft();
+            turn = 1;
             didSomething = true;
             tempFoundVertex = false;
-            orientRobot( caseVariable, turnedLeft, turnedRight );
+            orientRobot( caseVariable, turn );
             transmitSqData( yVal, xVal );
             stack.push(possibleLeftNode);
           }
@@ -476,19 +475,19 @@ void loop() {
         case B010:
           if (in(possibleLeftNode)) {
             goLeft();
-            turnedLeft = true;
+            turn = 1;
             didSomething = true;
             tempFoundVertex = false;
-            orientRobot( caseVariable, turnedLeft, turnedRight );
+            orientRobot( caseVariable, turn );
             transmitSqData( yVal, xVal );
             stack.push(possibleLeftNode);
           }
           else if (in(possibleRightNode)) {
             goRight();
-            turnedRight = true;
+            turn = 2;
             didSomething = true;
             tempFoundVertex = false;
-            orientRobot( caseVariable, turnedLeft, turnedRight );
+            orientRobot( caseVariable, turn );
             transmitSqData( yVal, xVal );
             stack.push(possibleRightNode);
           }
@@ -496,10 +495,10 @@ void loop() {
         case B110:
           if (in(possibleRightNode)) {
             goRight();
-            turnedRight = true;
+            turn = 2;
             didSomething = true;
             tempFoundVertex = false;
-            orientRobot( caseVariable, turnedLeft, turnedRight );
+            orientRobot( caseVariable, turn );
             transmitSqData( yVal, xVal );
             stack.push(possibleRightNode);
           }
@@ -519,31 +518,31 @@ void loop() {
             delay(200);
             Straight();
             tempFoundVertex = false;
-            orientRobot( caseVariable, turnedLeft, turnedRight );
+            orientRobot( caseVariable, turn );
             transmitSqData( yVal, xVal );
             stack.push(possibleForwardNode);
             break;
           case B011:
           case B010:
             goLeft();
-            turnedLeft = true;
+            turn = 1;
             tempFoundVertex = false;
-            orientRobot( caseVariable, turnedLeft, turnedRight );
+            orientRobot( caseVariable, turn );
             transmitSqData( yVal, xVal );
             stack.push(possibleLeftNode);
             break;
           case B110:
             goRight();
-            turnedRight = true;
+            turn = 2;
             tempFoundVertex = false;
-            orientRobot( caseVariable, turnedLeft, turnedRight );
+            orientRobot( caseVariable, turn );
             transmitSqData( yVal, xVal );
             stack.push(possibleRightNode);
             break;
           case B111:
             turnAround();
             tempFoundVertex = false;
-            orientRobot( caseVariable, turnedLeft, turnedRight );
+            orientRobot( caseVariable, turn );
             transmitSqData( yVal, xVal );
             break;
           default:
@@ -1082,403 +1081,403 @@ void orientRobot( int wallState, int turn )
           orientation = 3;
         }
       }
+  break;
+case B101: //left and right only
+  switch ( orientation ) {
+    case north_up:
+      northWall = false;
+      westWall = true;
+      southWall = false;
+      eastWall = true;
       break;
-    case B101: //left and right only
-      switch ( orientation ) {
-        case north_up:
-          northWall = false;
-          westWall = true;
-          southWall = false;
-          eastWall = true;
-          break;
-        case north_left:
-          northWall = true;
-          westWall = false;
-          southWall = true;
-          eastWall = false;
-          break;
-        case north_back:
-          northWall = false;
-          westWall = true;
-          southWall = false;
-          eastWall = true;
-          break;
-        case north_right:
-          northWall = true;
-          westWall = false;
-          southWall = true;
-          eastWall = false;
-          break;
-      }
+    case north_left:
+      northWall = true;
+      westWall = false;
+      southWall = true;
+      eastWall = false;
       break;
-    case B100: //left wall only
-      switch ( orientation ) {
-        case north_up:
-          northWall = false;
-          westWall = true;
-          southWall = false;
-          eastWall = false;
-          break;
-        case north_left:
-          northWall = true;
-          westWall = false;
-          southWall = false;
-          eastWall = false;
-          break;
-        case north_back:
-          northWall = false;
-          westWall = false;
-          southWall = false;
-          eastWall = true;
-          break;
-        case north_right:
-          northWall = false;
-          westWall = false;
-          southWall = true;
-          eastWall = false;
-          break;
-      }
-      if (turn == 2) {
-        if ( orientation < 3 ) {
-          orientation = orientation + 1;
-        }
-        else {
-          orientation = 0;
-        }
-      }
+    case north_back:
+      northWall = false;
+      westWall = true;
+      southWall = false;
+      eastWall = true;
       break;
-    case B110: //left and front wall
-      switch ( orientation ) {
-        case north_up:
-          northWall = true;
-          westWall = true;
-          southWall = false;
-          eastWall = false;
-          break;
-
-        case north_left:
-          northWall = true;
-          westWall = false;
-          southWall = false;
-          eastWall = true;
-          break;
-
-        case north_back:
-          northWall = false;
-          westWall = false;
-          southWall = true;
-          eastWall = true;
-          break;
-
-        case north_right:
-          northWall = false;
-          westWall = true;
-          southWall = true;
-          eastWall = false;
-          break;
-        default:
-          break;
-      }
-      if ( orientation < 3 ) {
-        orientation = orientation + 1;
-      }
-      else {
-        orientation = 0;
-      }
+    case north_right:
+      northWall = true;
+      westWall = false;
+      southWall = true;
+      eastWall = false;
       break;
-    case B011: //right and front wall
-      switch ( orientation ) {
-        case north_up:
-          northWall = true;
-          westWall = false;
-          southWall = false;
-          eastWall = true;
-          break;
-
-        case north_left:
-          northWall = false;
-          westWall = false;
-          southWall = true;
-          eastWall = true;
-          break;
-
-        case north_back:
-          northWall = false;
-          westWall = true;
-          southWall = true;
-          eastWall = false;
-          break;
-
-        case north_right:
-          northWall = true;
-          westWall = true;
-          southWall = false;
-          eastWall = false;
-          break;
-        default:
-          break;
-      }
-      if ( orientation > 0 ) {
-        orientation = orientation - 1;
-      }
-      else {
-        orientation = 3;
-      }
-      break;
-    case B010: //front wall only, default to turn left
-      switch ( orientation ) {
-        case north_up:
-          northWall = true;
-          westWall = false;
-          southWall = false;
-          eastWall = false;
-          break;
-
-        case north_left:
-          northWall = false;
-          westWall = false;
-          southWall = false;
-          eastWall = true;
-          break;
-
-        case north_back:
-          northWall = false;
-          westWall = false;
-          southWall = true;
-          eastWall = false;
-          break;
-
-        case north_right:
-          northWall = false;
-          westWall = true;
-          southWall = false;
-          eastWall = false;
-          break;
-        default:
-          break;
-      }
-      if (turn == 1) {
-        if ( orientation > 0 ) {
-          orientation = orientation - 1;
-        }
-        else {
-          orientation = 3;
-        }
-      }
-      {
-        else if (turn == 2) {
-          if ( orientation > 0 ) {
-            orientation = orientation + 1;
-          }
-          else {
-            orientation = 0;
-          }
-        }
-        break;
-      case B111: //front, left, and right walls
-        switch ( orientation ) {
-          case north_up:
-            northWall = true;
-            westWall = true;
-            southWall = false;
-            eastWall = true;
-            break;
-
-          case north_left:
-            northWall = true;
-            westWall = false;
-            southWall = true;
-            eastWall = true;
-            break;
-
-          case north_back:
-            northWall = false;
-            westWall = true;
-            southWall = true;
-            eastWall = true;
-            break;
-
-          case north_right:
-            northWall = true;
-            westWall = true;
-            southWall = true;
-            eastWall = false;
-            break;
-          default:
-            break;
-        }
-        if ( orientation > 1 ) {
-          orientation = orientation - 2;
-        }
-        else {
-          orientation = 2;
-        }
-        break;
-      default:
-        northWall = false;
-        westWall = false;
-        southWall = false;
-        eastWall = false;
-        break;
-      }
   }
-
-
-  void coordinateCalculation( Orientation orientation ) {
-    switch ( orientation ) {
-      //case north_up:
-      case 0:
-        yVal -= 1;
-        break;
-      //case north_left:
-      case 1:
-        xVal += 1;
-        break;
-      //case north_back:
-      case 2:
-        yVal += 1;
-        break;
-      //case north_right:
-      case 3:
-        xVal -= 1;
-        break;
-      default:
-        break;
+  break;
+case B100: //left wall only
+  switch ( orientation ) {
+    case north_up:
+      northWall = false;
+      westWall = true;
+      southWall = false;
+      eastWall = false;
+      break;
+    case north_left:
+      northWall = true;
+      westWall = false;
+      southWall = false;
+      eastWall = false;
+      break;
+    case north_back:
+      northWall = false;
+      westWall = false;
+      southWall = false;
+      eastWall = true;
+      break;
+    case north_right:
+      northWall = false;
+      westWall = false;
+      southWall = true;
+      eastWall = false;
+      break;
+  }
+  if (turn == 2) {
+    if ( orientation < 3 ) {
+      orientation = orientation + 1;
+    }
+    else {
+      orientation = 0;
     }
   }
+  break;
+case B110: //left and front wall
+  switch ( orientation ) {
+    case north_up:
+      northWall = true;
+      westWall = true;
+      southWall = false;
+      eastWall = false;
+      break;
 
+    case north_left:
+      northWall = true;
+      westWall = false;
+      southWall = false;
+      eastWall = true;
+      break;
 
-  /*
-    // FOR SIMULATION ONLY !!!!!!!!!!
-    void assignGlobalMaze ( int xVal, int yVal )
-    {
-    northWall = maze[ yVal ][ xVal ].northWall;
-    southWall = maze[ yVal ][ xVal ].southWall;
-    eastWall = maze[ yVal ][ xVal ].eastWall;
-    westWall = maze[ yVal ][ xVal ].westWall;
-    treasureCircle  = maze[ yVal ][ xVal ].treasureCircle;
-    treasureTriangle = maze[ yVal ][ xVal ].treasureTriangle;
-    treasureSquare = maze[ yVal ][ xVal ].treasureSquare;
-    treasureRed = maze[ yVal ][ xVal ].treasureRed;
-    treasureBlue = maze[ yVal ][ xVal ].treasureBlue;
-    robotPresent = maze[ yVal ][ xVal ].robotPresent;
+    case north_back:
+      northWall = false;
+      westWall = false;
+      southWall = true;
+      eastWall = true;
+      break;
+
+    case north_right:
+      northWall = false;
+      westWall = true;
+      southWall = true;
+      eastWall = false;
+      break;
+    default:
+      break;
+  }
+  if ( orientation < 3 ) {
+    orientation = orientation + 1;
+  }
+  else {
+    orientation = 0;
+  }
+  break;
+case B011: //right and front wall
+  switch ( orientation ) {
+    case north_up:
+      northWall = true;
+      westWall = false;
+      southWall = false;
+      eastWall = true;
+      break;
+
+    case north_left:
+      northWall = false;
+      westWall = false;
+      southWall = true;
+      eastWall = true;
+      break;
+
+    case north_back:
+      northWall = false;
+      westWall = true;
+      southWall = true;
+      eastWall = false;
+      break;
+
+    case north_right:
+      northWall = true;
+      westWall = true;
+      southWall = false;
+      eastWall = false;
+      break;
+    default:
+      break;
+  }
+  if ( orientation > 0 ) {
+    orientation = orientation - 1;
+  }
+  else {
+    orientation = 3;
+  }
+  break;
+case B010: //front wall only, default to turn left
+  switch ( orientation ) {
+    case north_up:
+      northWall = true;
+      westWall = false;
+      southWall = false;
+      eastWall = false;
+      break;
+
+    case north_left:
+      northWall = false;
+      westWall = false;
+      southWall = false;
+      eastWall = true;
+      break;
+
+    case north_back:
+      northWall = false;
+      westWall = false;
+      southWall = true;
+      eastWall = false;
+      break;
+
+    case north_right:
+      northWall = false;
+      westWall = true;
+      southWall = false;
+      eastWall = false;
+      break;
+    default:
+      break;
+  }
+  if (turn == 1) {
+    if ( orientation > 0 ) {
+      orientation = orientation - 1;
     }
-
-  */
-
-  /** USAGE FOR THE BELOW THREE PROGRAMS
-      checkWalls checks for walls
-        north/south/east/westWall are global variables
-        please assign them values when checking in each square
-      checkTreasure checks the value of treasure
-        again, they're global variables, assign them
-        values and this will byte encode them
-      checkIr does the same thing for other robots
-        again it's a global variable
-  */
-  byte checkWalls( byte firstByte )
-  {
-    if ( northWall ) firstByte |= WALL_NORTH_PRESENT;
-    if ( southWall ) firstByte |= WALL_SOUTH_PRESENT;
-    if ( eastWall ) firstByte |= WALL_EAST_PRESENT;
-    if ( westWall ) firstByte |= WALL_WEST_PRESENT;
-    return firstByte;
-  }
-
-
-  byte checkTreasure( byte firstByte )
-  {
-    if ( treasureTriangle ) firstByte |= TREASURE_TRIANGLE;
-    if ( treasureCircle ) firstByte |= TREASURE_CIRCLE;
-    if ( treasureSquare ) firstByte |= TREASURE_SQUARE;
-    if ( treasureRed ) firstByte |= TREASURE_RED;
-    if ( treasureBlue ) firstByte |= TREASURE_BLUE;
-    return firstByte;
-  }
-
-
-  byte checkIr( byte firstByte )
-  {
-    if ( robotPresent ) {
-      firstByte |= ROBOT_PRESENT;
+    else {
+      orientation = 3;
     }
-    else if ( !robotPresent ) firstByte &= ROBOT_NOT_PRESENT;
-    return firstByte;
+  }
+  else if (turn == 2) {
+    if ( orientation > 0 ) {
+      orientation = orientation + 1;
+    }
+    else {
+      orientation = 0;
+    }
+  }
+  break;
+case B111: //front, left, and right walls
+  switch ( orientation ) {
+    case north_up:
+      northWall = true;
+      westWall = true;
+      southWall = false;
+      eastWall = true;
+      break;
+
+    case north_left:
+      northWall = true;
+      westWall = false;
+      southWall = true;
+      eastWall = true;
+      break;
+
+    case north_back:
+      northWall = false;
+      westWall = true;
+      southWall = true;
+      eastWall = true;
+      break;
+
+    case north_right:
+      northWall = true;
+      westWall = true;
+      southWall = true;
+      eastWall = false;
+      break;
+    default:
+      break;
+  }
+  if ( orientation > 1 ) {
+    orientation = orientation - 2;
+  }
+  else {
+    orientation = 2;
+  }
+break;
+default:
+northWall = false;
+westWall = false;
+southWall = false;
+eastWall = false;
+break;
+}
+}
+
+
+
+void coordinateCalculation( Orientation orientation ) {
+  switch ( orientation ) {
+    //case north_up:
+    case 0:
+      yVal -= 1;
+      break;
+    //case north_left:
+    case 1:
+      xVal += 1;
+      break;
+    //case north_back:
+    case 2:
+      yVal += 1;
+      break;
+    //case north_right:
+    case 3:
+      xVal -= 1;
+      break;
+    default:
+      break;
+  }
+}
+
+
+/*
+  // FOR SIMULATION ONLY !!!!!!!!!!
+  void assignGlobalMaze ( int xVal, int yVal )
+  {
+  northWall = maze[ yVal ][ xVal ].northWall;
+  southWall = maze[ yVal ][ xVal ].southWall;
+  eastWall = maze[ yVal ][ xVal ].eastWall;
+  westWall = maze[ yVal ][ xVal ].westWall;
+  treasureCircle  = maze[ yVal ][ xVal ].treasureCircle;
+  treasureTriangle = maze[ yVal ][ xVal ].treasureTriangle;
+  treasureSquare = maze[ yVal ][ xVal ].treasureSquare;
+  treasureRed = maze[ yVal ][ xVal ].treasureRed;
+  treasureBlue = maze[ yVal ][ xVal ].treasureBlue;
+  robotPresent = maze[ yVal ][ xVal ].robotPresent;
   }
 
+*/
+
+/** USAGE FOR THE BELOW THREE PROGRAMS
+    checkWalls checks for walls
+      north/south/east/westWall are global variables
+      please assign them values when checking in each square
+    checkTreasure checks the value of treasure
+      again, they're global variables, assign them
+      values and this will byte encode them
+    checkIr does the same thing for other robots
+      again it's a global variable
+*/
+byte checkWalls( byte firstByte )
+{
+  if ( northWall ) firstByte |= WALL_NORTH_PRESENT;
+  if ( southWall ) firstByte |= WALL_SOUTH_PRESENT;
+  if ( eastWall ) firstByte |= WALL_EAST_PRESENT;
+  if ( westWall ) firstByte |= WALL_WEST_PRESENT;
+  return firstByte;
+}
 
 
-  //NOT USING STUFF BELOW THIS
-  //      if ( MiddleDistance > 175) {
-  //        if (LeftDistance > 200) {
+byte checkTreasure( byte firstByte )
+{
+  if ( treasureTriangle ) firstByte |= TREASURE_TRIANGLE;
+  if ( treasureCircle ) firstByte |= TREASURE_CIRCLE;
+  if ( treasureSquare ) firstByte |= TREASURE_SQUARE;
+  if ( treasureRed ) firstByte |= TREASURE_RED;
+  if ( treasureBlue ) firstByte |= TREASURE_BLUE;
+  return firstByte;
+}
+
+
+byte checkIr( byte firstByte )
+{
+  if ( robotPresent ) {
+    firstByte |= ROBOT_PRESENT;
+  }
+  else if ( !robotPresent ) firstByte &= ROBOT_NOT_PRESENT;
+  return firstByte;
+}
+
+
+
+//NOT USING STUFF BELOW THIS
+//      if ( MiddleDistance > 175) {
+//        if (LeftDistance > 200) {
+//
+//        }
+//        else if (RightDistance > 175) {
+//          goLeft();
+//          //// Serial.println( "Right Wall" );
+//          foundVertex = false;
+//        }
+//        //// Serial.println( "got right" );
+//        //goStop();
+//        //      delay( 100 );
+//        else {
+//          goLeft();
+//          //// Serial.println( "Middle Wall" );
+//          foundVertex = false;
+//        }
+//      }
+//      else{
+
+// foundVertex = false;
+//      }
+
+void transmit( byte payload )
+{
+  // Ping out role.  Repeatedly send the current time
   //
-  //        }
-  //        else if (RightDistance > 175) {
-  //          goLeft();
-  //          //// Serial.println( "Right Wall" );
-  //          foundVertex = false;
-  //        }
-  //        //// Serial.println( "got right" );
-  //        //goStop();
-  //        //      delay( 100 );
-  //        else {
-  //          goLeft();
-  //          //// Serial.println( "Middle Wall" );
-  //          foundVertex = false;
-  //        }
-  //      }
-  //      else{
 
-  // foundVertex = false;
-  //      }
+  //if ( role == role_ping_out )
+  //{
+  // First, stop listening so we can talk.
+  radio.stopListening();
 
-  void transmit( byte payload )
+  printf( "Now sending %x...", payload );
+  bool ok = radio.write( &payload, sizeof(unsigned char) );
+  if ( ok )
+    printf( "ok..." );
+  else
+    printf( "failed.\n\r" );
+
+  // Now, continue listening
+  radio.startListening();
+
+  // Wait here until we get a response, or timeout (250ms)
+  unsigned long started_waiting_at = millis();
+  bool timeout = false;
+  while ( ! radio.available() && ! timeout )
+    if (millis() - started_waiting_at > 1000 )
+      timeout = true;
+
+  // Describe the results
+  if ( timeout )
   {
-    // Ping out role.  Repeatedly send the current time
-    //
-
-    //if ( role == role_ping_out )
-    //{
-    // First, stop listening so we can talk.
-    radio.stopListening();
-
-    printf( "Now sending %x...", payload );
-    bool ok = radio.write( &payload, sizeof(unsigned char) );
-    if ( ok )
-      printf( "ok..." );
-    else
-      printf( "failed.\n\r" );
-
-    // Now, continue listening
-    radio.startListening();
-
-    // Wait here until we get a response, or timeout (250ms)
-    unsigned long started_waiting_at = millis();
-    bool timeout = false;
-    while ( ! radio.available() && ! timeout )
-      if (millis() - started_waiting_at > 1000 )
-        timeout = true;
-
-    // Describe the results
-    if ( timeout )
-    {
-      printf("Failed, response timed out.\n\r");
-    }
-    else
-    {
-      // Grab the response, compare, and send to debugging spew
-      unsigned char rxPayload;
-      radio.read( &rxPayload, sizeof(unsigned char) );
-      if ( rxPayload == payload ) {
-        // Spew it
-        printf("Received correct data %x, RT delay: %lu\n\r", rxPayload, millis() - started_waiting_at);
-      }
-      else {
-        printf("That's not what I sent, received %x, RT delay: %lu\n\r", rxPayload, millis() - started_waiting_at);
-      }
-    }
-
-    // Try again 1s later
-    //delay(1000);
-    //}
+    printf("Failed, response timed out.\n\r");
   }
+  else
+  {
+    // Grab the response, compare, and send to debugging spew
+    unsigned char rxPayload;
+    radio.read( &rxPayload, sizeof(unsigned char) );
+    if ( rxPayload == payload ) {
+      // Spew it
+      printf("Received correct data %x, RT delay: %lu\n\r", rxPayload, millis() - started_waiting_at);
+    }
+    else {
+      printf("That's not what I sent, received %x, RT delay: %lu\n\r", rxPayload, millis() - started_waiting_at);
+    }
+  }
+
+  // Try again 1s later
+  //delay(1000);
+  //}
+}
