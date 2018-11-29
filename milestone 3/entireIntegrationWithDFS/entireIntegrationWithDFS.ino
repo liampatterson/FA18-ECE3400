@@ -227,6 +227,7 @@ byte current;
 boolean didSomething;
 
 byte possibleForwardNode;
+byte possibleBackNode;
 byte possibleLeftNode;
 byte possibleRightNode;
 
@@ -285,21 +286,25 @@ void decodePossibleSets( Orientation orientation, byte currentCoords ) {
   switch ( orientation ) {
     case north_up:
       possibleForwardNode = intToByte( xVal, yVal - 1 );
+      possibleBackNode = intToByte( xVal, yVal + 1 );
       possibleLeftNode = intToByte( xVal - 1, yVal );
       possibleRightNode = intToByte( xVal + 1, yVal );
       break;
     case north_left:
       possibleForwardNode = intToByte( xVal + 1, yVal );
+      possibleBackNode = intToByte( xVal - 1, yVal );
       possibleLeftNode = intToByte( xVal, yVal - 1 );
       possibleRightNode = intToByte( xVal, yVal + 1 );
       break;
     case north_back:
       possibleForwardNode = intToByte( xVal, yVal + 1 );
+      possibleBackNode = intToByte( xVal, yVal - 1 );
       possibleLeftNode = intToByte( xVal + 1, yVal );
       possibleRightNode = intToByte( xVal - 1, yVal );
       break;
     case north_right:
       possibleForwardNode = intToByte( xVal - 1, yVal );
+      possibleBackNode = intToByte( xVal + 1, yVal );
       possibleLeftNode = intToByte( xVal, yVal + 1 );
       possibleRightNode = intToByte( xVal, yVal - 1 );
       break;
@@ -310,7 +315,7 @@ void decodePossibleSets( Orientation orientation, byte currentCoords ) {
 
 byte intToByte( int xVal, int yVal ) {
   byte returnVal;
-  returnVal = ( xVal << 4 ) || ( yVal % 15);
+  returnVal = (( xVal << 4 ) | ( yVal % 15));
   return returnVal;
 }
 /*** END HELPER FUNCTIONS FOR DFS ***/
@@ -380,7 +385,6 @@ void loop() {
         case B000:
           if (in(possibleForwardNode)) {
             goStraight();
-            delay(200);
             Straight();
             didSomething = true;
             tempFoundVertex = false;
@@ -410,7 +414,6 @@ void loop() {
         case B101:
           if (in(possibleForwardNode)) {
             goStraight();
-            delay(200);
             Straight();
             didSomething = true;
             tempFoundVertex = false;
@@ -422,7 +425,6 @@ void loop() {
         case B001:
           if (in(possibleForwardNode)) {
             goStraight();
-            delay(200);
             Straight();
             didSomething = true;
             tempFoundVertex = false;
@@ -443,7 +445,6 @@ void loop() {
         case B100:
           if (in(possibleForwardNode)) {
             goStraight();
-            delay(200);
             Straight();
             didSomething = true;
             tempFoundVertex = false;
@@ -507,7 +508,7 @@ void loop() {
           break;
       }
       if (!didSomething) {
-        delay(2000);
+        delay(6000);
         //now check everything around you if you have to go to a visited node
         switch (caseVariable) {
           case B101:
@@ -515,7 +516,6 @@ void loop() {
           case B100:
           case B000:
             goStraight();
-            delay(200);
             Straight();
             tempFoundVertex = false;
             orientRobot( caseVariable, turn );
@@ -544,6 +544,7 @@ void loop() {
             tempFoundVertex = false;
             orientRobot( caseVariable, turn );
             transmitSqData( yVal, xVal );
+            stack.push(possibleBackNode);
             break;
           default:
             break;
@@ -732,7 +733,7 @@ void turnAround( void )
   servoLeft.write( 0 );
   servoRight.write( 0 );
   // Serial.println( "turning left" );
-  delay( 200 );
+  delay( 100 );
   readLightSensors();
   while ( middleIsBlack ) {
     readLightSensors();
@@ -1081,244 +1082,244 @@ void orientRobot( int wallState, int turn )
           orientation = 3;
         }
       }
-  break;
-case B101: //left and right only
-  switch ( orientation ) {
-    case north_up:
-      northWall = false;
-      westWall = true;
-      southWall = false;
-      eastWall = true;
       break;
-    case north_left:
-      northWall = true;
-      westWall = false;
-      southWall = true;
-      eastWall = false;
+    case B101: //left and right only
+      switch ( orientation ) {
+        case north_up:
+          northWall = false;
+          westWall = true;
+          southWall = false;
+          eastWall = true;
+          break;
+        case north_left:
+          northWall = true;
+          westWall = false;
+          southWall = true;
+          eastWall = false;
+          break;
+        case north_back:
+          northWall = false;
+          westWall = true;
+          southWall = false;
+          eastWall = true;
+          break;
+        case north_right:
+          northWall = true;
+          westWall = false;
+          southWall = true;
+          eastWall = false;
+          break;
+      }
       break;
-    case north_back:
-      northWall = false;
-      westWall = true;
-      southWall = false;
-      eastWall = true;
+    case B100: //left wall only
+      switch ( orientation ) {
+        case north_up:
+          northWall = false;
+          westWall = true;
+          southWall = false;
+          eastWall = false;
+          break;
+        case north_left:
+          northWall = true;
+          westWall = false;
+          southWall = false;
+          eastWall = false;
+          break;
+        case north_back:
+          northWall = false;
+          westWall = false;
+          southWall = false;
+          eastWall = true;
+          break;
+        case north_right:
+          northWall = false;
+          westWall = false;
+          southWall = true;
+          eastWall = false;
+          break;
+      }
+      if (turn == 2) {
+        if ( orientation < 3 ) {
+          orientation = orientation + 1;
+        }
+        else {
+          orientation = 0;
+        }
+      }
       break;
-    case north_right:
-      northWall = true;
-      westWall = false;
-      southWall = true;
-      eastWall = false;
-      break;
-  }
-  break;
-case B100: //left wall only
-  switch ( orientation ) {
-    case north_up:
-      northWall = false;
-      westWall = true;
-      southWall = false;
-      eastWall = false;
-      break;
-    case north_left:
-      northWall = true;
-      westWall = false;
-      southWall = false;
-      eastWall = false;
-      break;
-    case north_back:
-      northWall = false;
-      westWall = false;
-      southWall = false;
-      eastWall = true;
-      break;
-    case north_right:
-      northWall = false;
-      westWall = false;
-      southWall = true;
-      eastWall = false;
-      break;
-  }
-  if (turn == 2) {
-    if ( orientation < 3 ) {
-      orientation = orientation + 1;
-    }
-    else {
-      orientation = 0;
-    }
-  }
-  break;
-case B110: //left and front wall
-  switch ( orientation ) {
-    case north_up:
-      northWall = true;
-      westWall = true;
-      southWall = false;
-      eastWall = false;
-      break;
+    case B110: //left and front wall
+      switch ( orientation ) {
+        case north_up:
+          northWall = true;
+          westWall = true;
+          southWall = false;
+          eastWall = false;
+          break;
 
-    case north_left:
-      northWall = true;
-      westWall = false;
-      southWall = false;
-      eastWall = true;
-      break;
+        case north_left:
+          northWall = true;
+          westWall = false;
+          southWall = false;
+          eastWall = true;
+          break;
 
-    case north_back:
-      northWall = false;
-      westWall = false;
-      southWall = true;
-      eastWall = true;
-      break;
+        case north_back:
+          northWall = false;
+          westWall = false;
+          southWall = true;
+          eastWall = true;
+          break;
 
-    case north_right:
-      northWall = false;
-      westWall = true;
-      southWall = true;
-      eastWall = false;
+        case north_right:
+          northWall = false;
+          westWall = true;
+          southWall = true;
+          eastWall = false;
+          break;
+        default:
+          break;
+      }
+      if ( orientation < 3 ) {
+        orientation = orientation + 1;
+      }
+      else {
+        orientation = 0;
+      }
+      break;
+    case B011: //right and front wall
+      switch ( orientation ) {
+        case north_up:
+          northWall = true;
+          westWall = false;
+          southWall = false;
+          eastWall = true;
+          break;
+
+        case north_left:
+          northWall = false;
+          westWall = false;
+          southWall = true;
+          eastWall = true;
+          break;
+
+        case north_back:
+          northWall = false;
+          westWall = true;
+          southWall = true;
+          eastWall = false;
+          break;
+
+        case north_right:
+          northWall = true;
+          westWall = true;
+          southWall = false;
+          eastWall = false;
+          break;
+        default:
+          break;
+      }
+      if ( orientation > 0 ) {
+        orientation = orientation - 1;
+      }
+      else {
+        orientation = 3;
+      }
+      break;
+    case B010: //front wall only, default to turn left
+      switch ( orientation ) {
+        case north_up:
+          northWall = true;
+          westWall = false;
+          southWall = false;
+          eastWall = false;
+          break;
+
+        case north_left:
+          northWall = false;
+          westWall = false;
+          southWall = false;
+          eastWall = true;
+          break;
+
+        case north_back:
+          northWall = false;
+          westWall = false;
+          southWall = true;
+          eastWall = false;
+          break;
+
+        case north_right:
+          northWall = false;
+          westWall = true;
+          southWall = false;
+          eastWall = false;
+          break;
+        default:
+          break;
+      }
+      if (turn == 1) {
+        if ( orientation > 0 ) {
+          orientation = orientation - 1;
+        }
+        else {
+          orientation = 3;
+        }
+      }
+      else if (turn == 2) {
+        if ( orientation > 3 ) {
+          orientation = orientation + 1;
+        }
+        else {
+          orientation = 0;
+        }
+      }
+      break;
+    case B111: //front, left, and right walls
+      switch ( orientation ) {
+        case north_up:
+          northWall = true;
+          westWall = true;
+          southWall = false;
+          eastWall = true;
+          break;
+
+        case north_left:
+          northWall = true;
+          westWall = false;
+          southWall = true;
+          eastWall = true;
+          break;
+
+        case north_back:
+          northWall = false;
+          westWall = true;
+          southWall = true;
+          eastWall = true;
+          break;
+
+        case north_right:
+          northWall = true;
+          westWall = true;
+          southWall = true;
+          eastWall = false;
+          break;
+        default:
+          break;
+      }
+      if ( orientation > 1 ) {
+        orientation = orientation - 2;
+      }
+      else {
+        orientation = 2;
+      }
       break;
     default:
-      break;
-  }
-  if ( orientation < 3 ) {
-    orientation = orientation + 1;
-  }
-  else {
-    orientation = 0;
-  }
-  break;
-case B011: //right and front wall
-  switch ( orientation ) {
-    case north_up:
-      northWall = true;
-      westWall = false;
-      southWall = false;
-      eastWall = true;
-      break;
-
-    case north_left:
       northWall = false;
-      westWall = false;
-      southWall = true;
-      eastWall = true;
-      break;
-
-    case north_back:
-      northWall = false;
-      westWall = true;
-      southWall = true;
-      eastWall = false;
-      break;
-
-    case north_right:
-      northWall = true;
-      westWall = true;
-      southWall = false;
-      eastWall = false;
-      break;
-    default:
-      break;
-  }
-  if ( orientation > 0 ) {
-    orientation = orientation - 1;
-  }
-  else {
-    orientation = 3;
-  }
-  break;
-case B010: //front wall only, default to turn left
-  switch ( orientation ) {
-    case north_up:
-      northWall = true;
       westWall = false;
       southWall = false;
       eastWall = false;
       break;
-
-    case north_left:
-      northWall = false;
-      westWall = false;
-      southWall = false;
-      eastWall = true;
-      break;
-
-    case north_back:
-      northWall = false;
-      westWall = false;
-      southWall = true;
-      eastWall = false;
-      break;
-
-    case north_right:
-      northWall = false;
-      westWall = true;
-      southWall = false;
-      eastWall = false;
-      break;
-    default:
-      break;
   }
-  if (turn == 1) {
-    if ( orientation > 0 ) {
-      orientation = orientation - 1;
-    }
-    else {
-      orientation = 3;
-    }
-  }
-  else if (turn == 2) {
-    if ( orientation > 3 ) {
-      orientation = orientation + 1;
-    }
-    else {
-      orientation = 0;
-    }
-  }
-  break;
-case B111: //front, left, and right walls
-  switch ( orientation ) {
-    case north_up:
-      northWall = true;
-      westWall = true;
-      southWall = false;
-      eastWall = true;
-      break;
-
-    case north_left:
-      northWall = true;
-      westWall = false;
-      southWall = true;
-      eastWall = true;
-      break;
-
-    case north_back:
-      northWall = false;
-      westWall = true;
-      southWall = true;
-      eastWall = true;
-      break;
-
-    case north_right:
-      northWall = true;
-      westWall = true;
-      southWall = true;
-      eastWall = false;
-      break;
-    default:
-      break;
-  }
-  if ( orientation > 1 ) {
-    orientation = orientation - 2;
-  }
-  else {
-    orientation = 2;
-  }
-break;
-default:
-northWall = false;
-westWall = false;
-southWall = false;
-eastWall = false;
-break;
-}
 }
 
 
