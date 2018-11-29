@@ -215,6 +215,8 @@ bool robotPresent;
 Orientation orientation = north_left;
 int xVal = 0;
 int yVal = 0;
+bool turnedLeft = false;
+bool turnedRight = false;
 
 // END RADIO CONSTANTS
 
@@ -283,24 +285,24 @@ void decodePossibleSets( Orientation orientation, byte currentCoords ) {
 
   switch ( orientation ) {
     case north_up:
-      possibleForwardNode = intToByte( xVal, yVal + 1 );
+      possibleForwardNode = intToByte( xVal, yVal - 1 );
       possibleLeftNode = intToByte( xVal - 1, yVal );
       possibleRightNode = intToByte( xVal + 1, yVal );
       break;
     case north_left:
       possibleForwardNode = intToByte( xVal + 1, yVal );
-      possibleLeftNode = intToByte( xVal, yVal + 1 );
-      possibleRightNode = intToByte( xVal, yVal - 1 );
+      possibleLeftNode = intToByte( xVal, yVal - 1 );
+      possibleRightNode = intToByte( xVal, yVal + 1 );
       break;
     case north_back:
-      possibleForwardNode = intToByte( xVal, yVal - 1 );
+      possibleForwardNode = intToByte( xVal, yVal + 1 );
       possibleLeftNode = intToByte( xVal + 1, yVal );
       possibleRightNode = intToByte( xVal - 1, yVal );
       break;
     case north_right:
       possibleForwardNode = intToByte( xVal - 1, yVal );
-      possibleLeftNode = intToByte( xVal, yVal - 1 );
-      possibleRightNode = intToByte( xVal, yVal + 1 );
+      possibleLeftNode = intToByte( xVal, yVal + 1 );
+      possibleRightNode = intToByte( xVal, yVal - 1 );
       break;
     default:
       break;
@@ -351,9 +353,11 @@ void loop() {
     //    }
     if ( !foundVertex ) { //no vertex, go straight
       Straight();
-      
+
     }
     else { //found vertex
+      turnedLeft = false;
+      turnedRight = false;
       tempFoundVertex = true; //found a vertex for now
       readDistanceSensors();
       goStop();
@@ -362,7 +366,7 @@ void loop() {
       coordinateCalculation( orientation );
       didSomething = false;
       current = stack.pop();
-      if (!in(current)) { //if current is not in visited
+      if (in(current)) { //if current is not in visited
         add(current); //set current coordinate to be visited, TODO add an add function
       }
       decodePossibleSets( orientation, intToByte(xVal, yVal) );
@@ -382,23 +386,25 @@ void loop() {
             Straight();
             didSomething = true;
             tempFoundVertex = false;
-            orientRobot( caseVariable );
+            orientRobot( caseVariable, turnedLeft, turnedRight );
             transmitSqData( yVal, xVal );
             stack.push(possibleForwardNode);
           }
           else if (in(possibleLeftNode)) {
             goLeft();
+            turnedLeft = true;
             didSomething = true;
             tempFoundVertex = false;
-            orientRobot( caseVariable );
+            orientRobot( caseVariable, turnedLeft, turnedRight );
             transmitSqData( yVal, xVal );
             stack.push(possibleLeftNode);
           }
           else if (in(possibleRightNode)) {
             goRight();
+            turnedRight = true;
             didSomething = true;
             tempFoundVertex = false;
-            orientRobot( caseVariable );
+            orientRobot( caseVariable, turnedLeft, turnedRight );
             transmitSqData( yVal, xVal );
             stack.push(possibleRightNode);
           }
@@ -410,7 +416,7 @@ void loop() {
             Straight();
             didSomething = true;
             tempFoundVertex = false;
-            orientRobot( caseVariable );
+            orientRobot( caseVariable, turnedLeft, turnedRight );
             transmitSqData( yVal, xVal );
             stack.push(possibleForwardNode);
           }
@@ -422,15 +428,16 @@ void loop() {
             Straight();
             didSomething = true;
             tempFoundVertex = false;
-            orientRobot( caseVariable );
+            orientRobot( caseVariable, turnedLeft, turnedRight );
             transmitSqData( yVal, xVal );
             stack.push(possibleForwardNode);
           }
           else if (in(possibleLeftNode)) {
             goLeft();
+            turnedLeft = true;
             didSomething = true;
             tempFoundVertex = false;
-            orientRobot( caseVariable );
+            orientRobot( caseVariable, turnedLeft, turnedRight );
             transmitSqData( yVal, xVal );
             stack.push(possibleLeftNode);
           }
@@ -442,15 +449,16 @@ void loop() {
             Straight();
             didSomething = true;
             tempFoundVertex = false;
-            orientRobot( caseVariable );
+            orientRobot( caseVariable, turnedLeft, turnedRight );
             transmitSqData( yVal, xVal );
             stack.push(possibleForwardNode);
           }
           else if (in(possibleRightNode)) {
             goRight();
+            turnedRight = true;
             didSomething = true;
             tempFoundVertex = false;
-            orientRobot( caseVariable );
+            orientRobot( caseVariable, turnedLeft, turnedRight );
             transmitSqData( yVal, xVal );
             stack.push(possibleRightNode);
           }
@@ -460,7 +468,7 @@ void loop() {
             goLeft();
             didSomething = true;
             tempFoundVertex = false;
-            orientRobot( caseVariable );
+            orientRobot( caseVariable, turnedLeft, turnedRight );
             transmitSqData( yVal, xVal );
             stack.push(possibleLeftNode);
           }
@@ -468,17 +476,19 @@ void loop() {
         case B010:
           if (in(possibleLeftNode)) {
             goLeft();
+            turnedLeft = true;
             didSomething = true;
             tempFoundVertex = false;
-            orientRobot( caseVariable );
+            orientRobot( caseVariable, turnedLeft, turnedRight );
             transmitSqData( yVal, xVal );
             stack.push(possibleLeftNode);
           }
           else if (in(possibleRightNode)) {
             goRight();
+            turnedRight = true;
             didSomething = true;
             tempFoundVertex = false;
-            orientRobot( caseVariable );
+            orientRobot( caseVariable, turnedLeft, turnedRight );
             transmitSqData( yVal, xVal );
             stack.push(possibleRightNode);
           }
@@ -486,9 +496,10 @@ void loop() {
         case B110:
           if (in(possibleRightNode)) {
             goRight();
+            turnedRight = true;
             didSomething = true;
             tempFoundVertex = false;
-            orientRobot( caseVariable );
+            orientRobot( caseVariable, turnedLeft, turnedRight );
             transmitSqData( yVal, xVal );
             stack.push(possibleRightNode);
           }
@@ -497,7 +508,7 @@ void loop() {
           break;
       }
       if (!didSomething) {
-        
+        delay(2000);
         //now check everything around you if you have to go to a visited node
         switch (caseVariable) {
           case B101:
@@ -508,29 +519,31 @@ void loop() {
             delay(200);
             Straight();
             tempFoundVertex = false;
-            orientRobot( caseVariable );
+            orientRobot( caseVariable, turnedLeft, turnedRight );
             transmitSqData( yVal, xVal );
             stack.push(possibleForwardNode);
             break;
           case B011:
           case B010:
             goLeft();
+            turnedLeft = true;
             tempFoundVertex = false;
-            orientRobot( caseVariable );
+            orientRobot( caseVariable, turnedLeft, turnedRight );
             transmitSqData( yVal, xVal );
             stack.push(possibleLeftNode);
             break;
           case B110:
             goRight();
+            turnedRight = true;
             tempFoundVertex = false;
-            orientRobot( caseVariable );
+            orientRobot( caseVariable, turnedLeft, turnedRight );
             transmitSqData( yVal, xVal );
             stack.push(possibleRightNode);
             break;
           case B111:
             turnAround();
             tempFoundVertex = false;
-            orientRobot( caseVariable );
+            orientRobot( caseVariable, turnedLeft, turnedRight );
             transmitSqData( yVal, xVal );
             break;
           default:
@@ -565,18 +578,6 @@ void ledSetup( void )
   pinMode( 1, OUTPUT ); //white LED
   pinMode( 2, OUTPUT ); //red LED
   pinMode( 4, OUTPUT ); //blue LED
-}
-
-int otherCounterLight = 0;
-int otherAvgLightMiddle = 0;
-void readMiddleSensorOnly( void ){
-  while (otherCounterLight < 3) {
-    otherAvgLightMiddle = otherAvgLightMiddle + analogRead( lightMiddlePort );
-    otherCounterLight = otherCounterLight + 1;
-  }
-  otherCounterLight = 0;
-  lightMiddleVal = otherAvgLightMiddle / 3;
-  otherAvgLightMiddle = 0;
 }
 
 int counterLight = 0;
@@ -650,13 +651,13 @@ void readDistanceSensors() {
   int a = B100;
   int b = B010;
   int c = B001;
-  if (LeftDistance > 200) {
+  if (LeftDistance > 170) {
     caseVariable = caseVariable | a; //set leftmost bit to 1
   }
-  if (MiddleDistance > 200) {
+  if (MiddleDistance > 170) {
     caseVariable = caseVariable | b; //set middle bit to 1
   }
-  if (RightDistance > 200) {
+  if (RightDistance > 170) {
     caseVariable = caseVariable | c;  //set rightmost bit to 1
   }
 
@@ -708,15 +709,10 @@ void goRight( void )
 {
   servoLeft.write( 100 );
   servoRight.write( 90 );
-<<<<<<< HEAD
   delay( 75 );
   readLightSensors();
-=======
-  delay( 200 );
-  readMiddleSensorOnly();
->>>>>>> 8add932720b7df9d37e23798d8fd3dd7bde48532
   while ( middleIsBlack ) {
-   readMiddleSensorOnly();
+    readLightSensors();
   }
 }
 
@@ -725,15 +721,10 @@ void goLeft( void )
 {
   servoLeft.write( 90 );
   servoRight.write( 80 );
-<<<<<<< HEAD
   delay( 75 );
   readLightSensors();
-=======
-  delay( 200 );
-  readMiddleSensorOnly();
->>>>>>> 8add932720b7df9d37e23798d8fd3dd7bde48532
   while ( middleIsBlack) {
-    readMiddleSensorOnly();
+    readLightSensors();
   }
 }
 
@@ -742,7 +733,7 @@ void turnAround( void )
   servoLeft.write( 0 );
   servoRight.write( 0 );
   // Serial.println( "turning left" );
-  delay( 100 );
+  delay( 200 );
   readLightSensors();
   while ( middleIsBlack ) {
     readLightSensors();
@@ -1053,7 +1044,7 @@ void transmitSqData( int xVal, int yVal )
 }
 
 
-void orientRobot( int wallState )
+void orientRobot( int wallState, int turn )
 {
   switch ( wallState ) {
     case B001: //right wall only
@@ -1082,6 +1073,14 @@ void orientRobot( int wallState )
           southWall = false;
           eastWall = false;
           break;
+      }
+      if (turn == 1) {
+        if ( orientation > 0 ) {
+          orientation = orientation - 1;
+        }
+        else {
+          orientation = 3;
+        }
       }
       break;
     case B101: //left and right only
@@ -1138,6 +1137,14 @@ void orientRobot( int wallState )
           southWall = true;
           eastWall = false;
           break;
+      }
+      if (turn == 2) {
+        if ( orientation < 3 ) {
+          orientation = orientation + 1;
+        }
+        else {
+          orientation = 0;
+        }
       }
       break;
     case B110: //left and front wall
@@ -1250,217 +1257,228 @@ void orientRobot( int wallState )
         default:
           break;
       }
-      if ( orientation > 0 ) {
-        orientation = orientation - 1;
+      if (turn == 1) {
+        if ( orientation > 0 ) {
+          orientation = orientation - 1;
+        }
+        else {
+          orientation = 3;
+        }
       }
-      else {
-        orientation = 3;
-      }
-      break;
-    case B111: //front, left, and right walls
-      switch ( orientation ) {
-        case north_up:
-          northWall = true;
-          westWall = true;
-          southWall = false;
-          eastWall = true;
-          break;
+      {
+        else if (turn == 2) {
+          if ( orientation > 0 ) {
+            orientation = orientation + 1;
+          }
+          else {
+            orientation = 0;
+          }
+        }
+        break;
+      case B111: //front, left, and right walls
+        switch ( orientation ) {
+          case north_up:
+            northWall = true;
+            westWall = true;
+            southWall = false;
+            eastWall = true;
+            break;
 
-        case north_left:
-          northWall = true;
-          westWall = false;
-          southWall = true;
-          eastWall = true;
-          break;
+          case north_left:
+            northWall = true;
+            westWall = false;
+            southWall = true;
+            eastWall = true;
+            break;
 
-        case north_back:
-          northWall = false;
-          westWall = true;
-          southWall = true;
-          eastWall = true;
-          break;
+          case north_back:
+            northWall = false;
+            westWall = true;
+            southWall = true;
+            eastWall = true;
+            break;
 
-        case north_right:
-          northWall = true;
-          westWall = true;
-          southWall = true;
-          eastWall = false;
-          break;
-        default:
-          break;
+          case north_right:
+            northWall = true;
+            westWall = true;
+            southWall = true;
+            eastWall = false;
+            break;
+          default:
+            break;
+        }
+        if ( orientation > 1 ) {
+          orientation = orientation - 2;
+        }
+        else {
+          orientation = 2;
+        }
+        break;
+      default:
+        northWall = false;
+        westWall = false;
+        southWall = false;
+        eastWall = false;
+        break;
       }
-      if ( orientation > 1 ) {
-        orientation = orientation - 2;
-      }
-      else {
-        orientation = 2;
-      }
-      break;
-    default:
-      northWall = false;
-      westWall = false;
-      southWall = false;
-      eastWall = false;
-      break;
   }
-}
 
 
-void coordinateCalculation( Orientation orientation ) {
-  switch ( orientation ) {
-    //case north_up:
-    case 0:
-      yVal -= 1;
-      break;
-    //case north_left:
-    case 1:
-      xVal += 1;
-      break;
-    //case north_back:
-    case 2:
-      yVal += 1;
-      break;
-    //case north_right:
-    case 3:
-      xVal -= 1;
-      break;
-    default:
-      break;
+  void coordinateCalculation( Orientation orientation ) {
+    switch ( orientation ) {
+      //case north_up:
+      case 0:
+        yVal -= 1;
+        break;
+      //case north_left:
+      case 1:
+        xVal += 1;
+        break;
+      //case north_back:
+      case 2:
+        yVal += 1;
+        break;
+      //case north_right:
+      case 3:
+        xVal -= 1;
+        break;
+      default:
+        break;
+    }
   }
-}
 
 
-/*
-  // FOR SIMULATION ONLY !!!!!!!!!!
-  void assignGlobalMaze ( int xVal, int yVal )
+  /*
+    // FOR SIMULATION ONLY !!!!!!!!!!
+    void assignGlobalMaze ( int xVal, int yVal )
+    {
+    northWall = maze[ yVal ][ xVal ].northWall;
+    southWall = maze[ yVal ][ xVal ].southWall;
+    eastWall = maze[ yVal ][ xVal ].eastWall;
+    westWall = maze[ yVal ][ xVal ].westWall;
+    treasureCircle  = maze[ yVal ][ xVal ].treasureCircle;
+    treasureTriangle = maze[ yVal ][ xVal ].treasureTriangle;
+    treasureSquare = maze[ yVal ][ xVal ].treasureSquare;
+    treasureRed = maze[ yVal ][ xVal ].treasureRed;
+    treasureBlue = maze[ yVal ][ xVal ].treasureBlue;
+    robotPresent = maze[ yVal ][ xVal ].robotPresent;
+    }
+
+  */
+
+  /** USAGE FOR THE BELOW THREE PROGRAMS
+      checkWalls checks for walls
+        north/south/east/westWall are global variables
+        please assign them values when checking in each square
+      checkTreasure checks the value of treasure
+        again, they're global variables, assign them
+        values and this will byte encode them
+      checkIr does the same thing for other robots
+        again it's a global variable
+  */
+  byte checkWalls( byte firstByte )
   {
-  northWall = maze[ yVal ][ xVal ].northWall;
-  southWall = maze[ yVal ][ xVal ].southWall;
-  eastWall = maze[ yVal ][ xVal ].eastWall;
-  westWall = maze[ yVal ][ xVal ].westWall;
-  treasureCircle  = maze[ yVal ][ xVal ].treasureCircle;
-  treasureTriangle = maze[ yVal ][ xVal ].treasureTriangle;
-  treasureSquare = maze[ yVal ][ xVal ].treasureSquare;
-  treasureRed = maze[ yVal ][ xVal ].treasureRed;
-  treasureBlue = maze[ yVal ][ xVal ].treasureBlue;
-  robotPresent = maze[ yVal ][ xVal ].robotPresent;
+    if ( northWall ) firstByte |= WALL_NORTH_PRESENT;
+    if ( southWall ) firstByte |= WALL_SOUTH_PRESENT;
+    if ( eastWall ) firstByte |= WALL_EAST_PRESENT;
+    if ( westWall ) firstByte |= WALL_WEST_PRESENT;
+    return firstByte;
   }
 
-*/
 
-/** USAGE FOR THE BELOW THREE PROGRAMS
-    checkWalls checks for walls
-      north/south/east/westWall are global variables
-      please assign them values when checking in each square
-    checkTreasure checks the value of treasure
-      again, they're global variables, assign them
-      values and this will byte encode them
-    checkIr does the same thing for other robots
-      again it's a global variable
-*/
-byte checkWalls( byte firstByte )
-{
-  if ( northWall ) firstByte |= WALL_NORTH_PRESENT;
-  if ( southWall ) firstByte |= WALL_SOUTH_PRESENT;
-  if ( eastWall ) firstByte |= WALL_EAST_PRESENT;
-  if ( westWall ) firstByte |= WALL_WEST_PRESENT;
-  return firstByte;
-}
-
-
-byte checkTreasure( byte firstByte )
-{
-  if ( treasureTriangle ) firstByte |= TREASURE_TRIANGLE;
-  if ( treasureCircle ) firstByte |= TREASURE_CIRCLE;
-  if ( treasureSquare ) firstByte |= TREASURE_SQUARE;
-  if ( treasureRed ) firstByte |= TREASURE_RED;
-  if ( treasureBlue ) firstByte |= TREASURE_BLUE;
-  return firstByte;
-}
-
-
-byte checkIr( byte firstByte )
-{
-  if ( robotPresent ) {
-    firstByte |= ROBOT_PRESENT;
+  byte checkTreasure( byte firstByte )
+  {
+    if ( treasureTriangle ) firstByte |= TREASURE_TRIANGLE;
+    if ( treasureCircle ) firstByte |= TREASURE_CIRCLE;
+    if ( treasureSquare ) firstByte |= TREASURE_SQUARE;
+    if ( treasureRed ) firstByte |= TREASURE_RED;
+    if ( treasureBlue ) firstByte |= TREASURE_BLUE;
+    return firstByte;
   }
-  else if ( !robotPresent ) firstByte &= ROBOT_NOT_PRESENT;
-  return firstByte;
-}
+
+
+  byte checkIr( byte firstByte )
+  {
+    if ( robotPresent ) {
+      firstByte |= ROBOT_PRESENT;
+    }
+    else if ( !robotPresent ) firstByte &= ROBOT_NOT_PRESENT;
+    return firstByte;
+  }
 
 
 
-//NOT USING STUFF BELOW THIS
-//      if ( MiddleDistance > 175) {
-//        if (LeftDistance > 200) {
-//
-//        }
-//        else if (RightDistance > 175) {
-//          goLeft();
-//          //// Serial.println( "Right Wall" );
-//          foundVertex = false;
-//        }
-//        //// Serial.println( "got right" );
-//        //goStop();
-//        //      delay( 100 );
-//        else {
-//          goLeft();
-//          //// Serial.println( "Middle Wall" );
-//          foundVertex = false;
-//        }
-//      }
-//      else{
-
-// foundVertex = false;
-//      }
-
-void transmit( byte payload )
-{
-  // Ping out role.  Repeatedly send the current time
+  //NOT USING STUFF BELOW THIS
+  //      if ( MiddleDistance > 175) {
+  //        if (LeftDistance > 200) {
   //
+  //        }
+  //        else if (RightDistance > 175) {
+  //          goLeft();
+  //          //// Serial.println( "Right Wall" );
+  //          foundVertex = false;
+  //        }
+  //        //// Serial.println( "got right" );
+  //        //goStop();
+  //        //      delay( 100 );
+  //        else {
+  //          goLeft();
+  //          //// Serial.println( "Middle Wall" );
+  //          foundVertex = false;
+  //        }
+  //      }
+  //      else{
 
-  //if ( role == role_ping_out )
-  //{
-  // First, stop listening so we can talk.
-  radio.stopListening();
+  // foundVertex = false;
+  //      }
 
-  printf( "Now sending %x...", payload );
-  bool ok = radio.write( &payload, sizeof(unsigned char) );
-  if ( ok )
-    printf( "ok..." );
-  else
-    printf( "failed.\n\r" );
-
-  // Now, continue listening
-  radio.startListening();
-
-  // Wait here until we get a response, or timeout (250ms)
-  unsigned long started_waiting_at = millis();
-  bool timeout = false;
-  while ( ! radio.available() && ! timeout )
-    if (millis() - started_waiting_at > 1000 )
-      timeout = true;
-
-  // Describe the results
-  if ( timeout )
+  void transmit( byte payload )
   {
-    printf("Failed, response timed out.\n\r");
-  }
-  else
-  {
-    // Grab the response, compare, and send to debugging spew
-    unsigned char rxPayload;
-    radio.read( &rxPayload, sizeof(unsigned char) );
-    if ( rxPayload == payload ) {
-      // Spew it
-      printf("Received correct data %x, RT delay: %lu\n\r", rxPayload, millis() - started_waiting_at);
-    }
-    else {
-      printf("That's not what I sent, received %x, RT delay: %lu\n\r", rxPayload, millis() - started_waiting_at);
-    }
-  }
+    // Ping out role.  Repeatedly send the current time
+    //
 
-  // Try again 1s later
-  //delay(1000);
-  //}
-}
+    //if ( role == role_ping_out )
+    //{
+    // First, stop listening so we can talk.
+    radio.stopListening();
+
+    printf( "Now sending %x...", payload );
+    bool ok = radio.write( &payload, sizeof(unsigned char) );
+    if ( ok )
+      printf( "ok..." );
+    else
+      printf( "failed.\n\r" );
+
+    // Now, continue listening
+    radio.startListening();
+
+    // Wait here until we get a response, or timeout (250ms)
+    unsigned long started_waiting_at = millis();
+    bool timeout = false;
+    while ( ! radio.available() && ! timeout )
+      if (millis() - started_waiting_at > 1000 )
+        timeout = true;
+
+    // Describe the results
+    if ( timeout )
+    {
+      printf("Failed, response timed out.\n\r");
+    }
+    else
+    {
+      // Grab the response, compare, and send to debugging spew
+      unsigned char rxPayload;
+      radio.read( &rxPayload, sizeof(unsigned char) );
+      if ( rxPayload == payload ) {
+        // Spew it
+        printf("Received correct data %x, RT delay: %lu\n\r", rxPayload, millis() - started_waiting_at);
+      }
+      else {
+        printf("That's not what I sent, received %x, RT delay: %lu\n\r", rxPayload, millis() - started_waiting_at);
+      }
+    }
+
+    // Try again 1s later
+    //delay(1000);
+    //}
+  }
