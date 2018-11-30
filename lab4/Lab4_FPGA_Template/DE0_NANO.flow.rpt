@@ -1,6 +1,6 @@
 Flow report for DE0_NANO
-Sat Nov 03 15:15:35 2018
-Quartus Prime Version 16.1.0 Build 196 10/24/2016 SJ Lite Edition
+Thu Nov 29 20:44:57 2018
+Quartus Prime Version 16.1.2 Build 203 01/18/2017 SJ Lite Edition
 
 
 ---------------------
@@ -21,7 +21,7 @@ Quartus Prime Version 16.1.0 Build 196 10/24/2016 SJ Lite Edition
 ----------------
 ; Legal Notice ;
 ----------------
-Copyright (C) 2016  Intel Corporation. All rights reserved.
+Copyright (C) 2017  Intel Corporation. All rights reserved.
 Your use of Intel Corporation's design tools, logic functions 
 and other software and tools, and its AMPP partner logic 
 functions, and any output files from any of the foregoing 
@@ -41,18 +41,18 @@ agreement for further details.
 +----------------------------------------------------------------------------------+
 ; Flow Summary                                                                     ;
 +------------------------------------+---------------------------------------------+
-; Flow Status                        ; Successful - Sat Nov 03 15:15:31 2018       ;
-; Quartus Prime Version              ; 16.1.0 Build 196 10/24/2016 SJ Lite Edition ;
+; Flow Status                        ; Successful - Thu Nov 29 20:44:51 2018       ;
+; Quartus Prime Version              ; 16.1.2 Build 203 01/18/2017 SJ Lite Edition ;
 ; Revision Name                      ; DE0_NANO                                    ;
 ; Top-level Entity Name              ; DE0_NANO                                    ;
 ; Family                             ; Cyclone IV E                                ;
 ; Device                             ; EP4CE22F17C6                                ;
 ; Timing Models                      ; Final                                       ;
-; Total logic elements               ; 186 / 22,320 ( < 1 % )                      ;
-;     Total combinational functions  ; 172 / 22,320 ( < 1 % )                      ;
-;     Dedicated logic registers      ; 63 / 22,320 ( < 1 % )                       ;
-; Total registers                    ; 63                                          ;
-; Total pins                         ; 71 / 154 ( 46 % )                           ;
+; Total logic elements               ; 857 / 22,320 ( 4 % )                        ;
+;     Total combinational functions  ; 678 / 22,320 ( 3 % )                        ;
+;     Dedicated logic registers      ; 444 / 22,320 ( 2 % )                        ;
+; Total registers                    ; 444                                         ;
+; Total pins                         ; 73 / 154 ( 47 % )                           ;
 ; Total virtual pins                 ; 0                                           ;
 ; Total memory bits                  ; 202,752 / 608,256 ( 33 % )                  ;
 ; Embedded Multiplier 9-bit elements ; 0 / 132 ( 0 % )                             ;
@@ -65,7 +65,7 @@ agreement for further details.
 +-------------------+---------------------+
 ; Option            ; Setting             ;
 +-------------------+---------------------+
-; Start date & time ; 11/03/2018 15:15:02 ;
+; Start date & time ; 11/29/2018 20:44:21 ;
 ; Main task         ; Compilation         ;
 ; Revision Name     ; DE0_NANO            ;
 +-------------------+---------------------+
@@ -76,7 +76,7 @@ agreement for further details.
 +-------------------------------------+----------------------------------------+---------------+-------------+------------+
 ; Assignment Name                     ; Value                                  ; Default Value ; Entity Name ; Section Id ;
 +-------------------------------------+----------------------------------------+---------------+-------------+------------+
-; COMPILER_SIGNATURE_ID               ; 121369651351.154127250201176           ; --            ; --          ; --         ;
+; COMPILER_SIGNATURE_ID               ; 52237091421.154354226111180            ; --            ; --          ; --         ;
 ; MAX_CORE_JUNCTION_TEMP              ; 85                                     ; --            ; --          ; --         ;
 ; MIN_CORE_JUNCTION_TEMP              ; 0                                      ; --            ; --          ; --         ;
 ; MISC_FILE                           ; sweetPLL_inst.v                        ; --            ; --          ; --         ;
@@ -95,11 +95,11 @@ agreement for further details.
 +---------------------------+--------------+-------------------------+---------------------+------------------------------------+
 ; Module Name               ; Elapsed Time ; Average Processors Used ; Peak Virtual Memory ; Total CPU Time (on all processors) ;
 +---------------------------+--------------+-------------------------+---------------------+------------------------------------+
-; Analysis & Synthesis      ; 00:00:17     ; 1.0                     ; 640 MB              ; 00:00:24                           ;
-; Fitter                    ; 00:00:07     ; 1.0                     ; 1135 MB             ; 00:00:07                           ;
-; Assembler                 ; 00:00:02     ; 1.0                     ; 561 MB              ; 00:00:02                           ;
-; TimeQuest Timing Analyzer ; 00:00:03     ; 1.0                     ; 636 MB              ; 00:00:03                           ;
-; Total                     ; 00:00:29     ; --                      ; --                  ; 00:00:36                           ;
+; Analysis & Synthesis      ; 00:00:16     ; 1.0                     ; 4813 MB             ; 00:00:28                           ;
+; Fitter                    ; 00:00:09     ; 1.1                     ; 5577 MB             ; 00:00:11                           ;
+; Assembler                 ; 00:00:02     ; 1.0                     ; 4695 MB             ; 00:00:02                           ;
+; TimeQuest Timing Analyzer ; 00:00:05     ; 1.1                     ; 4811 MB             ; 00:00:03                           ;
+; Total                     ; 00:00:32     ; --                      ; --                  ; 00:00:44                           ;
 +---------------------------+--------------+-------------------------+---------------------+------------------------------------+
 
 
@@ -108,10 +108,10 @@ agreement for further details.
 +---------------------------+------------------+------------+------------+----------------+
 ; Module Name               ; Machine Hostname ; OS Name    ; OS Version ; Processor type ;
 +---------------------------+------------------+------------+------------+----------------+
-; Analysis & Synthesis      ; LIAMPATTERSE7C8  ; Windows 10 ; 10.0       ; x86_64         ;
-; Fitter                    ; LIAMPATTERSE7C8  ; Windows 10 ; 10.0       ; x86_64         ;
-; Assembler                 ; LIAMPATTERSE7C8  ; Windows 10 ; 10.0       ; x86_64         ;
-; TimeQuest Timing Analyzer ; LIAMPATTERSE7C8  ; Windows 10 ; 10.0       ; x86_64         ;
+; Analysis & Synthesis      ; limabean         ; Windows 10 ; 10.0       ; x86_64         ;
+; Fitter                    ; limabean         ; Windows 10 ; 10.0       ; x86_64         ;
+; Assembler                 ; limabean         ; Windows 10 ; 10.0       ; x86_64         ;
+; TimeQuest Timing Analyzer ; limabean         ; Windows 10 ; 10.0       ; x86_64         ;
 +---------------------------+------------------+------------+------------+----------------+
 
 
