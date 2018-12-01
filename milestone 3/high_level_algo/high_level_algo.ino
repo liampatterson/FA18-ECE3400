@@ -12,17 +12,13 @@ byte visited[81];
 StackArray <byte> stack;
 
 void DFSimplementation( void ) {
-  
-  
   startNode = (0,0);
   stack.push(startNode);
- 
   
-  //not sure how to write possibleForwardNode etc, need to know orientation and coordinate mapping stuff
   while(!stack.empty()){
     current = stack.pop;
-    if(!visited.contains(current)){  //TODO add a contains function
-      visited.add(current); //set current coordinate to be visited, TODO add an add function
+    if(!visited.contains(current)){  
+      visited.add(current); //set current coordinate to be visited
     }
     decodePossibleSets( orientation );
     //unvisited
@@ -56,10 +52,8 @@ void DFSimplementation( void ) {
     }
     else{
       turnAround();
-    }
-  
-  }
-}
+      stack.push(possibleBackNode);
+    }  }  }
 
 //assumes coordinates are in format char xVal,yVal
 void decodePossibleSets( Orientation orientation, byte currentCoords ) {
