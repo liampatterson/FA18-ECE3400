@@ -799,10 +799,14 @@ void chooseChannel3( void )
 // BEGIN MOVEMENT DEFINITIONS
 void goRight( void )
 {
+  servoLeft.write( 95 );
+  servoRight.write( 85 );
+  delay( 100 );
+  goStop();
+  delay( 100 );
+  readLightSensors();
   servoLeft.write( 98 );
   servoRight.write( 90 );
-  delay( 75 );
-  readLightSensors();
   int backup = 0;
   while ( middleIsBlack && (backup < 45 ) ) {
     readLightSensors();
@@ -813,11 +817,14 @@ void goRight( void )
 //used to be 90 and 80 just changed it to 90 and 60 as of 2:17pm 11/11
 void goLeft( void )
 {
+  servoLeft.write( 95 );
+  servoRight.write( 85 );
+  delay( 100 );
+  goStop();
+  delay( 100 );
+  readLightSensors();
   servoLeft.write( 90 );
   servoRight.write( 82 );
-  delay( 75 );
-  readLightSensors();
-
   int backup = 0;
   while ( middleIsBlack && (backup < 45 )) {
     readLightSensors();
