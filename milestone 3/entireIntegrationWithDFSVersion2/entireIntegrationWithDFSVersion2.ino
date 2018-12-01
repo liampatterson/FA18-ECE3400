@@ -514,7 +514,8 @@ void loop() {
           break;
       }
       if (!didSomething) {
-        delay(6000);
+        //delay(6000);
+        int randtemp = 0;
         //now check everything around you if you have to go to a visited node
         switch (caseVariable) {
           case B101:
@@ -527,7 +528,7 @@ void loop() {
             stack.push(possibleForwardNode);
             break;
           case B001:
-            int randtemp = random(1);
+            randtemp = random(2);
             if (randtemp == 0) {
               goStraight();
               Straight();
@@ -547,7 +548,7 @@ void loop() {
             }
             break;
           case B100:
-            int randtemp = random(1);
+            randtemp = random(2);
             if (randtemp == 0) {
               goStraight();
               Straight();
@@ -567,7 +568,7 @@ void loop() {
             }
             break;
           case B000:
-            int randtemp = random(2);
+            randtemp = random(3);
             if (randtemp == 0) {
               goStraight();
               Straight();
@@ -603,7 +604,7 @@ void loop() {
             stack.push(possibleLeftNode);
             break;
           case B010:
-            int randtemp = random(1);
+            randtemp = random(2);
             if (randtemp == 0) {
               goLeft();
               turn = 1;
