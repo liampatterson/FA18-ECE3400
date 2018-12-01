@@ -249,6 +249,8 @@ void setup( void )
 
   stack.push(startNode);
 
+  randomSeed (analogRead (0));
+
 }
 
 
@@ -348,11 +350,11 @@ void loop() {
     //    }
   }
   else {
-//    if (detectIR()) {
-//      goStop();
-//      delay(2000);
-//      Straight();
-//    }
+    //    if (detectIR()) {
+    //      goStop();
+    //      delay(2000);
+    //      Straight();
+    //    }
     if ( !foundVertex ) { //no vertex, go straight
       Straight();
     }
@@ -516,9 +518,6 @@ void loop() {
         //now check everything around you if you have to go to a visited node
         switch (caseVariable) {
           case B101:
-          case B001:
-          case B100:
-          case B000:
             goStraight();
             Straight();
             turn = 0;
@@ -527,14 +526,100 @@ void loop() {
             transmitSqData( yVal, xVal );
             stack.push(possibleForwardNode);
             break;
+          case B001:
+            int randtemp = random(1);
+            if (randtemp == 0) {
+              goStraight();
+              Straight();
+              turn = 0;
+              tempFoundVertex = false;
+              orientRobot( caseVariable, turn );
+              transmitSqData( yVal, xVal );
+              stack.push(possibleForwardNode);
+            }
+            else {
+              goLeft();
+              turn = 1;
+              tempFoundVertex = false;
+              orientRobot( caseVariable, turn );
+              transmitSqData( yVal, xVal );
+              stack.push(possibleLeftNode);
+            }
+            break;
+          case B100:
+            int randtemp = random(1);
+            if (randtemp == 0) {
+              goStraight();
+              Straight();
+              turn = 0;
+              tempFoundVertex = false;
+              orientRobot( caseVariable, turn );
+              transmitSqData( yVal, xVal );
+              stack.push(possibleForwardNode);
+            }
+            else {
+              goRight();
+              turn = 2;
+              tempFoundVertex = false;
+              orientRobot( caseVariable, turn );
+              transmitSqData( yVal, xVal );
+              stack.push(possibleRightNode);
+            }
+            break;
+          case B000:
+            int randtemp = random(2);
+            if (randtemp == 0) {
+              goStraight();
+              Straight();
+              turn = 0;
+              tempFoundVertex = false;
+              orientRobot( caseVariable, turn );
+              transmitSqData( yVal, xVal );
+              stack.push(possibleForwardNode);
+            }
+            else if (randtemp == 1) {
+              goLeft();
+              turn = 1;
+              tempFoundVertex = false;
+              orientRobot( caseVariable, turn );
+              transmitSqData( yVal, xVal );
+              stack.push(possibleLeftNode);
+            }
+            else {
+              goRight();
+              turn = 2;
+              tempFoundVertex = false;
+              orientRobot( caseVariable, turn );
+              transmitSqData( yVal, xVal );
+              stack.push(possibleRightNode);
+            }
+            break;
           case B011:
-          case B010:
             goLeft();
             turn = 1;
             tempFoundVertex = false;
             orientRobot( caseVariable, turn );
             transmitSqData( yVal, xVal );
             stack.push(possibleLeftNode);
+            break;
+          case B010:
+            int randtemp = random(1);
+            if (randtemp == 0) {
+              goLeft();
+              turn = 1;
+              tempFoundVertex = false;
+              orientRobot( caseVariable, turn );
+              transmitSqData( yVal, xVal );
+              stack.push(possibleLeftNode);
+            }
+            else {
+              goRight();
+              turn = 2;
+              tempFoundVertex = false;
+              orientRobot( caseVariable, turn );
+              transmitSqData( yVal, xVal );
+              stack.push(possibleRightNode);
+            }
             break;
           case B110:
             goRight();
@@ -731,7 +816,7 @@ void goLeft( void )
   servoRight.write( 82 );
   delay( 75 );
   readLightSensors();
-  
+
   int backup = 0;
   while ( middleIsBlack && (backup < 45 )) {
     readLightSensors();
