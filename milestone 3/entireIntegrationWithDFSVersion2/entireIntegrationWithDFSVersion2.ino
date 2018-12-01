@@ -350,17 +350,18 @@ void loop() {
     //    }
   }
   else {
-    //    if (detectIR()) {
-    //      goStop();
-    //      delay(2000);
-    //      Straight();
-    //    }
+        
     if ( !foundVertex ) { //no vertex, go straight
       Straight();
     }
     else { //found vertex
       turn = 0;
       tempFoundVertex = true; //found a vertex for now
+      if (detectIR()) {
+          goStop();
+          delay(2000);
+          //Straight();
+        }
       readDistanceSensors();
       goStop();
       delay(300);
@@ -1011,7 +1012,7 @@ boolean detectIR( void )
   fft_mag_log(); // take the output of the fft
   sei();
   //// Serial.println("start");
-  for (byte i = 0 ; i < FFT_N / 2 ; i++) {
+  for (byte i = 0 ; i < 256 / 2 ; i++) {
     // // Serial.println(fft_log_out[i]); // send out the data
   }
 
