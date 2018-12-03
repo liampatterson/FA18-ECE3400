@@ -259,7 +259,6 @@ void add(byte b){
     {
       if(visited[k] == B0){
         visited[k] = b; //add it to the end of the array
-        break;
       }
     }
   }
@@ -278,7 +277,7 @@ void decodePossibleSets( Orientation orientation, byte currentCoords ) {
     //00010001 is coordinate (1,1)
     //00100001 is coordinate (2,1)
     int xVal = ( currentCoords >> 4 );
-    int yVal = ( currentCoords & B00001111 );
+    int yVal = ( currentCoords && B00001111 );
     
     switch( orientation ) {
       case north_up:
@@ -308,7 +307,7 @@ void decodePossibleSets( Orientation orientation, byte currentCoords ) {
 
 byte intToByte( int xVal, int yVal ){
       byte returnVal;
-      returnVal = ( xVal << 4 ) | ( yVal % 15);
+      returnVal = ( xVal << 4 ) || ( yVal % 15);
       return returnVal;
     }
 /*** END HELPER FUNCTIONS FOR DFS ***/
