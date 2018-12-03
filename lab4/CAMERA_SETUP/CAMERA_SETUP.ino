@@ -11,6 +11,10 @@ int reg12;
 int reg42;
 int reg14;
 
+int S2 = 2;
+int S1 = 3;
+int S0 = 4;
+
 ///////// Main Program //////////////
 void setup() {
   String output;
@@ -101,10 +105,20 @@ int blueDiamond = 0;
 
 void loop() {
 // put your main code here, to run repeatedly:
-  MSB = digitalRead(8);
-  B = digitalRead(9);
-  LSB = digitalRead(10);
-
+  digitalWrite(S2, HIGH);
+  digitalWrite(S1, LOW);
+  digitalWrite(S0, HIGH);
+  MSB = analogRead(A3);
+  digitalWrite(S2, HIGH);
+  digitalWrite(S1, HIGH);
+  digitalWrite(S0, LOW);
+  B = analogRead(A3);
+  digitalWrite(S2, HIGH);
+  digitalWrite(S1, HIGH);
+  digitalWrite(S0, HIGH);
+  LSB = analogRead(A3);
+  Serial.println(MSB);
+  Serial.println("least significant bit" + LSB);
   if (MSB == HIGH && B == LOW && LSB == LOW) {
     redTriangle++;
     redSquare = 0;
