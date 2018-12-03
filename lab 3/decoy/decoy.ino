@@ -53,7 +53,7 @@ const char* role_friendly_name[] = { "invalid", "Ping out", "Pong back"};
 // The role of the current running sketch
 role_e role = role_ping_out;
 
-uint64_t pipesToHit[80] = { 81, 81, 81, 81, 81, 81, 81, 81, 81, 81,
+uint64_t pipesToHit[80] = { 0x04LL, 0x05LL, 81, 81, 81, 81, 81, 81, 81, 81,
                               81, 81, 81, 81, 81, 81, 81, 81, 81, 81,
                               81, 81, 81, 81, 81, 81, 81, 81, 81, 81,
                               81, 81, 81, 81, 81, 81, 81, 81, 81, 81,
@@ -62,9 +62,11 @@ uint64_t pipesToHit[80] = { 81, 81, 81, 81, 81, 81, 81, 81, 81, 81,
                               81, 81, 81, 81, 81, 81, 81, 81, 81, 81,
                               81, 81, 81, 81, 81, 81, 81, 81, 81, 81 };
 
-int currHitIndex = 0;
+int currHitIndex = 2;
 
 bool runOnce = false;
+
+int wild2 = 0xC4;
 
 void setup(void)
 {
@@ -84,8 +86,9 @@ void setup(void)
   // RF24_PA_MIN=-18dBm, RF24_PA_LOW=-12dBm, RF24_PA_HIGH=-6dBM, and RF24_PA_MAX=0dBm.
   radio.setPALevel(RF24_PA_MAX);
   radioSetup();
-  Serial.begin(115200);
+  Serial.begin(2000000);
   Serial.println( "initializing..." );
+  
 }
 
 
@@ -95,50 +98,51 @@ void loop(void)
   Serial.println( "Sniffing..." );
   runOnce = false;
   //currHitIndex = 0;
-  for ( int wild = 0xC4; wild < 0xC5; wild+=2 ) {
+  //for ( wild; wild < 0xC8; wild+=2 ) {
     for ( uint64_t iterate = 0LL; iterate < 80; iterate++ ) {
           pipes[0] = iterate;
           pipes[1] = iterate+1;
           radioSetup();
           radio.setDataRate(RF24_2MBPS);
-          transmit( (byte) wild );
+          transmit( (byte) wild2 );
           radio.setDataRate(RF24_250KBPS);
-          transmit( (byte) wild );
+          transmit( (byte) wild2 );
           radio.setPayloadSize(8);
           radio.setDataRate(RF24_2MBPS);
-          transmit( (byte) wild );
+          transmit( (byte) wild2 );
           radio.setDataRate(RF24_250KBPS);
-          transmit( (byte) wild );
+          transmit( (byte) wild2 );
           radio.setPayloadSize(2);
           radio.setDataRate(RF24_2MBPS);
-          transmit( (byte) wild );
+          transmit( (byte) wild2 );
           radio.setDataRate(RF24_250KBPS);
-          transmit( (byte) wild );
+          transmit( (byte) wild2 );
           }
         for ( uint64_t iterate = 80LL; iterate > 0; iterate-- ) {
           pipes[0] = iterate;
           pipes[1] = iterate-1;
           radioSetup();
           radio.setDataRate(RF24_2MBPS);
-          transmit( (byte) wild );
+          transmit( (byte) wild2 );
           radio.setDataRate(RF24_250KBPS);
-          transmit( (byte) wild );
+          transmit( (byte) wild2 );
           radio.setPayloadSize(8);
           radio.setDataRate(RF24_2MBPS);
-          transmit( (byte) wild );
+          transmit( (byte) wild2 );
           radio.setDataRate(RF24_250KBPS);
-          transmit( (byte) wild );
+          transmit( (byte) wild2 );
           radio.setPayloadSize(2);
           radio.setDataRate(RF24_2MBPS);
-          transmit( (byte) wild );
+          transmit( (byte) wild2 );
           radio.setDataRate(RF24_250KBPS);
-          transmit( (byte) wild );
+          transmit( (byte) wild2 );
           }
-          //Serial.println( wild );
-    }
+
+    //}
+    wild2+=0x0A;
     runOnce = true;
     Serial.println( currHitIndex );
-    for ( int wild = 0; wild < 0xFF; wild++ ) {
+    for ( int wild = 127; wild > 0; wild-- ) {
       for ( int index = 0; index < currHitIndex; index+=2 ) {
         pipes[0] = pipesToHit[index];
         pipes[1] = pipesToHit[index+1];
@@ -161,6 +165,38 @@ void loop(void)
             transmit( (byte) wild );
             radio.setDataRate(RF24_250KBPS);
             transmit( (byte) wild );
+            
+            Serial.println( (int) pipes[0] );
+            Serial.println( (int) pipes[1] );
+            Serial.println( wild );
+            Serial.println( "============" );
+        }
+      }
+    }
+    for ( int wild = 128; wild < 256; wild++ ) {
+      for ( int index = 0; index < currHitIndex; index+=2 ) {
+        pipes[0] = pipesToHit[index];
+        pipes[1] = pipesToHit[index+1];
+        if ( pipes[0] == 9 | pipes[0] == 10 | pipes[1] == 9 | pipes[1] == 10 | pipes[0] == 12 | pipes[1] == 12 ) {
+            Serial.println( "not gonna block ourselves" );   
+        }
+        else {
+            radioSetup();
+            radio.setDataRate(RF24_2MBPS);
+            transmit( (byte) wild );
+            radio.setDataRate(RF24_250KBPS);
+            transmit( (byte) wild );
+            radio.setPayloadSize(8);
+            radio.setDataRate(RF24_2MBPS);
+            transmit( (byte) wild );
+            radio.setDataRate(RF24_250KBPS);
+            transmit( (byte) wild );
+            radio.setPayloadSize(2);
+            radio.setDataRate(RF24_2MBPS);
+            transmit( (byte) wild );
+            radio.setDataRate(RF24_250KBPS);
+            transmit( (byte) wild );
+            
             Serial.println( (int) pipes[0] );
             Serial.println( (int) pipes[1] );
             Serial.println( wild );
