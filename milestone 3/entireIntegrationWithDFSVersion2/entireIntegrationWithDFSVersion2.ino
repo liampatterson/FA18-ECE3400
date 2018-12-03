@@ -201,10 +201,10 @@ const char* role_friendly_name[] = { "invalid", "Ping out", "Pong back"};
 role_e role = role_ping_out;
 
 //
-bool northWall = true;
+bool northWall;
 bool southWall;
 bool eastWall;
-bool westWall = true;
+bool westWall;
 bool treasureCircle;
 bool treasureTriangle;
 bool treasureSquare;
@@ -238,10 +238,11 @@ void setup( void )
   Serial.begin( 9600 );
   ledSetup();
   radioSetup();
+  readDistanceSensors();
+  orientRobot(caseVariable, 0);
   transmitSqData(0,0);
   // Serial.println("completed radio setup***************************");
   //to be used for mux digital inputs
-  pinMode(7, OUTPUT); //enable bit is dig 7
   pinMode(S2, OUTPUT);
   pinMode(S1, OUTPUT);
   pinMode(S0, OUTPUT);
@@ -748,22 +749,28 @@ void readLightSensors( void )
 
 
 void readDistanceSensors() {
-  int counter = 0;
+  int counter0 = 0;
+  int counter1 = 0;
+  int counter2 = 0;
   caseVariable = B000; // reset case variable
   avgLeftDistance = 0;
   avgMiddleDistance = 0;
   avgRightDistance = 0;
-  digitalWrite(7, LOW);
-  while (counter < 5) {
-    chooseChannel0();
+  chooseChannel0();
+  while (counter0 < 5) {
     avgLeftDistance = avgLeftDistance + analogRead(muxOut);
-    chooseChannel1();
-    avgMiddleDistance = avgMiddleDistance + analogRead(muxOut);
-    chooseChannel2();
-    avgRightDistance = avgRightDistance + analogRead(muxOut);
-    counter += 1;
+    counter0 += 1;
   }
-  digitalWrite(7, HIGH);
+  chooseChannel1();
+  while (counter1 < 5) {
+    avgMiddleDistance = avgMiddleDistance + analogRead(muxOut);
+    counter1 += 1;
+  }
+  chooseChannel2();
+  while (counter2 < 5) {
+    avgRightDistance = avgRightDistance + analogRead(muxOut);
+    counter2 += 1;
+  }
   LeftDistance = avgLeftDistance / 5;
   MiddleDistance = avgMiddleDistance / 5;
   RightDistance = avgRightDistance / 5;
