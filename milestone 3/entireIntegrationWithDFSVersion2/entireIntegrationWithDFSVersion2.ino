@@ -1100,7 +1100,7 @@ boolean detectIR( void )
   }
 
   r = false;
-  average = average + fft_log_out[42];
+  average = average + fft_log_out[11];
   String avg = "average ";
   //// Serial.println(avg+average);
   if (counter == 5) {
