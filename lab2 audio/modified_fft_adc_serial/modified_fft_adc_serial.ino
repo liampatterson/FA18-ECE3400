@@ -48,21 +48,21 @@ void loop() {
     for (byte i = 0 ; i < FFT_N/2 ; i++) { 
       //Serial.println(fft_log_out[i]); // send out the data
     }
-    average = average + fft_log_out[42];
-    Serial.println(fft_log_out[42]);
+    average = average + fft_log_out[5];
+    //Serial.println(fft_log_out[5]);
     if(counter == 5){ 
       average = average/5;
-      //Serial.println(average); 
+      Serial.println(average); 
 //      if(average > 170){
 //        Serial.println("this is 660 *******"); 
 //        //digitalWrite(6,HIGH);
 //      }
   
-      if (fft_log_out[42] > 140) {
-        Serial.println("this is 6kHz");
-        digitalWrite(6, LOW);
-        digitalWrite(7, HIGH);
-      }
+  //    if (fft_log_out[42] > 85) {
+  //      Serial.println("this is 6kHz");
+  //      digitalWrite(6, LOW);
+  //      digitalWrite(7, HIGH);
+  //    }
   //
   //    else if (fft_log_out[122] > 60) {
   //      Serial.println("this is 18kHz");
