@@ -1,5 +1,5 @@
 #define LOG_OUT 1 // use the log output function
-#define FFT_N 64 // set to 256 point fft
+#define FFT_N 64   // set to 256 point fft
 
 #include <FFT.h> // include the library
 #include <Servo.h>
@@ -76,6 +76,8 @@ typedef enum { north_up = 0, north_left = 1, north_back = 2, north_right = 3 } O
 #define ROBOT_PRESENT      B00000001;
 
 #define EXPLORED           B10000000;
+
+#define WALL_THRESHOLD     230
 
 // END BIT MASKS
 
@@ -201,10 +203,10 @@ const char* role_friendly_name[] = { "invalid", "Ping out", "Pong back"};
 role_e role = role_ping_out;
 
 //
-bool northWall;
+bool northWall = true;
 bool southWall;
 bool eastWall;
-bool westWall;
+bool westWall = true;
 bool treasureCircle;
 bool treasureTriangle;
 bool treasureSquare;
@@ -231,6 +233,11 @@ byte possibleBackNode;
 byte possibleLeftNode;
 byte possibleRightNode;
 
+bool sawRight = false;
+bool sawMiddle = false;
+bool sawLeft = false;
+
+
 /*** BEGIN MAIN CODE ***/
 void setup( void )
 {
@@ -238,10 +245,11 @@ void setup( void )
   Serial.begin( 9600 );
   ledSetup();
   radioSetup();
+  readDistanceSensors();
 
+  transmitSqData(0, 0);
   // Serial.println("completed radio setup***************************");
   //to be used for mux digital inputs
-  pinMode(7, OUTPUT); //enable bit is dig 7
   pinMode(S2, OUTPUT);
   pinMode(S1, OUTPUT);
   pinMode(S0, OUTPUT);
@@ -350,22 +358,53 @@ void loop() {
     //    }
   }
   else {
-        
+
     if ( !foundVertex ) { //no vertex, go straight
       Straight();
     }
     else { //found vertex
       turn = 0;
       tempFoundVertex = true; //found a vertex for now
-      if (detectIR()) {
-          goStop();
-          delay(2000);
-          //Straight();
-        }
-      readDistanceSensors();
+      //    if (detectIR()) {
+      //        goStop();
+      //        delay(2000);
+      //        Straight();
+      //    }
+      //     if (detectIR() && !foundVertex) {
+      //      turnAround();
+      //      if ( orientation > 1 ) {
+      //        orientation = orientation - 2;
+      //      }
+      //      else {
+      //        orientation = 2;
+      //      }
+      //      stack.pop();
+      //      stack.push(current);
+      //    }
+      //    else if (detectIR()) {
+      //      current = stack.pop();
+      //      xVal = ( current >> 4 );
+      //      yVal = ( current & B00001111 );
+      //      if (in(current)) { //if current is not in visited
+      //        add(current); //set current coordinate to be visited, TODO add an add function
+      //      }
+      //      decodePossibleSets( orientation, xVal, yVal  );
+      //      turnAround();
+      //      turn = 3;
+      //      tempFoundVertex = false;
+      //      orientRobot( caseVariable, turwn );
+      //      transmitSqData( yVal, xVal );
+      //      stack.push(possibleBackNode);
+      //    }
+      //readDistanceSensors();
+      goStraight();
+      delay(500);
       goStop();
       delay(300);
       readDistanceSensors();
+      delay(100);
+      readDistanceSensors();
+      delay(100);
       didSomething = false;
       current = stack.pop();
       //if (current != B0) {
@@ -722,44 +761,88 @@ void readLightSensors( void )
 
 
 void readDistanceSensors() {
-  int counter = 0;
+  int counter0 = 0;
+  //int counter1 = 0;
+  //int counter2 = 0;
   caseVariable = B000; // reset case variable
   avgLeftDistance = 0;
   avgMiddleDistance = 0;
   avgRightDistance = 0;
-  digitalWrite(7, LOW);
-  while (counter < 5) {
-    chooseChannel0();
-    avgLeftDistance = avgLeftDistance + analogRead(muxOut);
-    chooseChannel1();
-    avgMiddleDistance = avgMiddleDistance + analogRead(muxOut);
-    chooseChannel2();
-    avgRightDistance = avgRightDistance + analogRead(muxOut);
-    counter += 1;
-  }
-  digitalWrite(7, HIGH);
-  LeftDistance = avgLeftDistance / 5;
-  MiddleDistance = avgMiddleDistance / 5;
-  RightDistance = avgRightDistance / 5;
-  int a = B100;
-  int b = B010;
-  int c = B001;
-  if (LeftDistance > 180) {
+  /*
+    while (counter0 < 5) {
+     chooseChannel0();
+     avgLeftDistance = avgLeftDistance + analogRead(muxOut);
+     chooseChannel1();
+     avgMiddleDistance = avgMiddleDistance + analogRead(muxOut);
+     chooseChannel2();
+     avgRightDistance = avgRightDistance + analogRead(muxOut);
+     counter0 += 1;
+    }*/
+  //  chooseChannel1();
+  //  while (counter1 < 5) {
+  //    avgMiddleDistance = avgMiddleDistance + analogRead(muxOut);
+  //    counter1 += 1;
+  //  }
+  //  chooseChannel2();
+  //  while (counter2 < 5) {
+  //    avgRightDistance = avgRightDistance + analogRead(muxOut);
+  //    counter2 += 1;
+  //  }
+  chooseChannel0();
+  LeftDistance = analogRead(muxOut); /*avgLeftDistance / 5;*/
+  chooseChannel1();
+  MiddleDistance = analogRead(muxOut); /*avgMiddleDistance / 5;*/
+  chooseChannel2();
+  RightDistance = analogRead(muxOut); /* avgRightDistance / 5; */
+  byte a = B100;
+  byte b = B010;
+  byte c = B001;
+  if ( LeftDistance > WALL_THRESHOLD && sawLeft ) {
+    sawLeft = false;
     caseVariable = caseVariable | a; //set leftmost bit to 1
   }
-  if (MiddleDistance > 190) {
+  if ( MiddleDistance > (WALL_THRESHOLD) && sawMiddle ) {
+    sawMiddle = false;
     caseVariable = caseVariable | b; //set middle bit to 1
   }
-  if (RightDistance > 180) {
+  if ( RightDistance > WALL_THRESHOLD && sawRight ) {
+    sawRight = false;
     caseVariable = caseVariable | c;  //set rightmost bit to 1
   }
+  if ( LeftDistance > WALL_THRESHOLD ) {
+    sawLeft = true;
+    for ( int ldLoop = 0; ldLoop < 15; ldLoop++ ) {
+      chooseChannel0();
+      LeftDistance = analogRead(muxOut);
+      sawLeft &= LeftDistance > WALL_THRESHOLD;
+    }
+  }
+  else sawLeft = false;
+  if ( MiddleDistance > (WALL_THRESHOLD - 35) ) {
+    sawMiddle = true;
+    for ( int mdLoop = 0; mdLoop < 15; mdLoop++ ) {
+      chooseChannel1();
+      MiddleDistance = analogRead(muxOut);
+      sawMiddle &= MiddleDistance > (WALL_THRESHOLD - 35);
+    }
+  }
+  else sawMiddle = false;
+  if ( RightDistance > WALL_THRESHOLD ) {
+    sawRight = true;
+    for ( int rdLoop = 0; rdLoop < 15; rdLoop++ ) {
+      chooseChannel2();
+      RightDistance = analogRead(muxOut);
+      sawRight &= RightDistance > WALL_THRESHOLD;
+    }
+  }
+  else sawRight = false;
 
   String l = "left dist ";
   String r = "  right dist ";
   String m = "  middle dist ";
   // Serial.println("hi");
-  // Serial.println(l+LeftDistance+m+MiddleDistance+r+RightDistance);
-  Serial.println(caseVariable);
+  Serial.println(l + LeftDistance + m + MiddleDistance + r + RightDistance);
+  //Serial.println(caseVariable);
   avgLeftDistance = 0;
   avgMiddleDistance = 0;
   avgRightDistance = 0;
@@ -802,9 +885,9 @@ void goRight( void )
 {
   servoLeft.write( 95 );
   servoRight.write( 85 );
-  delay( 100 );
+  delay( 50 );
   goStop();
-  delay( 100 );
+  delay( 50 );
   readLightSensors();
   servoLeft.write( 98 );
   servoRight.write( 90 );
@@ -820,9 +903,9 @@ void goLeft( void )
 {
   servoLeft.write( 95 );
   servoRight.write( 85 );
-  delay( 100 );
+  delay( 50 );
   goStop();
-  delay( 100 );
+  delay( 50 );
   readLightSensors();
   servoLeft.write( 90 );
   servoRight.write( 82 );
@@ -916,70 +999,70 @@ boolean r;
 boolean start;
 
 
-boolean startSound( void )
-{
-  tempADCSRA = ADCSRA;
-  tempTIMSK0 = TIMSK0;
-  tempADMUX = ADMUX;
-  tempDIDR0 = DIDR0;
-  TIMSK0 = 0; // turn off timer0 for lower jitter
-  ADCSRA = 0xe5; // set the adc to free running mode
-  ADMUX = 0x44; // use adc4 yellow wire A4
-  DIDR0 = 0x01; // turn off the digital input for adc0
-  //while(1) { // reduces jitter
-  //counter = counter+1;
-  //cli();  // UDRE interrupt slows this way down on arduino1.0
-  for (int i = 0 ; i < 128 ; i += 2) { // save 256 samples
-    while (!(ADCSRA & 0x10)); // wait for adc to be ready
-    ADCSRA = 0xf5; // restart adc
-    byte m = ADCL; // fetch adc data
-    byte j = ADCH;
-    int k = (j << 8) | m; // form into an int
-    k -= 0x0200; // form into a signed int
-    k <<= 6; // form into a 16b signed int
-    fft_input[i] = k; // put real data into even bins
-    fft_input[i + 1] = 0; // set odd bins to 0
-  }
-  fft_window(); // window the data for better frequency response
-  fft_reorder(); // reorder the data before doing the fft
-  fft_run(); // process the data in the fft
-  fft_mag_log(); // take the output of the fft
-  sei();
-  Serial.println("start");
-  for (byte i = 0 ; i < FFT_N / 2 ; i++) {
-    Serial.println(fft_log_out[i]); // send out the data
-  }
-  //// Serial.println(fft_log_out[5]);
-  start = false;
-  average = average + fft_log_out[3];
-  String avg = "average ";
-  //// Serial.println(avg+average);
-  if (counter == 5) {
-    average = average / 5;
-
-    //// Serial.println(avg+average);
-    if (average > 120) {
-      Serial.println("****************************this is 6.6kHz");
-      //goStop();
-      //delay(5000);
-      start = true;
-    }
-    else {
-      start = false;
-    }
-    counter = 0;
-    average = 0;
-  }
-  counter += 1;
-  //// Serial.println(counter);
-  //}
-  ADCSRA = tempADCSRA;
-  TIMSK0 = tempTIMSK0;
-  ADMUX = tempADMUX;
-  DIDR0 = tempDIDR0;
-  //goStraight();
-  return start;
-}
+//boolean startSound( void )
+//{
+//  tempADCSRA = ADCSRA;
+//  tempTIMSK0 = TIMSK0;
+//  tempADMUX = ADMUX;
+//  tempDIDR0 = DIDR0;
+//  TIMSK0 = 0; // turn off timer0 for lower jitter
+//  ADCSRA = 0xe5; // set the adc to free running mode
+//  ADMUX = 0x45; // use adc4 yellow wire A4
+//  DIDR0 = 0x01; // turn off the digital input for adc0
+//  //while(1) { // reduces jitter
+//  //counter = counter+1;
+//  //cli();  // UDRE interrupt slows this way down on arduino1.0
+//  for (int i = 0 ; i < 128 ; i += 2) { // save 256 samples
+//    while (!(ADCSRA & 0x10)); // wait for adc to be ready
+//    ADCSRA = 0xf5; // restart adc
+//    byte m = ADCL; // fetch adc data
+//    byte j = ADCH;
+//    int k = (j << 8) | m; // form into an int
+//    k -= 0x0200; // form into a signed int
+//    k <<= 6; // form into a 16b signed int
+//    fft_input[i] = k; // put real data into even bins
+//    fft_input[i + 1] = 0; // set odd bins to 0
+//  }
+//  fft_window(); // window the data for better frequency response
+//  fft_reorder(); // reorder the data before doing the fft
+//  fft_run(); // process the data in the fft
+//  fft_mag_log(); // take the output of the fft
+//  sei();
+//  Serial.println("start");
+//  for (byte i = 0 ; i < FFT_N / 2 ; i++) {
+//    Serial.println(fft_log_out[i]); // send out the data
+//  }
+//  //// Serial.println(fft_log_out[5]);
+//  start = false;
+//  average = average + fft_log_out[3];
+//  String avg = "average ";
+//  //// Serial.println(avg+average);
+//  if (counter == 5) {
+//    average = average / 5;
+//
+//    //// Serial.println(avg+average);
+//    if (average > 120) {
+//      Serial.println("****************************this is 6.6kHz");
+//      //goStop();
+//      //delay(5000);
+//      start = true;
+//    }
+//    else {
+//      start = false;
+//    }
+//    counter = 0;
+//    average = 0;
+//  }
+//  counter += 1;
+//  //// Serial.println(counter);
+//  //}
+//  ADCSRA = tempADCSRA;
+//  TIMSK0 = tempTIMSK0;
+//  ADMUX = tempADMUX;
+//  DIDR0 = tempDIDR0;
+//  //goStraight();
+//  return start;
+//}
 
 
 boolean detectIR( void )
@@ -990,12 +1073,12 @@ boolean detectIR( void )
   tempDIDR0 = DIDR0;
   TIMSK0 = 0; // turn off timer0 for lower jitter
   ADCSRA = 0xe5; // set the adc to free running mode
-  ADMUX = 0x45; // use adc5 purple wire A5
+  ADMUX = 0x44; // use adc5 purple wire A5
   DIDR0 = 0x01; // turn off the digital input for adc0
   //while(1) { // reduces jitter
   //counter = counter+1;
   // cli();  // UDRE interrupt slows this way down on arduino1.0
-  for (int i = 0 ; i < 512 ; i += 2) { // save 256 samples
+  for (int i = 0 ; i < 256 ; i += 2) { // save 256 samples
     while (!(ADCSRA & 0x10)); // wait for adc to be ready
     ADCSRA = 0xf5; // restart adc
     byte m = ADCL; // fetch adc data
@@ -1012,7 +1095,7 @@ boolean detectIR( void )
   fft_mag_log(); // take the output of the fft
   sei();
   //// Serial.println("start");
-  for (byte i = 0 ; i < 256 / 2 ; i++) {
+  for (byte i = 0 ; i < FFT_N / 2 ; i++) {
     // // Serial.println(fft_log_out[i]); // send out the data
   }
 
@@ -1363,7 +1446,7 @@ void orientRobot( int wallState, int turn )
           break;
       }
       if (turn == 1) {
-        if ( orientation > 0 ) {
+        if ( turn > 0 ) {
           orientation = orientation - 1;
         }
         else {
@@ -1371,7 +1454,56 @@ void orientRobot( int wallState, int turn )
         }
       }
       else if (turn == 2) {
-        if ( orientation > 3 ) {
+        if ( orientation < 3 ) {
+          orientation = orientation + 1;
+        }
+        else {
+          orientation = 0;
+        }
+      }
+      break;
+    case B000:
+      switch (orientation) {
+        case north_up:
+          northWall = false;
+          westWall = false;
+          southWall = false;
+          eastWall = false;
+          break;
+
+        case north_left:
+          northWall = false;
+          westWall = false;
+          southWall = false;
+          eastWall = false;
+          break;
+
+        case north_back:
+          northWall = false;
+          westWall = false;
+          southWall = false;
+          eastWall = false;
+          break;
+
+        case north_right:
+          northWall = false;
+          westWall = false;
+          southWall = false;
+          eastWall = false;
+          break;
+        default:
+          break;
+      }
+      if (turn == 1) {
+        if ( turn > 0 ) {
+          orientation = orientation - 1;
+        }
+        else {
+          orientation = 3;
+        }
+      }
+      else if (turn == 2) {
+        if ( orientation < 3 ) {
           orientation = orientation + 1;
         }
         else {
@@ -1415,7 +1547,7 @@ void orientRobot( int wallState, int turn )
         orientation = orientation - 2;
       }
       else {
-        orientation = 2;
+        orientation = orientation + 2;
       }
       break;
     default:
