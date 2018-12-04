@@ -7,7 +7,7 @@ with the fft. the data is sent out over the serial
 port at 115.2kb.
 */
 #define LOG_OUT 1 // use the log output function
-#define FFT_N 256 // set to 256 point fft
+#define FFT_N 64 // set to 256 point fft
 
 #include <FFT.h> // include the library
 
@@ -28,7 +28,7 @@ void loop() {
   while(1) { // reduces jitter
     counter = counter+1;
     cli();  // UDRE interrupt slows this way down on arduino1.0
-    for (int i = 0 ; i < 512 ; i += 2) { // save 256 samples
+    for (int i = 0 ; i < 128 ; i += 2) { // save 256 samples
       while(!(ADCSRA & 0x10)); // wait for adc to be ready
       ADCSRA = 0xf5; // restart adc
       byte m = ADCL; // fetch adc data
@@ -44,15 +44,15 @@ void loop() {
     fft_run(); // process the data in the fft
     fft_mag_log(); // take the output of the fft
     sei();
-    //Serial.println("start");
+    Serial.println("start");
     for (byte i = 0 ; i < FFT_N/2 ; i++) { 
-      //Serial.println(fft_log_out[i]); // send out the data
+      Serial.println(fft_log_out[i]); // send out the data
     }
     average = average + fft_log_out[5];
     //Serial.println(fft_log_out[5]);
     if(counter == 5){ 
       average = average/5;
-      Serial.println(average); 
+      //Serial.println(average); 
 //      if(average > 170){
 //        Serial.println("this is 660 *******"); 
 //        //digitalWrite(6,HIGH);
