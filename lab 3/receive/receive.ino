@@ -393,18 +393,18 @@ void transmit( byte payload ) {
         
         // Spew it
         //printf("Got payload %x...", rxPayload);
-        if ( rxPayload == 0xFF ) {
+        /*if ( rxPayload == 0xFF ) {
           printf( "reset \r\n" );
-        }
-        else if ( rxPayload == 0x1b ) {
+        }*/
+        else if ( rxPayload == 0xF1 ) {
           //printf( "\r\nThis is the first byte " );
           printFlag = 1;
         }
-        else if ( rxPayload == 0x2b ) {
+        else if ( rxPayload == 0xF2 ) {
           //printf( "This is the second byte " );
           printFlag = 2;
         }
-        else if ( rxPayload == 0xcc ) {
+        else if ( rxPayload == 0xFc ) {
           //printf( "These are the coordinates " );
           printFlag = 3;
         }
