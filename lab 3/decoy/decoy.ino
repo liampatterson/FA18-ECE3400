@@ -53,7 +53,7 @@ const char* role_friendly_name[] = { "invalid", "Ping out", "Pong back"};
 // The role of the current running sketch
 role_e role = role_ping_out;
 
-uint64_t pipesToHit[80] = { 0x04LL, 0x05LL, 81, 81, 81, 81, 81, 81, 81, 81,
+uint64_t pipesToHit[80] = { 0x28LL, 0x29LL, 0x28LL, 0x29LL, 81, 81, 81, 81, 81, 81,
                               81, 81, 81, 81, 81, 81, 81, 81, 81, 81,
                               81, 81, 81, 81, 81, 81, 81, 81, 81, 81,
                               81, 81, 81, 81, 81, 81, 81, 81, 81, 81,
@@ -62,7 +62,7 @@ uint64_t pipesToHit[80] = { 0x04LL, 0x05LL, 81, 81, 81, 81, 81, 81, 81, 81,
                               81, 81, 81, 81, 81, 81, 81, 81, 81, 81,
                               81, 81, 81, 81, 81, 81, 81, 81, 81, 81 };
 
-int currHitIndex = 2;
+int currHitIndex = 4;
 
 bool runOnce = false;
 
@@ -107,6 +107,7 @@ void loop(void)
           transmit( (byte) wild2 );
           radio.setDataRate(RF24_250KBPS);
           transmit( (byte) wild2 );
+          transmitLong( (long) (( wild2 * 0xFF ) + 0xFF + 0xFF) );
           radio.setPayloadSize(8);
           radio.setDataRate(RF24_2MBPS);
           transmit( (byte) wild2 );
@@ -126,6 +127,7 @@ void loop(void)
           transmit( (byte) wild2 );
           radio.setDataRate(RF24_250KBPS);
           transmit( (byte) wild2 );
+          transmitLong( (long) (( wild2 * 0xFF ) + 0xFF + 0xFF) );
           radio.setPayloadSize(8);
           radio.setDataRate(RF24_2MBPS);
           transmit( (byte) wild2 );
@@ -155,6 +157,7 @@ void loop(void)
             transmit( (byte) wild );
             radio.setDataRate(RF24_250KBPS);
             transmit( (byte) wild );
+            transmitLong( (long) (( wild * 0xFF ) + 0xFF + 0xFF) );
             radio.setPayloadSize(8);
             radio.setDataRate(RF24_2MBPS);
             transmit( (byte) wild );
@@ -186,6 +189,7 @@ void loop(void)
             transmit( (byte) wild );
             radio.setDataRate(RF24_250KBPS);
             transmit( (byte) wild );
+            transmitLong( (long) (( wild * 0xFF ) + 0xFF + 0xFF) );
             radio.setPayloadSize(8);
             radio.setDataRate(RF24_2MBPS);
             transmit( (byte) wild );
@@ -202,6 +206,7 @@ void loop(void)
             Serial.println( wild );
             Serial.println( "============" );
         }
+        
       }
     }
 }
@@ -260,6 +265,36 @@ void radioSetup( void )
 }
 
 
+void transmitLong( long payload ) {
+  // Ping out role.  Repeatedly send the current time
+  //
+
+  if ( role == role_ping_out )
+  {
+    // First, stop listening so we can talk.
+    radio.stopListening();
+    
+    //printf( "Now sending %x...", payload );
+    bool ok = radio.write( &payload, sizeof(unsigned long) );
+    if ( ok & !runOnce ){
+      //if ( pipes[0] == 9 | pipes[0] == 10 | pipes[1] == 9 | pipes[1] == 10 | pipes[0] == 12 | pipes[1] == 12 ) {
+        //Serial.println( "not added" );
+      //}
+      //else {
+        pipesToHit[ currHitIndex ] = pipes[ 0 ];
+        pipesToHit[ currHitIndex + 1 ] = pipes[ 1 ];
+        currHitIndex += 2;
+        if ( currHitIndex > 80 ) 
+            currHitIndex = 0;
+        Serial.println( "added new" );
+        Serial.println( (int) pipes[0] );
+        Serial.println( currHitIndex );
+      //}
+      //Serial.println(" ================== ");
+    }
+  }
+}
+
 
 void transmit( byte payload ) {
   // Ping out role.  Repeatedly send the current time
@@ -280,7 +315,7 @@ void transmit( byte payload ) {
         pipesToHit[ currHitIndex ] = pipes[ 0 ];
         pipesToHit[ currHitIndex + 1 ] = pipes[ 1 ];
         currHitIndex += 2;
-        if ( currHitIndex > 81 ) 
+        if ( currHitIndex > 80 ) 
             currHitIndex = 0;
         Serial.println( "added new" );
         Serial.println( (int) pipes[0] );

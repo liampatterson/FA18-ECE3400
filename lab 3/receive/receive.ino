@@ -204,7 +204,7 @@ void setup(void)
   //
 
   //radio.printDetails();
-  //Serial.println( "reset" );
+  Serial.println( "reset" );
 }
 
 void loop(void)
@@ -459,9 +459,13 @@ String readCoordinates( byte coordinates ) {
 String readFirstByte( byte firstByte ) {
   String output = "";
   if ( firstByte >> 7 ) output += ",north=true";
+  else output += ",north=false";
   if ( ( firstByte & B01000000 ) >> 6 ) output += ",east=true";
+  else output += ",east=false";
   if ( ( firstByte & B00100000 ) >> 5 ) output += ",south=true";
+  else output += ",south=false";
   if ( ( firstByte & B00010000 ) >> 4 ) output += ",west=true";
+  else output += ",west=false";
   switch ( ( firstByte & B00001100 ) >> 2 ) {
     case 1:
       //triangle
