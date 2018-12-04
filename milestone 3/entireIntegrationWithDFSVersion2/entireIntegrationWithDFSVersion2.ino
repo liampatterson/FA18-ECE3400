@@ -227,6 +227,7 @@ byte visited[81];
 StackArray<byte> stack;
 byte startNode = B00000001;
 byte current;
+byte lastCurrent;
 boolean didSomething;
 
 byte possibleForwardNode;
@@ -247,8 +248,9 @@ void setup( void )
   ledSetup();
   radioSetup();
   readDistanceSensors();
-
   transmitSqData(0, 0);
+  westWall = false;
+  northWall = false;
   // Serial.println("completed radio setup***************************");
   //to be used for mux digital inputs
   pinMode(S2, OUTPUT);
@@ -326,7 +328,7 @@ void decodePossibleSets( Orientation orientation, int xValtemp, int yValtemp ) {
 
 byte intToByte( int xVal, int yVal ) {
   byte returnVal;
-  returnVal = (( xVal << 4 ) | ( yVal % 15));
+  returnVal = (( xVal << 4 ) | ( yVal % 16));
   return returnVal;
 }
 /*** END HELPER FUNCTIONS FOR DFS ***/
@@ -359,44 +361,49 @@ void loop() {
     //    }
   }
   else {
-
+    
+//    if (detectIR() && !foundVertex) {
+//      goStop();
+//      delay(500);
+//      turnAround();
+//      if ( orientation > 1 ) {
+//        orientation = orientation - 2;
+//      }
+//      else {
+//        orientation = orientation + 2;
+//      }
+//      stack.pop();
+//      stack.push(lastCurrent);
+//    }
+//    else if (detectIR()) {
+//      readDistanceSensors();
+//      goStop();
+//      delay(300);
+//      current = stack.pop();
+//      xVal = ( current >> 4 );
+//      yVal = ( current & B00001111 );
+//      if (in(current)) { //if current is not in visited
+//        add(current); //set current coordinate to be visited, TODO add an add function
+//      }
+//      decodePossibleSets( orientation, xVal, yVal  );
+//      turnAround();
+//      turn = 3;
+//      tempFoundVertex = false;
+//      orientRobot( caseVariable, turn );
+//      transmitSqData( yVal, xVal );
+//      stack.push(possibleBackNode);
+//    }
+        if (detectIR()) {
+          goStop();
+          delay(10000);
+          Straight();
+        }
     if ( !foundVertex ) { //no vertex, go straight
       Straight();
     }
     else { //found vertex
       turn = 0;
       tempFoundVertex = true; //found a vertex for now
-          if (detectIR()) {
-              goStop();
-              delay(10000);
-              Straight();
-          }
-      //     if (detectIR() && !foundVertex) {
-      //      turnAround();
-      //      if ( orientation > 1 ) {
-      //        orientation = orientation - 2;
-      //      }
-      //      else {
-      //        orientation = 2;
-      //      }
-      //      stack.pop();
-      //      stack.push(current);
-      //    }
-      //    else if (detectIR()) {
-      //      current = stack.pop();
-      //      xVal = ( current >> 4 );
-      //      yVal = ( current & B00001111 );
-      //      if (in(current)) { //if current is not in visited
-      //        add(current); //set current coordinate to be visited, TODO add an add function
-      //      }
-      //      decodePossibleSets( orientation, xVal, yVal  );
-      //      turnAround();
-      //      turn = 3;
-      //      tempFoundVertex = false;
-      //      orientRobot( caseVariable, turwn );
-      //      transmitSqData( yVal, xVal );
-      //      stack.push(possibleBackNode);
-      //    }
       //readDistanceSensors();
       goStraight();
       delay(500);
@@ -688,6 +695,7 @@ void loop() {
       //goStraight();
       //delay(100);
       foundVertex = tempFoundVertex;
+      lastCurrent = current;
       // Serial.println("found vertex ********************");
       //      readDistanceSensors();
 
@@ -1097,7 +1105,7 @@ boolean detectIR( void )
   sei();
   // Serial.println("start");
   for (byte i = 0 ; i < FFT_N / 2 ; i++) {
-   // Serial.println(fft_log_out[i]); // send out the data
+    // Serial.println(fft_log_out[i]); // send out the data
   }
 
   r = false;
@@ -1108,8 +1116,8 @@ boolean detectIR( void )
     average = average / 5;
 
     //// Serial.println(avg+average);
-    if (average > 150) {
-     // Serial.println("****************************found******");
+    if (average > 170) {
+      // Serial.println("****************************found******");
       //goStop();
       //delay(5000);
       r = true;
@@ -1196,7 +1204,7 @@ void radioSetup( void )
 
   //radio.printDetails();
   // Serial.println( "reset" );
-  transmit( 0xFF );
+  //transmit( 0xFF );
   //transmit( 0xFF );
   //transmit( 0xFF );
 }
@@ -1209,9 +1217,9 @@ void transmitSqData( int xVal, int yVal )
 {
   //    assignGlobalMaze( xVal, yVal ); //FOR SIMULATION ONLY !!!!!!!!!!
   byte coordinates = xVal << 4 | yVal ;
-  byte first = 0x1b;
-  byte second = 0x2b;
-  byte coords = 0xcc;
+  byte first = 0xf1;
+  byte second = 0xf2;
+  byte coords = 0xfc;
   byte firstByte = 0;
   firstByte = checkWalls( firstByte );
   firstByte = checkTreasure( firstByte );

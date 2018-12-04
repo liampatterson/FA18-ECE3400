@@ -396,7 +396,7 @@ void transmit( byte payload ) {
         /*if ( rxPayload == 0xFF ) {
           printf( "reset \r\n" );
         }*/
-        else if ( rxPayload == 0xF1 ) {
+        if ( rxPayload == 0xF1 ) {
           //printf( "\r\nThis is the first byte " );
           printFlag = 1;
         }
