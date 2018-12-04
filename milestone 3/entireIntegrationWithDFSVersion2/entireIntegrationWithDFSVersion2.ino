@@ -78,7 +78,7 @@ typedef enum { north_up = 0, north_left = 1, north_back = 2, north_right = 3 } O
 
 #define EXPLORED           B10000000;
 
-#define WALL_THRESHOLD     230
+#define WALL_THRESHOLD     215
 
 // END BIT MASKS
 
@@ -206,7 +206,7 @@ role_e role = role_ping_out;
 //
 bool northWall = true;
 bool southWall;
-bool eastWall;
+bool eastWall = true;
 bool westWall = true;
 bool treasureCircle;
 bool treasureTriangle;
@@ -251,6 +251,7 @@ void setup( void )
   transmitSqData(0, 0);
   westWall = false;
   northWall = false;
+  eastWall = false;
   // Serial.println("completed radio setup***************************");
   //to be used for mux digital inputs
   pinMode(S2, OUTPUT);
@@ -1455,7 +1456,7 @@ void orientRobot( int wallState, int turn )
           break;
       }
       if (turn == 1) {
-        if ( turn > 0 ) {
+        if ( orientation > 0 ) {
           orientation = orientation - 1;
         }
         else {
@@ -1504,7 +1505,7 @@ void orientRobot( int wallState, int turn )
           break;
       }
       if (turn == 1) {
-        if ( turn > 0 ) {
+        if ( orientation > 0 ) {
           orientation = orientation - 1;
         }
         else {
